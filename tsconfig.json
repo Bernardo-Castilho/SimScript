@@ -1,0 +1,19 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "module": "ES2015",
+        "target": "ES2015",
+        "declaration": true,
+        "outDir": "./dist",
+        "strictNullChecks": false,
+        "stripInternal": true,
+    },
+    "typedocOptions": {
+        "name": "SimScript",
+        "entryPoints": ["./index.ts"],
+        "out": "./simscript/docs",
+        "excludePrivate": true,
+        "excludeInternal": true,
+        "theme": "minimal"
+    }    
+}

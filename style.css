@@ -1,0 +1,297 @@
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    max-width: 75ch;
+    margin: auto;
+}
+
+h1,
+h2 {
+    margin: 1.75em 0 0 -1em;
+    line-height: 2em;
+}
+
+h2 {
+    border-top: 1px solid rgba(0, 0, 0, .2);
+}
+
+button,
+input,
+select {
+    padding: .5em;
+    margin: .5em 0 1em 0;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+input[type=range] {
+    padding: 0;
+}
+
+button {
+    padding: .5em 1em;
+}
+
+button:hover {
+    background: rgba(0, 0, 0, .2);
+}
+
+h2 button {
+    padding: 0;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: .3em;
+}
+
+th {
+    font-weight: bold;
+}
+
+th[colspan] {
+    text-align: left;
+    padding-top: 0.5em;
+}
+
+td {
+    margin: 0 1em;
+}
+
+tr,
+td {
+    text-align: right;
+    padding-left: 2em;
+}
+
+.error {
+    color: darkred;
+    font-weight: bold;
+}
+
+button.hide {
+    display: none;
+    margin-left: 5em;
+}
+
+label {
+    display: block;
+    margin-left: 1em;
+}
+
+table {
+    margin-bottom: 1em;
+}
+
+/* crosswalk traffic light cycle parameters */
+span.light {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    border: 4px solid rgba(0, 0, 0, .5);
+    vertical-align: middle;
+    margin-right: .5em;
+}
+
+span.light.red {
+    background: red;
+}
+
+span.light.yellow {
+    background: orange;
+}
+
+span.light.green {
+    background: green;
+}
+
+/* charts */
+.charts-css {
+    cursor: default;
+    font-size: 10pt;
+    padding: 1em;
+    --color: lightblue;
+}
+
+.charts-css caption {
+    font-weight: bold;
+    font-size: 125%;
+}
+
+.charts-css td.avg {
+    --color: lightgreen;
+}
+
+.charts-css.column {
+    height: 200px;
+}
+
+.charts-css td span.data {
+    height: 1em;
+}
+
+/* animation */
+div.ss-anim {
+    position: relative;
+    height: 300px;
+}
+
+div.ss-anim>div {
+    position: absolute;
+}
+
+div.ss-anim .ss-queue {
+    width: 1em;
+    height: 1em;
+    border-radius: 4px;
+    transform: translate(-50%, -50%);
+    background: orange;
+    opacity: 0.03;
+}
+
+div.ss-anim .light {
+    top: 5%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(0, 0, 0, .2);
+    border-radius: 1em;
+    padding: .1em;
+}
+
+div.ss-anim .light div {
+    width: 1em;
+    height: 1em;
+    margin: .1em;
+    border: 2px solid rgba(0, 0, 0, .5);
+    border-radius: 1em;
+    opacity: .2;
+}
+
+div.ss-anim .light .red {
+    background: red;
+}
+
+div.ss-anim .light .yellow {
+    background: yellow;
+}
+
+div.ss-anim .light .green {
+    background: green;
+}
+
+div.ss-anim .street {
+    width: 80%;
+    height: 20%;
+    top: 50%;
+    left: 10%;
+    background: rgba(0, 0, 0, 0.1);
+    transform: perspective(400px) rotateX(30deg);
+}
+
+div.ss-anim .crosswalk {
+    width: 10%;
+    height: 20%;
+    top: 50%;
+    left: 45%;
+    background-image: repeating-linear-gradient(45deg,
+            black,
+            black 10px,
+            white 10px,
+            white 20px);
+    transform: perspective(400px) rotateX(30deg);
+}
+
+div.ss-anim .car-arr {
+    top: 60%;
+    left: 10%;
+}
+
+div.ss-anim .car-xing {
+    top: 60%;
+    left: 40%;
+}
+
+div.ss-anim .car-xed {
+    top: 60%;
+    left: 90%;
+}
+
+div.ss-anim .ped-arr {
+    top: 85%;
+    left: 10%;
+}
+
+div.ss-anim .ped-xing {
+    top: 75%;
+    left: 50%;
+}
+
+div.ss-anim .ped-xed {
+    top: 45%;
+    left: 50%;
+}
+
+div.ss-anim .ped-leave {
+    top: 35%;
+    left: 90%;
+}
+
+.ss-anim .ss-entity {
+    position: absolute;
+}
+
+div.ss-anim .ss-entity.ped {
+    opacity: 0.8;
+}
+
+div.ss-anim .time-now {
+    top: 1em;
+    right: 10%;
+}
+
+div.ss-anim .time-now span {
+    font-weight: bold;
+}
+
+/* SVG animation*/
+svg.ss-anim {
+    overflow: visible;
+}
+
+svg.ss-anim g.light {
+    fill: rgba(0, 0, 0, 0.1);
+    stroke: rgba(0, 0, 0, 0.3);
+    stroke-width: 2px;
+}
+
+svg.ss-anim g.light circle {
+    opacity: 0.2;
+}
+
+svg.ss-anim g.light circle.red {
+    fill: red;
+}
+
+svg.ss-anim g.light circle.yellow {
+    fill: yellow;
+}
+
+svg.ss-anim g.light circle.green {
+    fill: green;
+}
+
+svg.ss-anim .ss-queue {
+    fill: orange;
+    opacity: 0.03;
+}
+
+svg.ss-anim .street {
+    fill: rgba(0, 0, 0, 0.1);
+}
+
+svg.ss-anim .crosswalk {
+    fill: rgba(0, 0, 0, 0.3);
+}

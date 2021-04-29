@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimScript</title>
+    <!--link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/charts.css/dist/charts.min.css"-->
+</head>
+
+<body>
+    <h1>
+        SimScript
+    </h1>
+    <p>
+        A Discrete Event Simulation library in TypeScript.
+    </p>
+    <p>
+        <b>SimScript</b> uses JavaScript's
+        <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await">async/await</a>
+        features in JavaScript to make simulation scripts easy to write and understand.
+    </p>
+    <p>
+        <b>SimScript</b> simulations are built using these classes:
+    </p>
+    <ul>
+        <li>
+            <b>Simulation</b>:
+            Creates entities and resources (queues) and schedules the execution of the entity
+            scripts as they execute their tasks.
+        </li>
+        <li>
+            <b>Queues</b>:
+            Represent resources that can be seized and released by entities. Queues keep track
+            of their utilization and may constrain the flow of entities through the simulation.
+        </li>
+        <li>
+            <b>Entities</b>:
+            Represent active elements that execute scripts. Scripts are JavaScript methods that
+            contain instructions for entities. Typical actions are entering and leaving queues,
+            going through delays, or sending signals.
+        </li>
+        <li>
+            <b>Animation</b>:
+            Uses HTML to render entities waiting in queues or in transit between queues.
+            Animations are useful for presentations and also for debugging simulations.
+        </li>
+    </ul>
+    <script type="module" src="/main.ts"></script>
+</body>
+
+</html>
