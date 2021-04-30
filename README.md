@@ -10,8 +10,8 @@ features to make simulation scripts easy to write and understand.
 
 ## Simulation
 
-Creates entities and resources (queues) and schedules the execution of the entity
-scripts as they execute their tasks.
+Simulations creates resources (queues) and entities which execute an asynchronous script 
+method which describes the actions each entity should perform.
 
 ## Queues
 
@@ -20,9 +20,10 @@ Queues keep track of their utilization and may constrain the flow of entities th
 
 ## Entities
 
-Represent active elements that execute scripts. Scripts are JavaScript methods that
-contain instructions for entities. Typical actions are entering and leaving queues,
-going through delays, or sending signals.
+Represent active elements that execute scripts. Scripts are async methods that
+contain instructions for entities.
+Typical actions include entering and leaving **queues**, going through **delays**,
+and sending or waiting for **signals**.
 
 ## Animation
 
@@ -32,7 +33,7 @@ Animations are useful for presentations and also for debugging simulations.
 
 # Example
 
-This is the classic Barbershop simulation written in SimScript:
+This is the classic Barbershop simulation written in **SimScript**:
 
 ```typescript
 // https://try-mts.com/gpss-introduction-and-barber-shop-simulation/
@@ -43,8 +44,8 @@ export class BarberShop extends Simulation {
     // generate entities with inter-arrival times of 18 min for 8 hours * 7 days
     onStarting() {
         super.onStarting();
-        this.qWait.grossDwell.setHistogramParameters(1, 0, 10);
-        this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6), null, 0, 60 * 8 * 7);
+        this.timeEnd = 60 * 8 * 7; // simulation times are in minutes
+        this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6));
     }
 }
 class Customer extends Entity {
