@@ -10,13 +10,14 @@ features to make simulation scripts easy to write and understand.
 
 ## Simulation
 
-Simulations creates resources (queues) and entities which execute an asynchronous script 
-method which describes the actions each entity should perform.
+Simulations create resources (queues) and entities which execute an async **script** 
+method that describes the actions each entity should perform.
 
 ## Queues
 
 Represent resources that can be seized and released by entities.
-Queues keep track of their utilization and may constrain the flow of entities through the simulation.
+Queues keep track of their utilization and may constrain the flow of entities 
+through the simulation.
 
 ## Entities
 
@@ -27,7 +28,8 @@ and sending or waiting for **signals**.
 
 ## Animation
 
-Uses HTML or SVG elements to render entities waiting in queues or in transit between queues.
+Uses HTML or SVG elements to render entities waiting in queues or in transit 
+between queues.
 
 Animations are useful for presentations and also for debugging simulations.
 
