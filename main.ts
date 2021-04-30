@@ -351,7 +351,6 @@ showSimulation(new Crosswalk(),
             simple and flexible.
         </p>
         <div class="ss-anim">
-            
             <div class="time-now">
                 Time: <span>0.00</span> hours
             </div>
@@ -377,9 +376,12 @@ showSimulation(new Crosswalk(),
     (sim: Crosswalk, animationHost: HTMLElement) => {
         new Animation(sim, animationHost, {
             getEntityHtml: e => {
+
+                // use explicit image sizes to measuring errors while loading images
                 return e instanceof Pedestrian
-                    ? '<img class="ped" src="resources/blueped.png">'
-                    : '<img class="car" src="resources/redcar.png">';
+                    ? '<img class="ped" src="resources/blueped.png" width="15" height="19">'
+                    : '<img class="car" src="resources/redcar.png" width="55" height="19">';
+                
             },
             queues: [
                 { queue: sim.qPedArr, element: '.ss-queue.ped-arr' },
@@ -441,10 +443,13 @@ showSimulation(new Crosswalk(),
                 if (e instanceof Pedestrian) {
                     return `
                         <g class="ped" fill="black" stroke="black" opacity="0.8">
-                            <circle cx="1%" cy="1%" r="0.5%" fill="orange"></circle>
-                            <rect x=".4%" y="2%" width="1.3%" height="4%" fill="green" rx="0.7%"></rect>
-                            <rect x=".66%" y="4%" width=".8%" height="3%" fill="blue"></rect>
-                            <rect x=".4%" y="7%" width="1.3%" height=".75%" rx="0.5%"></rect>
+                            <!-- use inner group to apply custom transforms -->
+                            <g transform="scale(1,0.8)">
+                                <circle cx="1%" cy="1%" r="0.5%" fill="orange"></circle>
+                                <rect x=".4%" y="2%" width="1.3%" height="4%" fill="green" rx="0.7%"></rect>
+                                <rect x=".66%" y="4%" width=".8%" height="3%" fill="blue"></rect>
+                                <rect x=".4%" y="7%" width="1.3%" height=".75%" rx="0.5%"></rect>
+                            </g>
                         </g>`;
                 } else {
                     return `

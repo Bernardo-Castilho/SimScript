@@ -135,6 +135,11 @@ export class Animation {
             }
         }
 
+        // prepare to remove unused animation entities
+        this._entities.forEach(ae => {
+            ae._inUse = false;
+        });
+
         // draw entities in animated queues
         for (let aq of this._queues.values()) {
             aq._draw();
@@ -143,7 +148,7 @@ export class Animation {
         // draw entities in transit between animated queues
         sim._fec.forEach(item => {
 
-            // see if this entity is in transit between to animated queues
+            // see if this entity is in transit between two animated queues
             if (item.options.path && item.timeDue != null) {
 
                 // calculate path
@@ -161,9 +166,6 @@ export class Animation {
                 // get AnimationEntity for this entity
                 const ae = this._getAnimationEntity(item.e);
 
-                // keep track of last update
-                ae._lastUpdate = sim.timeNow;
-
                 // update entity position
                 let start = item.timeStart,
                     finish = item.timeDue,
@@ -176,12 +178,16 @@ export class Animation {
         // remember time of last update
         this._lastUpdate = sim.timeNow;
 
-        // remove elements that left the simulation
-        for (let ae of this._entities.values()) {
-            if (ae._lastUpdate < this._lastUpdate) {
-                ae._removeElement();
-            };
-        }
+        // remove elements that are not currently in use
+        this._entities.forEach((ae, key) => {
+            if (!ae._inUse) {
+                this._entities.delete(key);
+                let e = ae._element;
+                if (e && e.parentElement) {
+                    e.parentElement.removeChild(e);
+                }
+            }
+        });
     }
 
     // gets/creates an AnimationEntity for an entity
@@ -247,13 +253,12 @@ class AnimationQueue {
     _draw() {
 
         // skip this if we're up-to-date
-        let anim = this._anim,
-            sim = anim._sim;
+        let anim = this._anim;
         if (this._q.lastChange < anim._lastUpdate) {
             for (let item of this._q.items.values()) {
                 let ae = anim._entities.get(item.entity);
                 if (ae) {
-                    ae._lastUpdate = sim.timeNow;
+                    ae._inUse = true;
                 }
             }
             return;
@@ -283,8 +288,7 @@ class AnimationQueue {
             pt.x += ae._width * this._cos;
             pt.y += ae._height * this._sin;
 
-            // keep track of count and last update
-            ae._lastUpdate = sim.timeNow;
+            // keep track of entity count
             cnt++;
         }
 
@@ -300,20 +304,18 @@ class AnimationEntity {
     _anim: Animation;
     _entity: Entity;
     _element: Element;
-    _innerHtml: string;
     _width: number;
     _height: number;
-    _lastUpdate: number;
+    _inUse: boolean;
 
     // ctor
     constructor(anim: Animation, entity: Entity) {
         this._anim = anim;
         this._entity = entity;
-        assert(entity instanceof Entity, 'e should be an entity');
+        this._inUse = false;
 
         // create animation element
         const e = this._element = createElement(this._getEntityHtml(), null, anim._svg);
-        this._innerHtml = e.innerHTML;
         e.classList.add('ss-entity');
         const s = (e as any).style;
         s.left = s.top = s.opacity = '0';
@@ -322,37 +324,22 @@ class AnimationEntity {
         anim._host.appendChild(e);
 
         // measure element
-        if (anim._svg) {
-            const rc = (e as any).getBBox();
-            this._width = rc.width;
-            this._height = rc.height;
-        } else {
-            const rc = e.getBoundingClientRect();
-            this._width = rc.width;
-            this._height = rc.height;
-        }
-    }
-
-    // gets the updated element that represents this entity
-    _getElement() {
-        const e = this._element;
-        const innerHtml = this._getEntityHtml();
-        if (innerHtml != this._innerHtml) {
-            e.innerHTML = this._innerHtml = innerHtml;
-        }
-        return e;
+        const rc = anim._svg
+            ? (e as any).getBBox()
+            : e.getBoundingClientRect();
+        this._width = rc.width;
+        this._height = rc.height;
     }
 
     // gets the inner HTML for this entity's element
     _getEntityHtml() {
-        return this._anim.getEntityHtml
-            ? this._anim.getEntityHtml(this._entity)
-            : _DEFAULT_ENTITY_ICON;
+        let getEntity = this._anim.getEntityHtml;
+        return getEntity ? getEntity(this._entity) : _DEFAULT_ENTITY_ICON;
     }
 
     // sets the position of this animated entity.
     _drawAt(pt: Point) {
-        const e = this._getElement(); // updated element
+        const e = this._element;
         const s = (e as any).style;
 
         // adjust reference point (middle of the element)
@@ -361,14 +348,9 @@ class AnimationEntity {
         // update the entity element
         s.transform = `translate(${p.x}px, ${p.y}px)`;
         s.opacity = '';
-    }
 
-    // removes this animated entity from the animation.
-    _removeElement() {
-        let e = this._element;
-        if (e && e.parentElement) {
-            e.parentElement.removeChild(e);
-        }
+        // remember we're in use
+        this._inUse = true;
     }
 }
 
@@ -418,12 +400,12 @@ class Point {
  * @returns The point along the spline at the given percentage.
  */
 function getSplinePosition(pts: Point[], pct: number, tension): Point {
-    
+
     // just two points? use linear interpolation 
     if (pts.length == 2) {
         return Point.interpolate(pts[0], pts[1], pct);
     }
-    
+
     // calculate total distance
     let totalDistance = 0;
     for (let i = 0; i < pts.length - 1; i++) {
