@@ -107,31 +107,6 @@ span.light.green {
     background: green;
 }
 
-/* charts */
-.charts-css {
-    cursor: default;
-    font-size: 10pt;
-    padding: 1em;
-    --color: lightblue;
-}
-
-.charts-css caption {
-    font-weight: bold;
-    font-size: 125%;
-}
-
-.charts-css td.avg {
-    --color: lightgreen;
-}
-
-.charts-css.column {
-    height: 200px;
-}
-
-.charts-css td span.data {
-    height: 1em;
-}
-
 /* animation */
 div.ss-anim {
     position: relative;
@@ -294,4 +269,25 @@ svg.ss-anim .street {
 
 svg.ss-anim .crosswalk {
     fill: rgba(0, 0, 0, 0.3);
+}
+
+/* histograms */
+.ss-histogram {
+    padding: 0 1em;
+}
+
+.ss-histogram svg text {
+    font-size: 80%;
+}
+
+.ss-histogram svg text.avg {
+    font-weight: bold;
+}
+
+.ss-histogram svg rect {
+    fill: lightblue;
+}
+
+.ss-histogram svg rect.avg {
+    fill: lightgreen;
 }

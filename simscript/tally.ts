@@ -170,48 +170,51 @@ export class Tally {
      * Before using this method, call the {@link setHistogramParameters}
      * to specify the desired histogram's bin size and limits.
      * 
-     * @param title Optional table title. Defaults to an empty string.
-     * @param type Optional chart type. Defaults to 'column'.
-     * @returns An HTML string showing the {@link Tally} as a histogram
-     * formatted for display using the [chart.css](https://chartscss.org/) library.
+     * @returns An HTML string showing the {@link Tally} as a histogram.
      */
-    getHistogramTable(title = '', type = 'column'): string {
-        let table = '',
-            histo = this.getHistogram();
-        if (histo) {
+     getHistogramChart(): string {
 
-            // table
-            table = `<table 
-                class="charts-css ${type} data-spacing-5 hide-data show-labels
-                ${title ? ' show-heading' : ''}">`;
-
-            // caption
-            if (title) {
-                table += `<caption>${title}</caption>`;
-            }
-
-            // histogram data
-            let maxCount = 0;
-            histo.forEach(entry => {
-                maxCount = Math.max(maxCount, entry.count)
-            });
-            const dec = this._histoParms.size < 1 ? 1 : 0;
-            histo.forEach(entry => {
-                let cls = entry.from <= this.avg && entry.to >= this.avg
-                    ? 'class="avg" '
-                    : '';
-                table += `<tr>
-                    <th scope="row">${format(entry.from, dec)}-${format(entry.to, dec)}</th>
-                    <td ${cls}style="--size:${entry.count / maxCount}"><span class="data">${entry.count}</span></td>
-                </tr>`;
-            });
-
-            // done
-            table += '</table>';
-            return table;
-        }
-
-    }
+        // get the histogram
+        let histo = this.getHistogram();
+    
+        // get parameters
+        let maxCnt = 0;
+        histo.forEach(e => maxCnt = Math.max(maxCnt, e.count));
+        const barWidth = Math.round(1 / histo.length * 100);
+        const dec = this._histoParms.size < 1 ? 1 : 0;
+    
+        // build bars
+        let bars = '';
+        histo.forEach((e, index) => {
+            const cls = this.avg >= e.from && this.avg <= e.to ? ' class="avg"' : '';
+            const hei = Math.round(e.count / maxCnt * 100);
+            const x = index * barWidth;
+            const gap = 5;
+    
+            bars += `<g${cls}>
+                <title>${e.count}</title>
+                <rect
+                    ${cls}
+                    x="calc(${x}% + ${gap}px)"
+                    width="calc(${barWidth}% - ${2 * gap}px)"
+                    y="calc(${100 - hei}% - 1.2em)"
+                    height="${hei}%" />
+                <text
+                    ${cls}
+                    x="${(x + barWidth / 2)}%"
+                    y="calc(100% - 1.2em)"
+                    text-anchor="middle">
+                    ${format(e.from, dec)}-${format(e.to, dec)}
+                </text>
+            </g>`;
+        });
+        return `
+            <div class="ss-histogram">
+                <svg width="100%" height="100%">
+                    ${bars}
+                </svg>
+            </div>`;
+    }    
     /**
      * Sets the parameters used to build histograms for this {@link Tally}.
      * 

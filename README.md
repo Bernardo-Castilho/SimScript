@@ -4,7 +4,7 @@ A Discrete Event Simulation Library in TypeScript.
 
 **SimScript** uses JavaScript's
 [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
-features to make simulation scripts easy to write and understand.
+features to make simulations easy to write and understand.
 
 **SimScript** simulations are built using these classes:
 
@@ -15,21 +15,21 @@ method that describes the actions each entity should perform.
 
 ## Queues
 
-Represent resources that can be seized and released by entities.
+Queues represent resources that can be seized and released by entities.
 Queues keep track of their utilization and may constrain the flow of entities 
 through the simulation.
 
 ## Entities
 
-Represent active elements that execute scripts. Scripts are async methods that
-contain instructions for entities.
+Entities represent active elements that execute scripts. Scripts are async
+methods that contain instructions for entities.
 Typical actions include entering and leaving **queues**, going through **delays**,
 and sending or waiting for **signals**.
 
-## Animation
+## Animations
 
-Uses HTML or SVG elements to render entities waiting in queues or in transit 
-between queues.
+Animations use HTML or SVG elements to render entities waiting in queues 
+or in transit between queues.
 
 Animations are useful for presentations and also for debugging simulations.
 

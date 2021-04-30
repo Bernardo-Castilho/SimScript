@@ -19,7 +19,7 @@
     <p>
         <b>SimScript</b> uses JavaScript's
         <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await">async/await</a>
-        features to make simulation scripts easy to write and understand.
+        features to make simulations easy to write and understand.
     </p>
     <p>
         <b>SimScript</b> simulations are built using these classes:
@@ -27,23 +27,25 @@
     <ul>
         <li>
             <b>Simulation</b>:
-            Creates entities and resources (queues) and schedules the execution of the entity
-            scripts as they execute their tasks.
+            Simulations create resources (queues) and entities which execute an async <b>script</b>
+            method that describes the actions each entity should perform.
         </li>
         <li>
             <b>Queues</b>:
-            Represent resources that can be seized and released by entities. Queues keep track
-            of their utilization and may constrain the flow of entities through the simulation.
+            Queues represent resources that can be seized and released by entities. 
+            Queues keep track of their utilization and may constrain the flow of entities through
+            the simulation.
         </li>
         <li>
             <b>Entities</b>:
-            Represent active elements that execute scripts. Scripts are JavaScript methods that
+            Entities represent active elements that execute scripts. Scripts are JavaScript methods that
             contain instructions for entities. Typical actions are entering and leaving queues,
-            going through delays, or sending signals.
+            going through delays, and sending or waiting for signals.
         </li>
         <li>
-            <b>Animation</b>:
-            Uses HTML to render entities waiting in queues or in transit between queues.
+            <b>Animations</b>:
+            Animations use HTML or SVG elements to render entities waiting in queues or in transit 
+            between queues.
             Animations are useful for presentations and also for debugging simulations.
         </li>
     </ul>

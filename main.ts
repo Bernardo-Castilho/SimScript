@@ -1,4 +1,3 @@
-import 'charts.css/dist/charts.min.css';
 import './style.css';
 
 import { Simulation, SimulationState } from './simscript/simulation';
@@ -11,7 +10,6 @@ import { BarberShop } from './simulations/barbershop';
 import { MMC } from './simulations/mmc';
 import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { SimpleTest } from './simulations/simpletest';
-
 
 //----------------------------------------------------------
 // Simple
@@ -76,7 +74,7 @@ showSimulation(new RandomVarTest(),
             <li>Min: <b>${format(sim.tally.min)}</b></li>
             <li>Max: <b>${format(sim.tally.max)}</b></li>
         </ul>` +
-            sim.tally.getHistogramTable(sim.randomVar.name);
+            sim.tally.getHistogramChart(sim.randomVar.name);
     },
     (sim: RandomVarTest, e) => { // handle parameter changes
         const target = e.target;
@@ -124,7 +122,7 @@ showSimulation(new BarberShop(),
 
             // show waiting queue's gross dwell histogram
             '<div class="histogram time">' +
-            sim.qWait.grossDwell.getHistogramTable('Waiting Times (mins)') +
+            sim.qWait.grossDwell.getHistogramChart() +
             '</div>';
     }
 );
@@ -205,10 +203,10 @@ showSimulation(new MMC(),
 
         log.innerHTML +=
             `<div class="histogram mmc pop">
-                ${sim.qWait.grossPop.getHistogramTable('Queue lengths')}
+                ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
             </div>
             <div class="histogram mmc time">
-                ${sim.qWait.grossDwell.getHistogramTable('Wait times (seconds)')}
+                ${sim.qWait.grossDwell.getHistogramChart('Wait times (seconds)')}
             </div>`;
 
         function sum(rho1: number, c: number): number {
@@ -302,12 +300,12 @@ showSimulation(new Crosswalk(),
 
             // show pedestrian queue's population histogram
             '<div class="histogram pedestrian pop">' +
-            sim.qPedXing.grossPop.getHistogramTable('Pedestrians waiting to cross') +
+            sim.qPedXing.grossPop.getHistogramChart('Pedestrians waiting to cross') +
             '</div>' +
 
             // show car queue's population histogram
             '<div class="histogram car pop">' +
-            sim.qCarXing.grossPop.getHistogramTable('Cars waiting to cross') +
+            sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross') +
             '</div>';
     },
     (sim: Crosswalk, e) => { // handle parameter changes

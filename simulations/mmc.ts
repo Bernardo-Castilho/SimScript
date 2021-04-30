@@ -24,7 +24,7 @@ export class MMC extends Simulation {
 
         // get up tally histograms
         this.qWait.grossPop.setHistogramParameters(1, 0, 10);
-        this.qWait.grossDwell.setHistogramParameters(60, 0, 600 - 0.1);
+        this.qWait.grossDwell.setHistogramParameters(60, 0, 500 - 0.1);
 
         // start simulation
         this.generateEntities(Customer, this.interArrival, 1e6); // limit the # of customers
