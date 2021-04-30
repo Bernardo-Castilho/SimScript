@@ -1,7 +1,7 @@
 import { Simulation, FecItem } from './simulation';
 import { Queue } from './queue';
 import { Entity } from './entity';
-import { assert, setOptions, getElement, createElement } from './util';
+import { assert, setOptions, getElement } from './util';
 
 const _DEFAULT_ENTITY_ICON = '&#9899;'; // black circle
 const _DEFAULT_SPLINE_TENSION = 0.1;
@@ -315,10 +315,14 @@ class AnimationEntity {
         this._inUse = false;
 
         // create animation element
-        const e = this._element = createElement(this._getEntityHtml(), null, anim._svg);
-        e.classList.add('ss-entity');
+        const e = anim._svg
+            ? document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            : document.createElement('div');
+        e.innerHTML = this._getEntityHtml();
         const s = (e as any).style;
         s.left = s.top = s.opacity = '0';
+        e.classList.add('ss-entity');
+        this._element = e;
 
         // append animation element to host
         anim._host.appendChild(e);

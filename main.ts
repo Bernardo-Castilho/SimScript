@@ -4,7 +4,7 @@ import './style.css';
 import { Simulation, SimulationState } from './simscript/simulation';
 import { Animation } from './simscript/animation';
 import { Exponential } from './simscript/random';
-import { format, createElement } from './simscript/util';
+import { format } from './simscript/util';
 
 import { RandomVarTest } from './simulations/randomvartest';
 import { BarberShop } from './simulations/barbershop';
@@ -442,14 +442,11 @@ showSimulation(new Crosswalk(),
             getEntityHtml: e => {
                 if (e instanceof Pedestrian) {
                     return `
-                        <g class="ped" fill="black" stroke="black" opacity="0.8">
-                            <!-- use inner group to apply custom transforms -->
-                            <g transform="scale(1,0.8)">
-                                <circle cx="1%" cy="1%" r="0.5%" fill="orange"></circle>
-                                <rect x=".4%" y="2%" width="1.3%" height="4%" fill="green" rx="0.7%"></rect>
-                                <rect x=".66%" y="4%" width=".8%" height="3%" fill="blue"></rect>
-                                <rect x=".4%" y="7%" width="1.3%" height=".75%" rx="0.5%"></rect>
-                            </g>
+                        <g class="ped" fill="black" stroke="black" opacity="0.8" transform="scale(1,0.8)">
+                            <circle cx="1%" cy="1%" r="0.5%" fill="orange"></circle>
+                            <rect x=".4%" y="2%" width="1.3%" height="4%" fill="green" rx="0.7%"></rect>
+                            <rect x=".66%" y="4%" width=".8%" height="3%" fill="blue"></rect>
+                            <rect x=".4%" y="7%" width="1.3%" height=".75%" rx="0.5%"></rect>
                         </g>`;
                 } else {
                     return `
@@ -581,4 +578,22 @@ function showSimulation(sim: Simulation, title: string, intro: string, showStats
             handleInput(sim, e);
         });
     }
+}
+
+function createElement(template: string, parent?: Element) {
+
+    // create element
+    let e: Element = document.createElement('div');
+    e.innerHTML = template;
+    if (e.children.length == 1) {
+        e = e.children[0] as Element;
+    }
+
+    // append to document
+    if (parent) {
+        parent.appendChild(e);
+    }
+
+    // return new element
+    return e;
 }

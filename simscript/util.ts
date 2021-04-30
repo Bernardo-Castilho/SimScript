@@ -56,34 +56,6 @@ export function setOptions(obj: any, options: any) {
 }
 
 /**
- * Creates an HTMLElement based on a template string and optionally appends
- * the new element to an existing element.
- * 
- * @param template HTML string that defines the new element.
- * @param parent HTML element to which the new element will be appended.
- * @returns The new HTMLElement.
- */
-export function createElement(template: string, parent?: Element, svg?: boolean) {
-
-    // create element
-    let e: Element = svg
-        ? document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-        : document.createElement('div');
-    e.innerHTML = template;
-    if (e.children.length == 1) {
-        e = e.children[0] as Element;
-    }
-
-    // append to document
-    if (parent) {
-        parent.appendChild(e);
-    }
-
-    // return new element
-    return e;
-}
-
-/**
  * Gets an HTML element from a query selector.
  *
  * @param selector An HTML element or a query selector string, or a jQuery object.
