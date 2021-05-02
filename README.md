@@ -77,6 +77,7 @@ import "simscript/dist/simscript.css";
 ```
 
 # Todo
+- tests
 - blitzes: 
     - randomvar
     * barbershop
@@ -87,4 +88,4 @@ import "simscript/dist/simscript.css";
 - more samples
 - animations 3d (a-frame?)
 - typedoc
-- svelte
+- svelte/React

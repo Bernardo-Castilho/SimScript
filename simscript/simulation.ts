@@ -652,10 +652,6 @@ export class FecItem {
     get promise(): Promise<void> {
         return this._promise;
     }
-    then(resolver) {
-        let r = resolver;
-        debugger
-    }
 }
 
 /**

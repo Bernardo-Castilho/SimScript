@@ -84,8 +84,7 @@ import "simscript/dist/simscript.css";
     - crosswalk anim
     - crosswalk anim svg
     - mmc
-- mmc, same seed issue
 - more samples
 - animations 3d (a-frame?)
 - typedoc
-- svelte
+- svelte/React
