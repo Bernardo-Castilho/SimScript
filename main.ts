@@ -122,7 +122,7 @@ showSimulation(new BarberShop(),
         sim.getStatsTable(true) +
 
         // show waiting queue's gross dwell histogram
-        sim.qWait.grossDwell.getHistogramChart();
+        sim.qWait.grossDwell.getHistogramChart('Waiting Times (min)');
     }
 );
 

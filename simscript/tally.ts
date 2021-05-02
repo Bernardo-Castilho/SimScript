@@ -211,6 +211,7 @@ export class Tally {
         });
         return `
             <div class="ss-histogram">
+                <div class="title">${title || ''}</div>
                 <svg width="100%" height="100%">
                     ${bars}
                 </svg>

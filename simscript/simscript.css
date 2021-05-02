@@ -25,6 +25,13 @@ table.ss-stats td {
 /* histograms */
 .ss-histogram {
     padding: 0 1em;
+    margin: 1em 0;
+}
+
+.ss-histogram>.title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: .5em;
 }
 
 .ss-histogram svg text {
