@@ -23,29 +23,30 @@ table.ss-stats td {
 }
 
 /* histograms */
-.ss-histogram {
+figure.ss-histogram {
     padding: 0 1em;
     margin: 1em 0;
 }
 
-.ss-histogram>.title {
+figure.ss-histogram figcaption {
     text-align: center;
     font-weight: bold;
     margin-bottom: .5em;
 }
 
-.ss-histogram svg text {
+figure.ss-histogram svg text {
     font-size: 80%;
 }
 
-.ss-histogram svg text.avg {
+figure.ss-histogram svg text.avg {
     font-weight: bold;
 }
 
-.ss-histogram svg rect {
-    fill: lightblue;
+figure.ss-histogram svg rect {
+    fill: rgb(0,100,255);
+    opacity: 0.5;
 }
 
-.ss-histogram svg rect.avg {
-    fill: lightgreen;
+figure.ss-histogram svg rect.avg {
+    opacity: 1;
 }

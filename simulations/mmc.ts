@@ -18,9 +18,9 @@ export class MMC extends Simulation {
         super.onStarting();
 
         // use seeded random generators with the same mean
-        //// ** REVIEW: using the same seed produces wrong results!!!
-        this.interArrival = new Exponential(this.interArrival.mean, 0);
-        this.service = new Exponential(this.service.mean, 1);
+        //// ** REVIEW: using the same seed produces wrong results?!?!?!?
+        this.interArrival = new Exponential(this.interArrival.mean, 1);
+        this.service = new Exponential(this.service.mean, 2);
 
         // get up tally histograms
         this.qWait.grossPop.setHistogramParameters(1, 0, 10);

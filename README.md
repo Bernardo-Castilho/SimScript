@@ -76,16 +76,32 @@ file in your project:
 import "simscript/dist/simscript.css";
 ```
 
+# Samples
+
+The links below show some samples of **SimScript** simulations:
+
+- [Barbershop](https://stackblitz.com/edit/typescript-efht9t?file=index.ts)
+    Classic GPSS simulation example:
+    customers arrive at a barbershop, wait until the barber is available, get serviced, and leave.
+
+- [M/M/C](https://stackblitz.com/edit/typescript-xbntrv?file=index.ts)
+    Classic M/M/C queueing system. Entities arrive, are served by one of C servers, and leave.
+
+- [RandomVar](https://stackblitz.com/edit/typescript-nwknjs?file=index.ts)
+    Demonstrates some of the random variables implemented in **SimScript**.
+
 # Todo
 - tests
 - blitzes: 
-    - randomvar
     * barbershop
+    * mmc
+    * randomvar
     - crosswalk
     - crosswalk anim
     - crosswalk anim svg
-    - mmc
 - more samples
+    - mmc anim
+    - barbershop anim
 - animations 3d (a-frame?)
 - typedoc
 - svelte/React

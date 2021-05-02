@@ -49,7 +49,7 @@ export class Tally {
     /**
      * Gets the minimum observed value.
      */
-     get min(): number {
+    get min(): number {
         return this._min;
     }
     /**
@@ -61,7 +61,7 @@ export class Tally {
     /**
      * Gets the number of observed values.
      */
-     get cnt(): number {
+    get cnt(): number {
         return this._cnt;
     }
     /**
@@ -75,7 +75,7 @@ export class Tally {
     /**
      * Gets the variance of the observed values.
      */
-     get var(): number {
+    get var(): number {
         return this._cnt > 0 && this._max > this._min
             ? Math.max(0, (this._sum2 - this._sum * this._sum / this._cnt) / this._cnt)
             : 0;
@@ -172,17 +172,22 @@ export class Tally {
      * 
      * @returns An HTML string showing the {@link Tally} as a histogram.
      */
-     getHistogramChart(title?: string): string {
+    getHistogramChart(title = ''): string {
 
         // get the histogram
         let histo = this.getHistogram();
-    
+
+        // sanity
+        if (!histo || !histo.length) {
+            return '';
+        }
+
         // get parameters
         let maxCnt = 0;
         histo.forEach(e => maxCnt = Math.max(maxCnt, e.count));
         const barWidth = Math.round(1 / histo.length * 100);
         const dec = this._histoParms.size < 1 ? 1 : 0;
-    
+
         // build bars
         let bars = '';
         histo.forEach((e, index) => {
@@ -190,7 +195,6 @@ export class Tally {
             const hei = Math.round(e.count / maxCnt * 100);
             const x = index * barWidth;
             const gap = 5;
-    
             bars += `<g${cls}>
                 <title>${e.count}</title>
                 <rect
@@ -210,13 +214,13 @@ export class Tally {
             </g>`;
         });
         return `
-            <div class="ss-histogram">
-                <div class="title">${title || ''}</div>
+            <figure class="ss-histogram">
+                <figcaption>${title}</figcaption>
                 <svg width="100%" height="100%">
                     ${bars}
                 </svg>
-            </div>`;
-    }    
+            </figure>`;
+    }
     /**
      * Sets the parameters used to build histograms for this {@link Tally}.
      * 
@@ -226,7 +230,7 @@ export class Tally {
      * The default value for this property is null, which prevents the
      * creation of any histograms.
      */
-     setHistogramParameters(binSize: number | null, min: number | null = null, max: number | null = null) {
+    setHistogramParameters(binSize: number | null, min: number | null = null, max: number | null = null) {
         if (!binSize) {
             this._histoParms = null;
             this._histo = null;

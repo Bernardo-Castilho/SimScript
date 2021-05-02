@@ -392,7 +392,6 @@ showSimulation(new Crosswalk(),
             for (let i = 0; i < lights.length; i++) {
                 (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
             }
-            sim.light
         })
     }
 );
