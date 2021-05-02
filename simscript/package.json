@@ -1,18 +1,26 @@
 {
-  "name": "simscript",
-  "version": "1.0.0",
-  "description": "A Discrete Event Simulation Library in TypeScript",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "/dist"
-  ],
-  "keywords": [
-    "Simulation"
-  ],
-  "author": "Bernardo Castilho",
-  "license": "ISC",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+    "name": "simscript",
+    "version": "1.0.3",
+    "description": "A Discrete Event Simulation Library in TypeScript",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "/dist"
+    ],
+    "keywords": [
+        "Simulation"
+    ],
+    "author": "Bernardo Castilho",
+    "license": "ISC",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Bernardo-Castilho/SimScript.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Bernardo-Castilho/SimScript/issues"
+    },
+    "homepage": "https://github.com/Bernardo-Castilho/SimScript#readme"
 }

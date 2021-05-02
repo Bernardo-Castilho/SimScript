@@ -214,18 +214,18 @@ export class Queue {
         if (sim == null) {
             sim = this._sim = e.simulation;
             sim.queues.push(this);
-            this._tmLastChange = sim.timeNow;
+            this._tmLastChange = 0;
         } else if (sim != e.simulation) {
             assert(false, 'Queue already in use by another simulation');
         }
 
         // check that the entity is not already in the queue
-        assert(this._items.get(e) == null, e.toString() + ' is already in the queue');
+        assert(this._items.get(e) == null, e.toString() + ' is already in queue' + this.name);
 
         // check that the entity fits
         assert(this.canEnter(units), 'Queue does not have enough capacity');
         
-        // update pop tallies before adding
+        // update tallies before adding
         this._updatePopTallies();
 
         // add the entity to the queue
@@ -280,12 +280,11 @@ export class Queue {
         this._tmLastChange = timeNow;
     }
 
-    protected _updateDwellTallies(timeIn) {
-        const timeNow = this._sim.timeNow,
-            dwell = timeNow - timeIn;
+    protected _updateDwellTallies(timeIn: number) {
+        const dwell = this._sim.timeNow - timeIn;
         assert(dwell >= 0, 'Dwell cannot be negative');
         this._grossDwell.add(dwell, 1);
-        if (dwell) {
+        if (dwell > 0) {
             this._netDwell.add(dwell, 1);
         }
     }

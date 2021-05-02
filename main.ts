@@ -1,4 +1,5 @@
 import './style.css';
+import './simscript/simscript.css';
 
 import { Simulation, SimulationState } from './simscript/simulation';
 import { Animation } from './simscript/animation';
@@ -19,7 +20,7 @@ showSimulation(new SimpleTest(),
         This is a simple test.
     </p>`,
     (sim: SimpleTest, log: HTMLElement) => {
-        log.innerHTML = sim.getStatsTable();
+        log.innerHTML = sim.getStatsTable(true);
     }
 );
 
@@ -74,7 +75,7 @@ showSimulation(new RandomVarTest(),
             <li>Min: <b>${format(sim.tally.min)}</b></li>
             <li>Max: <b>${format(sim.tally.max)}</b></li>
         </ul>` +
-            sim.tally.getHistogramChart(sim.randomVar.name);
+        sim.tally.getHistogramChart(sim.randomVar.name);
     },
     (sim: RandomVarTest, e) => { // handle parameter changes
         const target = e.target;
@@ -117,13 +118,11 @@ showSimulation(new BarberShop(),
             <li>Customers Served: <b>${format(sim.qJoe.grossDwell.cnt, 0)}</b></li>
         </ul>` +
 
-            // show stats table
-            sim.getStatsTable() +
+        // show stats table
+        sim.getStatsTable(true) +
 
-            // show waiting queue's gross dwell histogram
-            '<div class="histogram time">' +
-            sim.qWait.grossDwell.getHistogramChart() +
-            '</div>';
+        // show waiting queue's gross dwell histogram
+        sim.qWait.grossDwell.getHistogramChart();
     }
 );
 
@@ -201,13 +200,9 @@ showSimulation(new MMC(),
             </p>`;
         }
 
-        log.innerHTML +=
-            `<div class="histogram mmc pop">
-                ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
-            </div>
-            <div class="histogram mmc time">
-                ${sim.qWait.grossDwell.getHistogramChart('Wait times (seconds)')}
-            </div>`;
+        log.innerHTML += `
+            ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
+            ${sim.qWait.grossDwell.getHistogramChart('Wait times (seconds)')}`;
 
         function sum(rho1: number, c: number): number {
             let sum = 0;
@@ -299,14 +294,10 @@ showSimulation(new Crosswalk(),
             </ul>` +
 
             // show pedestrian queue's population histogram
-            '<div class="histogram pedestrian pop">' +
             sim.qPedXing.grossPop.getHistogramChart('Pedestrians waiting to cross') +
-            '</div>' +
 
             // show car queue's population histogram
-            '<div class="histogram car pop">' +
-            sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross') +
-            '</div>';
+            sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross');
     },
     (sim: Crosswalk, e) => { // handle parameter changes
         const target = e.target,

@@ -1,11 +1,12 @@
 {
-"compilerOptions": {
-    "module": "commonjs",
-    "target": "es2015",
-    "declaration": true,
-    "outDir": "./dist"
-  },
-  "include": [
-    "*.ts"
-  ]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2015",
+        "declaration": true,
+        "removeComments": true,
+        "outDir": "./dist"
+    },
+    "include": [
+        "*.ts"
+    ]
 }

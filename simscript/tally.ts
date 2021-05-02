@@ -172,7 +172,7 @@ export class Tally {
      * 
      * @returns An HTML string showing the {@link Tally} as a histogram.
      */
-     getHistogramChart(): string {
+     getHistogramChart(title?: string): string {
 
         // get the histogram
         let histo = this.getHistogram();
@@ -202,8 +202,9 @@ export class Tally {
                 <text
                     ${cls}
                     x="${(x + barWidth / 2)}%"
-                    y="calc(100% - 1.2em)"
-                    text-anchor="middle">
+                    y="100%"
+                    text-anchor="middle"
+                    dominant-baseline="text-top">
                     ${format(e.from, dec)}-${format(e.to, dec)}
                 </text>
             </g>`;

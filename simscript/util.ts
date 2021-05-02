@@ -79,5 +79,5 @@ export function getElement(selector: any): Element {
 export function clamp(value: number, min: number | null, max: number | null): number {
     return (min != null && value < min) ? min
         : (max != null && value > max) ? max
-            : value;
+        : value;
 }

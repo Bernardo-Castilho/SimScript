@@ -1,0 +1,44 @@
+/* stats tables */
+table.ss-stats {
+    margin-bottom: 1em;
+}
+
+table.ss-stats th {
+    font-weight: bold;
+}
+
+table.ss-stats th[colspan] {
+    text-align: left;
+    padding-top: 0.5em;
+}
+
+table.ss-stats td {
+    margin: 0 1em;
+}
+
+table.ss-stats tr,
+table.ss-stats td {
+    text-align: right;
+    padding-left: 2em;
+}
+
+/* histograms */
+.ss-histogram {
+    padding: 0 1em;
+}
+
+.ss-histogram svg text {
+    font-size: 80%;
+}
+
+.ss-histogram svg text.avg {
+    font-weight: bold;
+}
+
+.ss-histogram svg rect {
+    fill: lightblue;
+}
+
+.ss-histogram svg rect.avg {
+    fill: lightgreen;
+}

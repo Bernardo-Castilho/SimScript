@@ -27,10 +27,6 @@ select {
     font-size: inherit;
 }
 
-input[type=range] {
-    padding: 0;
-}
-
 button {
     padding: .5em 1em;
 }
@@ -39,30 +35,15 @@ button:hover {
     background: rgba(0, 0, 0, .2);
 }
 
+input[type=range] {
+    padding: 0;
+}
+
 h2 button {
     padding: 0;
     width: 1.5em;
     height: 1.5em;
     border-radius: .3em;
-}
-
-th {
-    font-weight: bold;
-}
-
-th[colspan] {
-    text-align: left;
-    padding-top: 0.5em;
-}
-
-td {
-    margin: 0 1em;
-}
-
-tr,
-td {
-    text-align: right;
-    padding-left: 2em;
 }
 
 .error {
@@ -78,10 +59,6 @@ button.hide {
 label {
     display: block;
     margin-left: 1em;
-}
-
-table {
-    margin-bottom: 1em;
 }
 
 /* crosswalk traffic light cycle parameters */
@@ -271,23 +248,3 @@ svg.ss-anim .crosswalk {
     fill: rgba(0, 0, 0, 0.3);
 }
 
-/* histograms */
-.ss-histogram {
-    padding: 0 1em;
-}
-
-.ss-histogram svg text {
-    font-size: 80%;
-}
-
-.ss-histogram svg text.avg {
-    font-weight: bold;
-}
-
-.ss-histogram svg rect {
-    fill: lightblue;
-}
-
-.ss-histogram svg rect.avg {
-    fill: lightgreen;
-}

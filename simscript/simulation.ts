@@ -34,11 +34,11 @@ export enum SimulationState {
  * 
  * Simulations keep a list of active entities and conditions these
  * entities are waiting for within their {@link Entity.script} methods,
- * which execute asynchronously. As these conditions are satisfied
- * along the simulated time, the {@link Entity} objects resume executing
- * their scripts. When the simulation runs out of active entities,
- * that means all entities have finished their scripts and the simulation
- * ends.
+ * which execute asynchronously.
+ * As these conditions are satisfied along the simulated time, the
+ * {@link Entity} objects resume executing their scripts.
+ * When the simulation runs out of active entities, that means all
+ * entities have finished their scripts and the simulation ends.
  * 
  * To create simulations follow these steps:
  * 
@@ -252,13 +252,13 @@ export class Simulation {
      * objects in the simulation.
      */
     getStatsTable(showNetValues = false): string {
-        return '<table>' +
+        return '<table class="ss-stats">' +
             this._createSimulationReport() +
             this._createQueueReport('Populations', 'grossPop') +
-            this._createQueueReport('Dwell Times', 'grossDwell') +
             (showNetValues ? this._createQueueReport('Net Populations', 'netPop') : '') +
+            this._createQueueReport('Dwell Times', 'grossDwell') +
             (showNetValues ? this._createQueueReport('Net Dwell Times', 'netDwell') : '') +
-            '</table>';
+        '</table>';
     }
 
     // ** events
@@ -425,7 +425,7 @@ export class Simulation {
             this._setTimeNow(nextTime);
         }
 
-        // use setTimeout every *ms to keep the thread alive
+        // call requestAnimationFrame to keep the thread alive
         const now = Date.now();
         if (now - this._lastUpdate > this._yieldInterval) {
             this._lastUpdate = now;
@@ -486,7 +486,7 @@ export class Simulation {
             </tr>
             <tr>
                 <th>Finish Time</th>
-                <td>${format(this.timeNow)}</td>
+                <td>${format(this.timeNow, 0)}</td>
             </tr>
             <tr>
                 <th>Elapsed Time (s)</th>
@@ -530,12 +530,12 @@ export class Simulation {
 /**
  * Represents options for {@link FecItem} objects.
  */
- export interface IFecItemOptions {
+export interface IFecItemOptions {
     delay?: number,
     path?: IMovePath,
     queue?: Queue,
     units?: number,
-    signal?: any
+    signal?: any,
 }
 
 /**
@@ -561,7 +561,7 @@ export class FecItem {
         this._options = options;
 
         // insert item into fec taking into account the entity priority
-        let sim = e.simulation as Simulation,
+        let sim = e.simulation,
             fec = sim._fec,
             index = fec.length;
         while (index > 0 && fec[index - 1].e.priority < e.priority) {
@@ -638,11 +638,13 @@ export class FecItem {
      * {@link Entity.script} function.
      */
     async dispatch() {
-        const q = this._options.queue;
+        const options = this._options;
+        const q = options.queue;
         if (q) {
-            q.add(this._e, this._options.units != null ? this._options.units : 1);
+            const units = options.units;
+            q.add(this._e, units != null ? units : 1);
         }
-        return this._resolve ? this._resolve() : null;
+        return this._resolve ? await this._resolve() : null;
     }
     /**
      * Gets the **Promise** represented by this item.

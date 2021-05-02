@@ -1,6 +1,4 @@
-import {
-    Simulation, FecItem, IMovePath
-} from './simulation';
+import { Simulation, FecItem, IMovePath } from './simulation';
 import { Queue } from './queue';
 import { RandomVar } from './random';
 import { assert, setOptions } from './util';
@@ -37,7 +35,7 @@ export class Entity {
     protected _serial = 0;
     protected _prty = 0;
     static _serial = 0;
-    /** @internal */ _sim: Simulation | null = null;
+    _sim: Simulation | null = null;
     /** @internal */ _queues = new Map();
 
     /**
@@ -60,7 +58,7 @@ export class Entity {
      * is part of.
      */
     get simulation(): Simulation {
-        return this._sim as Simulation;
+        return this._sim;
     }
     /**
      * Gets a serial number that uniquely identifies the {@link Entity}.
