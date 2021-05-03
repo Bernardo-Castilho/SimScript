@@ -1,0 +1,15 @@
+# Todo
+- tests
+- blitzes: 
+    * barbershop
+    * mmc
+    * randomvar
+    * crosswalk
+    - crosswalk anim
+    - crosswalk anim svg
+- more samples
+    - mmc anim
+    - barbershop anim
+- animations 3d (a-frame?)
+- typedoc
+- svelte/React
