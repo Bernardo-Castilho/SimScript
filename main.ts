@@ -385,14 +385,14 @@ showSimulation(new Crosswalk(),
         });
 
         // update semaphore and timeNow display when the time changes
-        const timeNow = animationHost.querySelector('.time-now span');
         const lights = animationHost.querySelectorAll('.light div');
+        const timeNow = animationHost.querySelector('.time-now span');
         sim.timeNowChanged.addEventListener(() => {
             timeNow.textContent = format(sim.timeNow / 3600);
             for (let i = 0; i < lights.length; i++) {
                 (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
             }
-        })
+        });
     }
 );
 
@@ -404,6 +404,9 @@ showSimulation(new Crosswalk(),
             This sample uses the same Crosswalk <b>Simulation</b> class
             as shown earlier, this time using an SVG-based animation.
         </p>
+        <div class="ss-time-now">
+            Time: <b><span>0.00</span></b> hours
+        </div>
         <svg class="ss-anim" viewBox="0 0 1000 500" style="width: 100%;height:300px">
             <g class="light" >
                 <rect class="light" x="47.5%" y="0%" width="5%" height="25%" rx="2%"></rect>
@@ -461,12 +464,13 @@ showSimulation(new Crosswalk(),
 
         // update semaphore and timeNow display when the time changes
         const lights = animationHost.querySelectorAll('.light circle');
+        const timeNow = document.querySelector('.ss-time-now span');
         sim.timeNowChanged.addEventListener(() => {
+            timeNow.textContent = format(sim.timeNow / 3600);
             for (let i = 0; i < lights.length; i++) {
                 (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
             }
-            sim.light
-        })
+        });
     }
 );
 

@@ -87,9 +87,11 @@ The links below show some samples of **SimScript** simulations:
 - [M/M/C](https://stackblitz.com/edit/typescript-xbntrv?file=index.ts)
     Classic M/M/C queueing system. Entities arrive, are served by one of C servers, and leave.
 
-- [Crosswalk](https://stackblitz.com/edit/typescript-nq3vvd?file=index.ts)
-    Uses the **waitSignal** and **sendSignal** methods to simulate a crosswalk.
-
 - [RandomVar](https://stackblitz.com/edit/typescript-nwknjs?file=index.ts)
     Demonstrates some of the random variables implemented in **SimScript**.
 
+- [Crosswalk](https://stackblitz.com/edit/typescript-nq3vvd?file=index.ts)
+    Uses the **waitSignal** and **sendSignal** methods to simulate a crosswalk.
+
+- [Animated Crosswalk](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)
+    Uses the **Animation** class to show an animated version of the **Crosswalk** simulation.
