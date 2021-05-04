@@ -1,5 +1,5 @@
 # Todo
-- typedoc
+* typedoc
 - entity rotation
 - tests
 - animations 3d (a-frame?)
@@ -8,8 +8,8 @@
     * mmc
     * randomvar
     * crosswalk
-    - crosswalk anim
-    - crosswalk anim svg
+    * crosswalk anim svg
+    - crosswalk anim div
 - more samples
     - mmc anim
     - barbershop anim
