@@ -264,7 +264,7 @@ export class Simulation {
     // ** events
 
     /**
-     * Occurs before the simulation starts executing.
+     * Event that occurs before the simulation starts executing.
      */
     readonly starting = new Event<Simulation, EventArgs>();
     /**
@@ -292,7 +292,7 @@ export class Simulation {
         this.starting.raise(this, e);
     }
     /**
-     * Occurs after the simulation starts executing.
+     * Event that occurs after the simulation starts executing.
      */
     readonly started = new Event<Simulation, EventArgs>();
     /**
@@ -302,7 +302,7 @@ export class Simulation {
         this.started.raise(this, e);
     }
     /**
-     * Occurs before the simulation finishes executing.
+     * Event that occurs before the simulation finishes executing.
      */
     readonly finishing = new Event<Simulation, EventArgs>();
     /**
@@ -312,7 +312,7 @@ export class Simulation {
         this.finishing.raise(this, e);
     }
     /**
-     * Occurs after the simulation finishes executing.
+     * Event that occurs after the simulation finishes executing.
      */
     readonly finished = new Event<Simulation, EventArgs>();
     /**
@@ -322,8 +322,8 @@ export class Simulation {
         this.finished.raise(this, e);
     }
     /**
-   * Occurs before the simulation's {@link state} property changes.
-   */
+     * Event that occurs before the simulation's {@link state} property changes.
+     */
     readonly stateChanging = new Event<Simulation, EventArgs>();
     /**
      * Raises the {@link stateChanging} event.
@@ -332,7 +332,7 @@ export class Simulation {
         this.stateChanging.raise(this, e);
     }
     /**
-     * Occurs after the simulation's {@link state} property changes.
+     * Event that occurs after the simulation's {@link state} property changes.
      * 
      * For example:
      * 
@@ -350,7 +350,7 @@ export class Simulation {
         this.stateChanged.raise(this, e);
     }
     /**
-     * Occurs before the simulation's {@link timeNow} property changes.
+     * Event that occurs before the simulation's {@link timeNow} property changes.
      */
     readonly timeNowChanging = new Event<Simulation, EventArgs>();
     /**
@@ -360,7 +360,7 @@ export class Simulation {
         this.timeNowChanging.raise(this, e);
     }
     /**
-     * Occurs after the simulation's {@link timeNow} property changes.
+     * Event that occurs after the simulation's {@link timeNow} property changes.
      * 
      * For example:
      * 
