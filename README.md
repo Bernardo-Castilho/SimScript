@@ -2,6 +2,9 @@
 
 A Discrete Event Simulation Library in TypeScript.
 
+For details, see the 
+(API Documentation)[https://bernardo-castilho.github.io/simscript/docs/].
+
 **SimScript** uses JavaScript's
 [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 features to make simulations easy to write and understand.
