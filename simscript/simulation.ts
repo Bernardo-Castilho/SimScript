@@ -1,4 +1,5 @@
 import { Entity, EntityGenerator } from './entity';
+import { RandomVar } from './random';
 import { Queue } from './queue';
 import { Tally } from './tally';
 import { Event, EventArgs } from './event';
@@ -97,7 +98,7 @@ export class Simulation {
     /**
      * Initializes a new instance of the {@link Simulation} class.
      * 
-     * Use the {@link onStarting} method to generate entities when
+     * Override the {@link onStarting} method to generate entities when
      * the simulation starts running.
      * 
      * @param options Object with parameters used to initialize the 
@@ -228,12 +229,13 @@ export class Simulation {
      * Generates {@link Entity} objects and activates them.
      * 
      * @param type Type of {@link Entity} to generate.
-     * @param interArrival {@link RandomVar} that returns the inter-arrival time.
+     * @param interArrival {@link RandomVar} that returns the inter-arrival time, 
+     * or **null** to generate a single entity.
      * @param max Maximum number of entities to generate.
      * @param startTime Time to start generating entities.
      * @param endTime Time to stop generating entities.
      */
-    generateEntities(type, interArrival, max?: number, startTime?: number, endTime?: number) {
+    generateEntities(type, interArrival: RandomVar | null, max?: number, startTime?: number, endTime?: number) {
         const gen = new EntityGenerator(type, interArrival, max, startTime, endTime);
         this.activate(gen);
     }

@@ -1,7 +1,8 @@
 # Todo
 * typedoc
-- entity rotation
-- tests
+* entity rotation test (Animation.rotateEntities)
+- cache spline points/angles?
+- more tests
 - animations 3d (a-frame?)
 - blitzes: 
     * barbershop

@@ -50,3 +50,9 @@ figure.ss-histogram svg rect {
 figure.ss-histogram svg rect.avg {
     opacity: 1;
 }
+
+/* animation transforms */
+.ss-anim .ss-entity {
+    transform-origin: 50% 50%;
+    transform-box: fill-box;
+}

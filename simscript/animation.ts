@@ -19,8 +19,8 @@ export interface IAnimatedQueue {
      */
     element: string | Element,
     /**
-     * The {@link Queue} angle, in degrees, measured in the counter-clockwise 
-     * direction from the three o'clock position.
+     * The {@link Queue} angle, in degrees, measured in clockwise 
+     * direction from the nine o'clock position.
      */
     angle?: number,
     /**
@@ -62,6 +62,7 @@ export class Animation {
     _height: number;
     _queues = new Map<Queue, AnimationQueue>();
     _entities = new Map<Entity, AnimationEntity>();
+    _rotateEntities = false;
     _getEntityHtml: Function;
     _lastUpdate: number;
     _svg: boolean;
@@ -105,6 +106,16 @@ export class Animation {
     }
     set getEntityHtml(value: Function) {
         this._getEntityHtml = value;
+    }
+    /**
+     * Gets or sets a value that determines whether entities should 
+     * be rotated when in queues or in transit.
+     */
+    get rotateEntities(): boolean {
+        return this._rotateEntities;
+    }
+    set rotateEntities(value: boolean) {
+        this._rotateEntities = value;
     }
     /**
      * Sets an array with queue animation information.
@@ -170,8 +181,9 @@ export class Animation {
                 let start = item.timeStart,
                     finish = item.timeDue,
                     pct = 1 - (finish - this._sim.timeNow) / (finish - start),
-                    pt = getSplinePosition(points, pct, tension);
-                ae._drawAt(pt);
+                    pt = getSplinePosition(points, pct, tension),
+                    angle = this.rotateEntities ? getSplineAngle(points, pct, tension) : 0;
+                ae._drawAt(pt, angle);
             }
         });
 
@@ -209,6 +221,7 @@ class AnimationQueue {
     _element: Element;
     _q: Queue;
     _max: number;
+    _angle = 0;
     _sin = 0;
     _cos = 1;
     _ptStart: Point;
@@ -219,10 +232,11 @@ class AnimationQueue {
         this._anim = anim;
         this._q = options.queue;
         this._element = getElement(options.element);
+        this._angle = options.angle || 0;
         this._max = options.max;
-        const angle = options.angle ? options.angle / 180 * Math.PI : 0;
+        const angle = this._angle / 180 * Math.PI;
         this._sin = Math.sin(-angle);
-        this._cos = Math.cos(-angle);
+        this._cos = -Math.cos(-angle);
         assert(this._q instanceof Queue, 'q parameter should be a Queue');
     }
 
@@ -282,11 +296,15 @@ class AnimationQueue {
 
             // get/create AnimationEntity for this entity
             const ae = anim._getAnimationEntity(e);
+            const halfWid = ae._width * this._cos / 2;
+            const halfHei = (anim.rotateEntities ? ae._width : ae._height) * this._sin / 2;
 
             // update entity position and insertion point position
-            ae._drawAt(pt);
-            pt.x += ae._width * this._cos;
-            pt.y += ae._height * this._sin;
+            pt.x += halfWid;
+            pt.y += halfHei;
+            ae._drawAt(pt, this._angle);
+            pt.x += halfWid;
+            pt.y += halfHei;
 
             // keep track of entity count
             cnt++;
@@ -319,8 +337,7 @@ class AnimationEntity {
             ? document.createElementNS('http://www.w3.org/2000/svg', 'g')
             : document.createElement('div');
         e.innerHTML = this._getEntityHtml();
-        const s = (e as any).style;
-        s.left = s.top = s.opacity = '0';
+        (e as any).style.opacity = '0';
         e.classList.add('ss-entity');
         this._element = e;
 
@@ -338,19 +355,27 @@ class AnimationEntity {
     // gets the inner HTML for this entity's element
     _getEntityHtml() {
         let getEntity = this._anim.getEntityHtml;
-        return getEntity ? getEntity(this._entity) : _DEFAULT_ENTITY_ICON;
+        return getEntity
+            ? getEntity(this._entity)
+            : _DEFAULT_ENTITY_ICON;
     }
 
     // sets the position of this animated entity.
-    _drawAt(pt: Point) {
+    _drawAt(pt: Point, angle?: number) {
         const e = this._element;
         const s = (e as any).style;
 
         // adjust reference point (middle of the element)
         const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2);
 
+        // calculate the transform
+        let transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
+        if (angle && this._anim.rotateEntities) {
+            transform += ` rotate(${angle}deg)`;
+        }
+
         // update the entity element
-        s.transform = `translate(${p.x}px, ${p.y}px)`;
+        s.transform = transform;
         s.opacity = '';
 
         // remember we're in use
@@ -480,4 +505,38 @@ function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, pct: num
         ay * pct * pct * pct + by * pct * pct + cy * pct + dy,
         az * pct * pct * pct + bz * pct * pct + cz * pct + dz,
     );
+}
+
+function getSplineAngle(pts: Point[], pct: number, tension: number): number {
+
+    // just two points? use linear interpolation 
+    if (pts.length == 2) {
+        return getAngle(pts[0], pts[1]);
+    }
+
+    // calculate total distance
+    let totalDistance = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+        totalDistance += Point.distance(pts[i], pts[i + 1]);
+    }
+
+    // calculate position within the spline
+    let position = totalDistance * pct;
+
+    // calculate index of spline segment
+    let distance = 0;
+    let length = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+        length = Point.distance(pts[i], pts[i + 1]);
+        if (distance + length >= position) {
+            return getAngle(pts[i], pts[i + 1]);
+        }
+        distance += length;
+    }
+}
+
+// gets the angle for a path segment
+function getAngle(pt1: Point, pt2: Point): number {
+    const angle = Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x);
+    return Math.round(angle * 180 / Math.PI);
 }

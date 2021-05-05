@@ -3,6 +3,7 @@ import './simscript/simscript.css';
 
 import { Simulation, SimulationState } from './simscript/simulation';
 import { Animation } from './simscript/animation';
+import { Entity } from './simscript/entity';
 import { Exponential } from './simscript/random';
 import { format } from './simscript/util';
 
@@ -11,6 +12,7 @@ import { BarberShop } from './simulations/barbershop';
 import { MMC } from './simulations/mmc';
 import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { SimpleTest } from './simulations/simpletest';
+import { Rotation } from './simulations/rotation';
 
 //----------------------------------------------------------
 // Simple
@@ -374,12 +376,12 @@ showSimulation(new Crosswalk(),
             },
             queues: [
                 { queue: sim.qPedArr, element: '.ss-queue.ped-arr' },
-                { queue: sim.qPedXing, element: '.ss-queue.ped-xing', angle: 210, max: 8 },
+                { queue: sim.qPedXing, element: '.ss-queue.ped-xing', angle: -45, max: 8 },
                 { queue: sim.qPedXed, element: '.ss-queue.ped-xed' },
                 { queue: sim.qPedLeave, element: '.ss-queue.ped-leave' },
 
                 { queue: sim.qCarArr, element: '.ss-queue.car-arr' },
-                { queue: sim.qCarXing, element: '.ss-queue.car-xing', angle: 180, max: 16 },
+                { queue: sim.qCarXing, element: '.ss-queue.car-xing', angle: 0, max: 16 },
                 { queue: sim.qCarXed, element: '.ss-queue.car-xed' },
             ]
         });
@@ -452,12 +454,12 @@ showSimulation(new Crosswalk(),
             },
             queues: [
                 { queue: sim.qPedArr, element: 'svg .ss-queue.ped-arr' },
-                { queue: sim.qPedXing, element: 'svg .ss-queue.ped-xing', angle: 210, max: 8 },
+                { queue: sim.qPedXing, element: 'svg .ss-queue.ped-xing', angle: -45, max: 8 },
                 { queue: sim.qPedXed, element: 'svg .ss-queue.ped-xed' },
                 { queue: sim.qPedLeave, element: 'svg .ss-queue.ped-leave' },
 
                 { queue: sim.qCarArr, element: 'svg .ss-queue.car-arr' },
-                { queue: sim.qCarXing, element: 'svg .ss-queue.car-xing', angle: 180, max: 16 },
+                { queue: sim.qCarXing, element: 'svg .ss-queue.car-xing', angle: 0, max: 16 },
                 { queue: sim.qCarXed, element: 'svg .ss-queue.car-xed' },
             ]
         });
@@ -474,6 +476,75 @@ showSimulation(new Crosswalk(),
     }
 );
 
+//----------------------------------------------------------
+// Rotation Test (SVG)
+showSimulation(new Rotation(),
+    'Rotation Test (SVG)',
+    `   <p>
+            Change the Queue angle to see entities rotate.
+        </p>
+        <label>
+            Queue Angle
+            <input id="q-angle" type="range" min="0" max="360" step="30" value="0"> <span></span>
+        </label>
+        <svg class="ss-anim" viewBox="0 0 1000 500" style="width: 100%;height:300px">
+
+            <!-- one queue at the center -->
+            <rect class="ss-queue rotate" x="48%" y="48%" width="4%" height="4%" />
+            <line x1="10%" y1="50%" x2="90%" y2="50%" stroke="black" />
+            <line x1="50%" y1="10%" x2="50%" y2="90%" stroke="black" />
+
+            <!-- twelve queues around it -->
+            <rect class="ss-queue q1" x="68%" y="13%" width="4%" height="4%" />
+            <rect class="ss-queue q2" x="82%" y="28%" width="4%" height="4%" />
+            <rect class="ss-queue q3" x="88%" y="48%" width="4%" height="4%" />
+            <rect class="ss-queue q4" x="83%" y="68%" width="4%" height="4%" />
+            <rect class="ss-queue q5" x="68%" y="83%" width="4%" height="4%" />
+            <rect class="ss-queue q6" x="48%" y="88%" width="4%" height="4%" />
+            <rect class="ss-queue q7" x="28%" y="83%" width="4%" height="4%" />
+            <rect class="ss-queue q8" x="13%" y="69%" width="4%" height="4%" />
+            <rect class="ss-queue q9" x="8%" y="48%" width="4%" height="4%" />
+            <rect class="ss-queue q10" x="13%" y="28%" width="4%" height="4% "/>
+            <rect class="ss-queue q11" x="28%" y="13%" width="4%" height="4% "/>
+            <rect class="ss-queue q12" x="48%" y="8%" width="4%" height="4% "/>
+        </svg>
+    `,
+    (sim: Rotation, animationHost: HTMLElement) => {
+        const anim = new Animation(sim, animationHost, {
+            rotateEntities: true,
+            getEntityHtml: (e: Entity) => {
+                return e.serial % 2 == 0 // long/short images
+                    ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="green" opacity="0.8" />'
+                    : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="red" opacity="0.8"/>';
+            },
+            queues: [
+                { queue: sim.qRotate, element: 'svg .ss-queue.rotate', angle: sim.qAngle },
+                { queue: sim.q1, element: 'svg .ss-queue.q1' },
+                { queue: sim.q2, element: 'svg .ss-queue.q2' },
+                { queue: sim.q3, element: 'svg .ss-queue.q3' },
+                { queue: sim.q4, element: 'svg .ss-queue.q4' },
+                { queue: sim.q5, element: 'svg .ss-queue.q5' },
+                { queue: sim.q6, element: 'svg .ss-queue.q6' },
+                { queue: sim.q7, element: 'svg .ss-queue.q7' },
+                { queue: sim.q8, element: 'svg .ss-queue.q8' },
+                { queue: sim.q9, element: 'svg .ss-queue.q9' },
+                { queue: sim.q10, element: 'svg .ss-queue.q10' },
+                { queue: sim.q11, element: 'svg .ss-queue.q11' },
+                { queue: sim.q12, element: 'svg .ss-queue.q12' },
+            ]
+        });
+        let input = document.getElementById('q-angle') as HTMLInputElement;
+        input.valueAsNumber = sim.qAngle;
+        input.nextElementSibling.textContent = input.value;
+        input.addEventListener('input', e => {
+            sim.qAngle = input.valueAsNumber;
+            input.nextElementSibling.textContent = input.value;
+            anim.queues = [
+                { queue: sim.qRotate, element: 'svg .ss-queue.rotate', angle: sim.qAngle },
+            ]
+        });
+    }
+);
 
 
 // my little framework

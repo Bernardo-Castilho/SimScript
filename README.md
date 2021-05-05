@@ -11,25 +11,31 @@ features to make simulations easy to write and understand.
 
 **SimScript** simulations are built using these classes:
 
-## Simulation
+## Simulation Class
 
-Simulations create resources (queues) and entities which execute an async **script** 
+Simulations create resources (queues) and entities which execute an async **script**
 method that describes the actions each entity should perform.
 
-## Queues
+The **Simulation** class is abstract. In most cases, you will create a class that
+extends it to create the queues and entities you need.
 
-Queues represent resources that can be seized and released by entities.
-Queues keep track of their utilization and may constrain the flow of entities 
-through the simulation.
-
-## Entities
+## Entity Class
 
 Entities represent active elements that execute scripts. Scripts are async
 methods that contain instructions for entities.
 Typical actions include entering and leaving **queues**, going through **delays**,
 and sending or waiting for **signals**.
 
-## Animations
+The **Entity** class is abstract. In most cases, you will create one of more classes that
+extend it to perform the actions required by your simulations.
+
+## Queue Class
+
+Queues represent resources that can be seized and released by entities.
+Queues keep track of their utilization and may constrain the flow of entities 
+through the simulation.
+
+## Animation Class
 
 Animations use HTML or SVG elements to render entities waiting in queues 
 or in transit between queues.

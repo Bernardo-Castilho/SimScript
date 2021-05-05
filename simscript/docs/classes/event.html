@@ -70,9 +70,11 @@
 					<div class="lead">
 						<p>Represents an event.</p>
 					</div>
-					<p>Events may have multiple handlers attached to them.</p>
-					<p>Event handlers are instances of the {@link EventListener} class, which
-					contain functions that get executed when the event is raised.</p>
+					<p>Events may have multiple listeners. Each listener is a function that
+					gets invoked when the event is raised.</p>
+					<p>Event listeners are functions that take two parameters:
+						<strong>sender</strong> is the object that raised the event, and
+					<strong>args</strong> is an object that contains the event parameters.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -153,7 +155,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/c26ceb4/simscript/event.ts#L47">event.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/404f677/simscript/event.ts#L49">event.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -166,13 +168,13 @@
 								<li>
 									<h5>listener: <a href="../interfaces/ieventlistener.html" class="tsd-signature-type" data-tsd-kind="Interface">IEventListener</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>{@link EventListener} function that gets called whenever the event is raised.</p>
+										<p>Function that gets called whenever the event is raised.</p>
 									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> self: <span class="tsd-signature-type">any</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Value for the <strong>this</strong> parameter for the {@link EventListener} function.</p>
+										<p>Value for the <strong>this</strong> parameter for the listener function.</p>
 									</div>
 								</li>
 							</ul>
@@ -190,13 +192,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/c26ceb4/simscript/event.ts#L76">event.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/404f677/simscript/event.ts#L78">event.ts:78</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Raises an <a href="event.html">Event</a> which causes all attached {@link EventListener} functions
-									to be invoked.</p>
+									<p>Raises an <a href="event.html">Event</a> which causes all attached listeners to be
+									invoked.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -228,7 +230,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/c26ceb4/simscript/event.ts#L56">event.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/404f677/simscript/event.ts#L58">event.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -241,13 +243,13 @@
 								<li>
 									<h5>listener: <a href="../interfaces/ieventlistener.html" class="tsd-signature-type" data-tsd-kind="Interface">IEventListener</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>{@link EventListener} listener to remove.</p>
+										<p>Event listener to remove.</p>
 									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> self: <span class="tsd-signature-type">any</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Value for the <strong>this</strong> parameter for the {@link EventListener} function.</p>
+										<p>Value for the <strong>this</strong> parameter for the listener function.</p>
 									</div>
 								</li>
 							</ul>

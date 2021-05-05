@@ -347,7 +347,7 @@ export class Entity {
  */
 export class EntityGenerator extends Entity {
     protected _type: any;
-    protected _interval: RandomVar;
+    protected _interval: RandomVar | null;
     protected _max: number;
     protected _tmStart: number;
     protected _tmEnd: number;
@@ -356,12 +356,13 @@ export class EntityGenerator extends Entity {
      * Initializes a new instance of the {@link EntityGenerator} class.
      * 
      * @param entityType Type of {@link Entity} to generate.
-     * @param interval {@link RandomVar} that defines the entity inter-arrival times.
+     * @param interval {@link RandomVar} that defines the entity inter-arrival times, or
+     * **null** to generate a single entity.
      * @param max Maximum number of entities to generate.
      * @param startTime Simulated time when entity generation should start.
      * @param endTime Simulated time when entity generation should stop.
      */
-    constructor(entityType: any, interval: RandomVar, max?: number, startTime?: number, endTime?: number) {
+    constructor(entityType: any, interval: RandomVar | null, max?: number, startTime?: number, endTime?: number) {
         super();
         this._type = entityType;
         this._interval = interval;
@@ -384,22 +385,32 @@ export class EntityGenerator extends Entity {
         }
 
         // initial interval (half)
-        if (interval) {
+        if (interval && this._tmStart == null) {
             await this.delay(interval.sample() / 2);
         }
 
         // creator loop
         for (let cnt = 0; ; cnt++) {
+
+            // break on max entity count
             if (this._max != null && cnt >= this._max) {
-                break; // reached max entity count
+                break;
             }
+
+            // break on time limit
             if (this._tmEnd != null && sim.timeNow > this._tmEnd) {
                 break; // reached max scheduled time
             }
+
+            // create and activate an entity
             var e = new this._type;
             this.simulation.activate(e);
+
+            // wait for the given interval or break if no interval
             if (interval) {
                 await this.delay(interval.sample());
+            } else {
+                break;
             }
         }
     }
