@@ -5,14 +5,14 @@ import { Simulation, SimulationState } from './simscript/simulation';
 import { Animation } from './simscript/animation';
 import { Entity } from './simscript/entity';
 import { Exponential } from './simscript/random';
-import { format } from './simscript/util';
+import { format, bind } from './simscript/util';
 
 import { RandomVarTest } from './simulations/randomvartest';
 import { BarberShop } from './simulations/barbershop';
 import { MMC } from './simulations/mmc';
 import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { SimpleTest } from './simulations/simpletest';
-import { Rotation } from './simulations/rotation';
+import { AnimationOptions } from './simulations/animation-options';
 
 //----------------------------------------------------------
 // Simple
@@ -47,8 +47,8 @@ showSimulation(new RandomVarTest(),
     (sim: RandomVarTest, log: HTMLElement) => {
         function getRandomVarOptions() {
             let options = '';
-            sim.randomVars.forEach(rnd => {
-                options += `<option ${rnd == sim.randomVar ? "selected" : ""}>
+            sim.randomVars.forEach((rnd, index) => {
+                options += `<option ${index == sim.randomVarIndex ? "selected" : ""}>
                     ${rnd.name}
                 </option>`
             });
@@ -56,18 +56,20 @@ showSimulation(new RandomVarTest(),
         }
         log.innerHTML = `
         <label>
+            String:
+            <input id="foo">
+        </label>
+        <label>
             Type:
-            <select data="random">
-                ${getRandomVarOptions()}
-            </select>
+            <select id="rand-type">${getRandomVarOptions()}</select>
         </label>
         <label>
             Sample size:
-            <input type="range" data="size" min="10" max="100000" value="${sim.sampleSize}">
+            <input id="rand-size" type="range" data="size" min="10" max="100000">
         </label>
         <label>
             Seeded:
-            <input type="checkbox" data="seeded" ${sim.seeded ? "checked" : ""}>
+            <input id="rand-seeded" type="checkbox">
         </label>
         <ul>
             <li>Count: <b>${format(sim.tally.cnt, 0)}</b></li>
@@ -77,22 +79,13 @@ showSimulation(new RandomVarTest(),
             <li>Min: <b>${format(sim.tally.min)}</b></li>
             <li>Max: <b>${format(sim.tally.max)}</b></li>
         </ul>` +
-        sim.tally.getHistogramChart(sim.randomVar.name);
-    },
-    (sim: RandomVarTest, e) => { // handle parameter changes
-        const target = e.target;
-        switch (target.getAttribute('data')) {
-            case 'random':
-                sim.setRandomVar(target.value);
-                break;
-            case 'seeded':
-                sim.seeded = target.checked;
-                break;
-            case 'size':
-                sim.sampleSize = target.valueAsNumber;
-                break;
-        }
-        sim.start();
+            sim.tally.getHistogramChart(sim.randomVar.name);
+        
+        // parameters
+        bind('foo', 'banana', v => console.log('changed to', v));
+        bind('rand-type', sim.randomVarIndex, v => { sim.randomVarIndex = v; sim.start() });
+        bind('rand-size', sim.sampleSize, v => { sim.sampleSize = v; sim.start() });
+        bind('rand-seeded', sim.seeded, v => { sim.seeded = v; sim.start() });
     }
 );
 
@@ -159,15 +152,15 @@ showSimulation(new MMC(),
         log.innerHTML = `
             <label>
                 Number of Servers:
-                <input type="range" min="2" max="10" value="${sim.qService.capacity}" data="capacity">
+                <input id="mmc-capy" type="range" min="2" max="10">
             </label>
             <label>
                 Mean inter-arrival time:
-                <input type="range" min="10" max="200" value="${sim.interArrival.mean}" data="interArrival">
+                <input id="mmc-inter-arr" type="range" min="10" max="200">
             </label>
             <label>
                 Mean service time:
-                <input type="range" min="10" max="200" value="${sim.service.mean}" data="service">
+                <input id="mmc-service" type="range" min="10" max="200">
             </label>
             <ul>
                 <li>Simulated time: <b>${format(sim.timeNow / 60, 0)}</b> hours</li>
@@ -195,7 +188,7 @@ showSimulation(new MMC(),
                 </li>
                 <li>Customers Served: <b>${format(sim.qService.grossDwell.cnt, 0)}</b></li>
             </ul>`;
-
+        
         if (rho > 1) {
             log.innerHTML += `<p class="error">
                 ** The server utilization exceeds 100%; the system will not reach a steady-state **
@@ -206,6 +199,12 @@ showSimulation(new MMC(),
             ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
             ${sim.qWait.grossDwell.getHistogramChart('Wait times (seconds)')}`;
 
+        // parameters
+        bind('mmc-capy', sim.qService.capacity, v => sim.qService.capacity = v);
+        bind('mmc-inter-arr', sim.interArrival.mean, v => sim.interArrival = new Exponential(v));
+        bind('mmc-service', sim.service.mean, v => sim.service = new Exponential(v));
+
+        // helpers
         function sum(rho1: number, c: number): number {
             let sum = 0;
             for (let i = 0; i < c; i++) {
@@ -217,21 +216,6 @@ showSimulation(new MMC(),
             let f = 1;
             for (let i = 2; i <= n; i++) f *= i;
             return f;
-        }
-    },
-    (sim: MMC, e) => { // handle parameter changes
-        const target = e.target,
-            value = target.valueAsNumber;
-        switch (target.getAttribute('data')) {
-            case 'capacity':
-                sim.qService.capacity = value;
-                break;
-            case 'interArrival':
-                sim.interArrival = new Exponential(value);
-                break;
-            case 'service':
-                sim.service = new Exponential(value);
-                break;
         }
     }
 );
@@ -259,18 +243,15 @@ showSimulation(new Crosswalk(),
             </p>
             <label>
                 <span class="light red"></span>Red:
-                <input type="range" min="0" max="120" value="${sim.cycle.red}" data="red">
-                <span>${sim.cycle.red} seconds</span>
+                <input id="xwalk-red" type="range" min="0" max="120" >
             </label>
             <label>
                 <span class="light yellow"></span>Yellow:
-                <input type="range" min="0" max="120" value="${sim.cycle.yellow}" data="yellow">
-                <span>${sim.cycle.yellow} seconds</span>
+                <input id="xwalk-yellow" type="range" min="0" max="120" >
             </label>
             <label>
                 <span class="light green"></span>Green:
-                <input type="range" min="0" max="120" value="${sim.cycle.green}" data="green">
-                <span>${sim.cycle.green} seconds</span>
+                <input id="xwalk-green" type="range" min="0" max="120" >
             </label>
             <ul>
                 <li>Simulated time: <b>${format(sim.timeNow / 60 / 60)}</b> hours</li>
@@ -300,21 +281,11 @@ showSimulation(new Crosswalk(),
 
             // show car queue's population histogram
             sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross');
-    },
-    (sim: Crosswalk, e) => { // handle parameter changes
-        const target = e.target,
-            value = target.valueAsNumber;
-        switch (target.getAttribute('data')) {
-            case 'red':
-                sim.cycle.red = value;
-                break;
-            case 'yellow':
-                sim.cycle.yellow = value;
-                break;
-            case 'green':
-                sim.cycle.green = value;
-                break;
-        }
+        
+        // parameters
+        bind('xwalk-red', sim.cycle.red, v => sim.cycle.red = v);
+        bind('xwalk-yellow', sim.cycle.yellow, v => sim.cycle.yellow = v);
+        bind('xwalk-green', sim.cycle.green, v => sim.cycle.green = v);
     }
 );
 
@@ -477,15 +448,31 @@ showSimulation(new Crosswalk(),
 );
 
 //----------------------------------------------------------
-// Rotation Test (SVG)
-showSimulation(new Rotation(),
-    'Rotation Test (SVG)',
+// Animation Options
+showSimulation(new AnimationOptions(),
+    'Animation Options',
     `   <p>
-            Change the Queue angle to see entities rotate.
+            Change the animation parameters to see their effect:
         </p>
         <label>
             Queue Angle
-            <input id="q-angle" type="range" min="0" max="360" step="30" value="0"> <span></span>
+            <input id="q-angle" type="range" min="0" max="360" step="15">
+        </label>
+        <label>
+            Rotate Entities
+            <input id="rotate-ents" type="checkbox">
+        </label>
+        <label>
+            Spline Tension
+            <input id="tension" type="range" min="0" max="1" step=".1">
+        </label>
+        <label>
+            Max Time Step
+            <input id="max-step" type="range" min="0" max="1" step=".1">
+        </label>
+        <label>
+            Frame Delay
+            <input id="frame-delay" type="range" min="0" max="250" step="10">
         </label>
         <svg class="ss-anim" viewBox="0 0 1000 500" style="width: 100%;height:300px">
 
@@ -496,24 +483,24 @@ showSimulation(new Rotation(),
 
             <!-- twelve queues around it -->
             <rect class="ss-queue q1" x="68%" y="13%" width="4%" height="4%" />
-            <rect class="ss-queue q2" x="82%" y="28%" width="4%" height="4%" />
+            <rect class="ss-queue q2" x="86%" y="28%" width="4%" height="4%" />
             <rect class="ss-queue q3" x="88%" y="48%" width="4%" height="4%" />
-            <rect class="ss-queue q4" x="83%" y="68%" width="4%" height="4%" />
+            <rect class="ss-queue q4" x="86%" y="68%" width="4%" height="4%" />
             <rect class="ss-queue q5" x="68%" y="83%" width="4%" height="4%" />
             <rect class="ss-queue q6" x="48%" y="88%" width="4%" height="4%" />
             <rect class="ss-queue q7" x="28%" y="83%" width="4%" height="4%" />
-            <rect class="ss-queue q8" x="13%" y="69%" width="4%" height="4%" />
+            <rect class="ss-queue q8" x="10%" y="69%" width="4%" height="4%" />
             <rect class="ss-queue q9" x="8%" y="48%" width="4%" height="4%" />
-            <rect class="ss-queue q10" x="13%" y="28%" width="4%" height="4% "/>
+            <rect class="ss-queue q10" x="10%" y="28%" width="4%" height="4% "/>
             <rect class="ss-queue q11" x="28%" y="13%" width="4%" height="4% "/>
             <rect class="ss-queue q12" x="48%" y="8%" width="4%" height="4% "/>
         </svg>
     `,
-    (sim: Rotation, animationHost: HTMLElement) => {
+    (sim: AnimationOptions, animationHost: HTMLElement) => {
         const anim = new Animation(sim, animationHost, {
             rotateEntities: true,
             getEntityHtml: (e: Entity) => {
-                return e.serial % 2 == 0 // long/short images
+                return e.serial % 2 // long/short images
                     ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="green" opacity="0.8" />'
                     : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="red" opacity="0.8"/>';
             },
@@ -533,22 +520,23 @@ showSimulation(new Rotation(),
                 { queue: sim.q12, element: 'svg .ss-queue.q12' },
             ]
         });
-        let input = document.getElementById('q-angle') as HTMLInputElement;
-        input.valueAsNumber = sim.qAngle;
-        input.nextElementSibling.textContent = input.value;
-        input.addEventListener('input', e => {
-            sim.qAngle = input.valueAsNumber;
-            input.nextElementSibling.textContent = input.value;
-            anim.queues = [
-                { queue: sim.qRotate, element: 'svg .ss-queue.rotate', angle: sim.qAngle },
-            ]
+
+        // parameters
+        bind('q-angle', sim.qAngle, v => {
+            sim.qAngle = v;
+            let q = anim.queues;
+            q[0].angle = v;
+            anim.queues = q;
         });
+        bind('rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
+        bind('tension', sim.splineTension, v => sim.splineTension = v);
+        bind('max-step', sim.maxTimeStep, v => sim.maxTimeStep = v);
+        bind('frame-delay', sim.frameDelay, v => sim.frameDelay = v);
     }
 );
 
-
 // my little framework
-function showSimulation(sim: Simulation, title: string, intro: string, showStats?: Function, handleInput?: Function) {
+function showSimulation(sim: Simulation, title: string, intro: string, showStats?: Function) {
     const runText = '&#9654; Run';
     const stopText = '&#9632; Stop';
 
@@ -631,19 +619,10 @@ function showSimulation(sim: Simulation, title: string, intro: string, showStats
             showStats(sim, eLog);
         }
     }
-
-    // listen to parameter changes
-    if (eLog && handleInput) {
-        eLog.addEventListener('input', e => {
-            sim.stop();
-            const input = e.target as HTMLInputElement;
-            input.title = input.value;
-            handleInput(sim, e);
-        });
-    }
 }
 
-function createElement(template: string, parent?: Element) {
+// creates an HTML element
+function createElement(template: string, appendTo?: Element) {
 
     // create element
     let e: Element = document.createElement('div');
@@ -653,8 +632,8 @@ function createElement(template: string, parent?: Element) {
     }
 
     // append to document
-    if (parent) {
-        parent.appendChild(e);
+    if (appendTo) {
+        appendTo.appendChild(e);
     }
 
     // return new element

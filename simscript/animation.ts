@@ -30,6 +30,17 @@ export interface IAnimatedQueue {
 }
 
 /**
+ * Defines the elements that describe a specific position along a spline.
+ * @internal
+ */
+interface ISplinePosition {
+    /** Point along the spline. */
+    point: Point,
+    /** Tangent of the spline at the point. */
+    angle: number
+}
+
+/**
  * Class used to adds animations to {@link Simulation} objects.
  * 
  * The {@link Animation} class adds animations to existing
@@ -61,12 +72,13 @@ export class Animation {
     private _width: number;
     private _height: number;
     private _queues = new Map<Queue, AnimationQueue>();
+    private _queueArray: IAnimatedQueue[];
     private _rotateEntities = false;
     private _toQueueEnd = true;
     private _getEntityHtml: Function;
     /** @internal */ _entities = new Map<Entity, AnimationEntity>();
     /** @internal */ _lastUpdate: number;
-
+    
     /**
      * Initializes a new instance of the {@link Animation} class.
      * 
@@ -99,7 +111,7 @@ export class Animation {
     /**
      * Gets a reference to the animation's host element.
      */
-    get hostElement(): Element{
+    get hostElement(): Element {
         return this._host;
     }
     /**
@@ -126,7 +138,7 @@ export class Animation {
      * The default value for this property is **false**, which causes
      * entities to be displayed without any rotation.
      */
-     get rotateEntities(): boolean {
+    get rotateEntities(): boolean {
         return this._rotateEntities;
     }
     set rotateEntities(value: boolean) {
@@ -146,11 +158,15 @@ export class Animation {
         this._toQueueEnd = value;
     }
     /**
-     * Sets an array with queue animation information.
+     * Gets or sets an array with queue animation information.
      * 
      * The items in the array should implement the {@link IAnimatedQueue} interface,
      */
+    get queues(): IAnimatedQueue[] {
+        return this._queueArray;
+    }
     set queues(value: IAnimatedQueue[]) {
+        this._queueArray = value;
         value.forEach(item => {
             let aq = new AnimationQueue(this, item);
             this._queues.set(aq._q, aq);
@@ -209,9 +225,8 @@ export class Animation {
                 let start = item.timeStart,
                     finish = item.timeDue,
                     pct = 1 - (finish - this._sim.timeNow) / (finish - start),
-                    pt = getSplinePosition(points, tension, pct),
-                    angle = this.rotateEntities ? getSplineAngle(points, tension, pct) : 0;
-                ae._drawAt(pt, angle);
+                    splinePos = getSplinePosition(points, tension, pct);
+                ae._drawAt(splinePos.point, this.rotateEntities ? splinePos.angle : 0);
             }
         });
 
@@ -442,9 +457,6 @@ class Point {
             p1.z + (p2.z - p1.z) * pct
         )
     }
-    static interpolateSpline(pts: Point[], tension: number, pct: number): Point {
-        return getSplinePosition(pts, tension, pct);
-    }
 }
 
 /**
@@ -456,11 +468,14 @@ class Point {
  * 
  * @returns The point along the spline at the given percentage.
  */
-function getSplinePosition(pts: Point[], tension: number, pct: number): Point {
+function getSplinePosition(pts: Point[], tension: number, pct: number): ISplinePosition {
 
     // just two points? use linear interpolation 
     if (pts.length == 2) {
-        return Point.interpolate(pts[0], pts[1], pct);
+        return {
+            point: Point.interpolate(pts[0], pts[1], pct),
+            angle: getAngle(pts[0], pts[1])
+        }
     }
 
     // calculate total distance
@@ -502,8 +517,7 @@ function getSplinePosition(pts: Point[], tension: number, pct: number): Point {
 
 // See 
 // Petzold, "Programming Microsoft Windows with C#", pages 645-646 or
-// Petzold, "Programming Microsoft Windows with Microsoft Visual Basic .NET", pages 638-639
-function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, tension: number, pct: number) {
+function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, tension: number, pct: number): ISplinePosition {
     const sx1 = tension * (p2.x - p0.x);
     const sy1 = tension * (p2.y - p0.y);
     const sz1 = tension * (p2.z - p0.z);
@@ -528,38 +542,26 @@ function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, tension:
     const dy = p1.y;
     const dz = p1.z;
 
-    return new Point(
+    // calculate the point
+    const pt = new Point(
         ax * pct * pct * pct + bx * pct * pct + cx * pct + dx,
         ay * pct * pct * pct + by * pct * pct + cy * pct + dy,
         az * pct * pct * pct + bz * pct * pct + cz * pct + dz,
-    );
-}
-function getSplineAngle(pts: Point[], tension: number, pct: number): number {
+    )
 
-    // just two points? use linear interpolation 
-    if (pts.length == 2) {
-        return getAngle(pts[0], pts[1]);
-    }
+    // calculate a close-by point to get the angle
+    const pct2 = pct == 1 ? pct - 0.02 : pct + 0.02;
+    const pt2 = new Point(
+        ax * pct2 * pct2 * pct2 + bx * pct2 * pct2 + cx * pct2 + dx,
+        ay * pct2 * pct2 * pct2 + by * pct2 * pct2 + cy * pct2 + dy,
+        az * pct2 * pct2 * pct2 + bz * pct2 * pct2 + cz * pct2 + dz,
+    )
 
-    // calculate total distance
-    let totalDistance = 0;
-    for (let i = 0; i < pts.length - 1; i++) {
-        totalDistance += Point.distance(pts[i], pts[i + 1]);
-    }
-
-    // calculate position within the spline
-    let position = totalDistance * pct;
-
-    // calculate index of spline segment
-    let distance = 0;
-    let length = 0;
-    for (let i = 0; i < pts.length - 1; i++) {
-        length = Point.distance(pts[i], pts[i + 1]);
-        if (distance + length >= position) {
-            return getAngle(pts[i], pts[i + 1]);
-        }
-        distance += length;
-    }
+    // return the point and the angle
+    return {
+        point: pt,
+        angle: getAngle(pt, pt2)
+    };
 }
 
 // gets the angle for a path segment

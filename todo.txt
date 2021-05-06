@@ -1,10 +1,11 @@
 # Todo
 * typedoc
 * entity rotation test (Animation.rotateEntities)
-- cache spline points/angles?
-- more tests
+* cache spline points/angles?
 - animations 3d (a-frame?)
+- more tests
 - blitzes: 
+    - animation parameters
     * barbershop
     * mmc
     * randomvar

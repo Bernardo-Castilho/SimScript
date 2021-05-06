@@ -37,6 +37,51 @@ function _getNumberFormat(decimals: number): Intl.NumberFormat {
 }
 
 /**
+ * Binds an input element to a variable (parameter).
+ * 
+ * @param id Id of the input element to bind.
+ * @param initialValue Initial value applied to the input element.
+ * @param onInput Function called when the input value changes.
+ */
+export function bind(id: string, initialValue: any, onInput: Function) {
+    const input = document.getElementById(id) as any;
+    const isCheck = input.type == 'checkbox';
+    const isNumber = input.type == 'range' || input.type == 'number';
+    const isSelect = input instanceof HTMLSelectElement;
+
+    // set initial value
+    if (isCheck) {
+        input.checked = initialValue as boolean;
+    } else if (isSelect) {
+        input.selectedIndex = initialValue;
+    } else if (isNumber) {
+        input.valueAsNumber = initialValue;
+    } else {
+        input.value = initialValue;
+    }
+
+    // show current range value
+    const span = input.type == 'range'
+        ? input.insertAdjacentElement('afterend', document.createElement('span'))
+        : null;
+    if (span) {
+        span.textContent = ' ' + input.value;
+    }
+    
+    // apply changes
+    input.addEventListener('input', e => {
+        if (span) {
+            span.textContent = ' ' + input.value;
+        }
+        const value = isCheck ? input.checked :
+            isSelect ? input.selectedIndex :
+            isNumber ? input.valueAsNumber :
+            input.value;
+        onInput(value);
+    });
+}
+
+/**
  * Applies a group of property values and event handlers to an object.
  * 
  * @param obj Object that contains the properties and events.

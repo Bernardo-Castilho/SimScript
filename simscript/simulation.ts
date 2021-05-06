@@ -87,6 +87,8 @@ export class Simulation {
     /** @internal */ _fec: FecItem[] = [];
     private _tmNow = 0;
     private _tmEnd: number | null = null;
+    private _tmMaxStep = 0;
+    private _frameDelay = 0;
     private _tmStart = 0;
     private _tmElapsed = 0;
     private _state = SimulationState.Paused;
@@ -129,6 +131,36 @@ export class Simulation {
     }
     set timeEnd(value: number | null) {
         this._tmEnd = value;
+    }
+    /**
+     * Gets or sets the maximum time step allowed by the simulation.
+     * 
+     * The default value for this property is **0**, which allows 
+     * the simulation to advance the time in steps of any size.
+     * 
+     * This property can be useful to slow down and set the pace for
+     * animated simulations.
+     */
+    get maxTimeStep(): number | null {
+        return this._tmMaxStep;
+    }
+    set maxTimeStep(value: number | null) {
+        this._tmMaxStep = value;
+    }
+    /**
+     * Gets or sets a delay, measured in milliseconds, that should
+     * be applied after each simulated time advance.
+     * 
+     * The default value for this property is **0**, which means
+     * no frame delays should be applied.
+     * 
+     * This property can be useful to slow down animated simulations.
+     */
+    get frameDelay(): number | null {
+        return this._frameDelay;
+    }
+    set frameDelay(value: number | null) {
+        this._frameDelay = value;
     }
     /**
      * Gets the actual simulation time in milliseconds.
@@ -264,7 +296,7 @@ export class Simulation {
     }
 
     // ** events
-
+    
     /**
      * Event that occurs before the simulation starts executing.
      */
@@ -422,9 +454,19 @@ export class Simulation {
             return;
         }
 
+        // honor max step
+        if (this.maxTimeStep && this.maxTimeStep > 0 && nextTime > 0) {
+            nextTime = Math.min(nextTime, this._tmNow + this.maxTimeStep);
+        }
+
         // advance the time
         if (nextTime > 0) {
             this._setTimeNow(nextTime);
+        }
+
+        // apply frame delay
+        if (this.frameDelay && this.frameDelay > 0) {
+            await this.sleep(this.frameDelay);
         }
 
         // call requestAnimationFrame to keep the thread alive
@@ -437,6 +479,11 @@ export class Simulation {
         }
     }
 
+    // wait for a given number of milliseconds
+    private sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+      
     // scan the fec, dispatch entities that are ready
     private async _scanFec(): Promise<number | null> {
         let fec = this._fec,

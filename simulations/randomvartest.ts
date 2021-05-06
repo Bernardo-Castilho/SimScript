@@ -45,15 +45,11 @@ export class RandomVarTest extends Simulation {
     get tally(): Tally {
         return this._tally;
     }
-    setRandomVar(name: string) {
-        const rvs = this._randomVars;
-        for (let i = 0; i < rvs.length; i++) {
-            const rv = rvs[i]
-            if (rv.name == name) {
-                this._index = i;
-                break;
-            }
-        }
+    get randomVarIndex(): number {
+        return this._index;
+    }
+    set randomVarIndex(value: number) {
+        this._index = value;
     }
     createRandomVars() {
         const seed = this._seeded ? 1 : null;
