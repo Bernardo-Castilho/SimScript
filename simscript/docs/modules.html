@@ -102,6 +102,7 @@
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function"><a href="modules.html#assert" class="tsd-kind-icon">assert</a></li>
+								<li class="tsd-kind-function"><a href="modules.html#bind" class="tsd-kind-icon">bind</a></li>
 								<li class="tsd-kind-function"><a href="modules.html#clamp" class="tsd-kind-icon">clamp</a></li>
 								<li class="tsd-kind-function"><a href="modules.html#format" class="tsd-kind-icon">format</a></li>
 								<li class="tsd-kind-function"><a href="modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a></li>
@@ -123,7 +124,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/9cb533f/simscript/util.ts#L9">util.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/3ae3182/simscript/util.ts#L9">util.ts:9</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -151,6 +152,49 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="bind" class="tsd-anchor"></a>
+					<h3>bind</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, initialValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, onInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/3ae3182/simscript/util.ts#L46">util.ts:46</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Binds an input element to a variable (parameter).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Id of the input element to bind.</p>
+									</div>
+								</li>
+								<li>
+									<h5>initialValue: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Initial value applied to the input element.</p>
+									</div>
+								</li>
+								<li>
+									<h5>onInput: <span class="tsd-signature-type">Function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Function called when the input value changes.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="clamp" class="tsd-anchor"></a>
 					<h3>clamp</h3>
 					<ul class="tsd-signatures tsd-kind-function">
@@ -160,7 +204,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/9cb533f/simscript/util.ts#L79">util.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/3ae3182/simscript/util.ts#L124">util.ts:124</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -204,7 +248,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/9cb533f/simscript/util.ts#L23">util.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/3ae3182/simscript/util.ts#L23">util.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -242,7 +286,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/9cb533f/simscript/util.ts#L63">util.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/3ae3182/simscript/util.ts#L108">util.ts:108</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -273,7 +317,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/9cb533f/simscript/util.ts#L45">util.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/3ae3182/simscript/util.ts#L90">util.ts:90</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -380,6 +424,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="modules.html#assert" class="tsd-kind-icon">assert</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#bind" class="tsd-kind-icon">bind</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="modules.html#clamp" class="tsd-kind-icon">clamp</a>
