@@ -28,13 +28,13 @@ interface IHistogramParameters {
  * statistics about queue populations and dwell times.
  */
 export class Tally {
-    protected _cnt = 0;
-    protected _min = 0;
-    protected _max = 0;
-    protected _sum = 0;
-    protected _sum2 = 0;
-    protected _histo: Map<number, number> | null = null;
-    protected _histoParms: IHistogramParameters | null = null;
+    private _cnt = 0;
+    private _min = 0;
+    private _max = 0;
+    private _sum = 0;
+    private _sum2 = 0;
+    private _histo: Map<number, number> | null = null;
+    private _histoParms: IHistogramParameters | null = null;
 
     /**
      * Initializes a new instance of the {@link Tally} class.

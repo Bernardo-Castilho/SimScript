@@ -68,26 +68,30 @@
 					<a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await">async/await</a>
 				features to make simulations easy to write and understand.</p>
 				<p><strong>SimScript</strong> simulations are built using these classes:</p>
-				<a href="#simulation" id="simulation" style="color: inherit; text-decoration: none;">
-					<h2>Simulation</h2>
+				<a href="#simulation-class" id="simulation-class" style="color: inherit; text-decoration: none;">
+					<h2>Simulation Class</h2>
 				</a>
 				<p>Simulations create resources (queues) and entities which execute an async <strong>script</strong>
 				method that describes the actions each entity should perform.</p>
-				<a href="#queues" id="queues" style="color: inherit; text-decoration: none;">
-					<h2>Queues</h2>
-				</a>
-				<p>Queues represent resources that can be seized and released by entities.
-					Queues keep track of their utilization and may constrain the flow of entities
-				through the simulation.</p>
-				<a href="#entities" id="entities" style="color: inherit; text-decoration: none;">
-					<h2>Entities</h2>
+				<p>The <strong>Simulation</strong> class is abstract. In most cases, you will create a class that
+				extends it to create the queues and entities you need.</p>
+				<a href="#entity-class" id="entity-class" style="color: inherit; text-decoration: none;">
+					<h2>Entity Class</h2>
 				</a>
 				<p>Entities represent active elements that execute scripts. Scripts are async
 					methods that contain instructions for entities.
 					Typical actions include entering and leaving <strong>queues</strong>, going through <strong>delays</strong>,
 				and sending or waiting for <strong>signals</strong>.</p>
-				<a href="#animations" id="animations" style="color: inherit; text-decoration: none;">
-					<h2>Animations</h2>
+				<p>The <strong>Entity</strong> class is abstract. In most cases, you will create one of more classes that
+				extend it to perform the actions required by your simulations.</p>
+				<a href="#queue-class" id="queue-class" style="color: inherit; text-decoration: none;">
+					<h2>Queue Class</h2>
+				</a>
+				<p>Queues represent resources that can be seized and released by entities.
+					Queues keep track of their utilization and may constrain the flow of entities
+				through the simulation.</p>
+				<a href="#animation-class" id="animation-class" style="color: inherit; text-decoration: none;">
+					<h2>Animation Class</h2>
 				</a>
 				<p>Animations use HTML or SVG elements to render entities waiting in queues
 				or in transit between queues.</p>
@@ -261,7 +265,6 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
 			</ul>

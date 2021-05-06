@@ -59,17 +59,17 @@ import { assert, setOptions } from './util';
  * longest **6.81** min).
  */
 export class Queue {
-    protected _sim: Simulation | null = null;
-    protected _name = '';
-    protected _capy: number | null = null;
-    protected _items = new Map<Entity, QueueItem>();
-    protected _tmLastChange = 0;
-    protected _inUse = 0;
-    protected _totalIn = 0;
-    protected _grossPop = new Tally();
-    protected _grossDwell = new Tally();
-    protected _netPop = new Tally();
-    protected _netDwell = new Tally();
+    private _sim: Simulation | null = null;
+    private _name = '';
+    private _capy: number | null = null;
+    private _items = new Map<Entity, QueueItem>();
+    private _tmLastChange = 0;
+    private _inUse = 0;
+    private _totalIn = 0;
+    private _grossPop = new Tally();
+    private _grossDwell = new Tally();
+    private _netPop = new Tally();
+    private _netDwell = new Tally();
 
     /**
      * Initializes a new instance of a {@link Queue} object.

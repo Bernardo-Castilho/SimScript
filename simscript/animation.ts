@@ -1,4 +1,4 @@
-import { Simulation, FecItem } from './simulation';
+import { Simulation } from './simulation';
 import { Queue } from './queue';
 import { Entity } from './entity';
 import { assert, setOptions, getElement } from './util';
@@ -56,16 +56,16 @@ export interface IAnimatedQueue {
  * transit between animated queues (see {@link Entity.move}).
  */
 export class Animation {
-    _sim: Simulation;
-    _host: Element;
-    _width: number;
-    _height: number;
-    _queues = new Map<Queue, AnimationQueue>();
-    _entities = new Map<Entity, AnimationEntity>();
-    _rotateEntities = false;
-    _getEntityHtml: Function;
-    _lastUpdate: number;
-    _svg: boolean;
+    private _sim: Simulation;
+    private _host: Element;
+    private _width: number;
+    private _height: number;
+    private _queues = new Map<Queue, AnimationQueue>();
+    private _rotateEntities = false;
+    private _toQueueEnd = true;
+    private _getEntityHtml: Function;
+    /** @internal */ _entities = new Map<Entity, AnimationEntity>();
+    /** @internal */ _lastUpdate: number;
 
     /**
      * Initializes a new instance of the {@link Animation} class.
@@ -78,7 +78,6 @@ export class Animation {
 
         // host element
         this._host = getElement(animationHost);
-        this._svg = this._host instanceof SVGElement;
 
         // simulation
         this._sim = sim;
@@ -96,7 +95,20 @@ export class Animation {
             setOptions(this, options);
         }
     }
-
+    
+    /**
+     * Gets a reference to the animation's host element.
+     */
+    get hostElement(): Element{
+        return this._host;
+    }
+    /**
+     * Gets a value that indicates whether the animation's 
+     * host element is an SVG element.
+     */
+    get isSvg(): boolean {
+        return this._host instanceof SVGElement;
+    }
     /**
      * Gets or sets a function that returns the HTML to be used
      * to create elements that represent the animated entity.
@@ -110,12 +122,28 @@ export class Animation {
     /**
      * Gets or sets a value that determines whether entities should 
      * be rotated when in queues or in transit.
+     * 
+     * The default value for this property is **false**, which causes
+     * entities to be displayed without any rotation.
      */
-    get rotateEntities(): boolean {
+     get rotateEntities(): boolean {
         return this._rotateEntities;
     }
     set rotateEntities(value: boolean) {
         this._rotateEntities = value;
+    }
+    /**
+     * Gets or sets a value that determines whether entities should 
+     * move towards the end or start of the destination queue.
+     * 
+     * The default value for this property is **true**, which causes
+     * entities to move towards the end of the destination queue.
+     */
+    get animateToQueueEnd(): boolean {
+        return this._toQueueEnd;
+    }
+    set animateToQueueEnd(value: boolean) {
+        this._toQueueEnd = value;
     }
     /**
      * Sets an array with queue animation information.
@@ -132,7 +160,7 @@ export class Animation {
     // ** implementation
 
     // updates entities in transit and in animated queues
-    _timeNowChanged() {
+    protected _timeNowChanged() {
 
         // reset queue start positions
         const host = this._host;
@@ -162,27 +190,27 @@ export class Animation {
             // see if this entity is in transit between two animated queues
             if (item.options.path && item.timeDue != null) {
 
+                // get AnimationEntity for this entity
+                const ae = this._getAnimationEntity(item.e);
+
                 // calculate path
                 const path = item.options.path;
                 const tension = path.tension != null ? path.tension : _DEFAULT_SPLINE_TENSION;
-                let points: Point[] = [];
+                const points: Point[] = [];
                 path.queues.forEach((q, index) => {
-                    let aq = this._queues.get(q);
+                    const aq = this._queues.get(q);
                     assert(aq != null, 'Queue missing animation info');
-                    points.push(index == 0
-                        ? aq._getStart()
-                        : aq._ptEnd || aq._getStart());
+                    points.push(this._toQueueEnd && path.queues.length == 2 && index > 0
+                        ? aq._ptEnd || aq._getStart()
+                        : aq._getStart());
                 });
-
-                // get AnimationEntity for this entity
-                const ae = this._getAnimationEntity(item.e);
 
                 // update entity position
                 let start = item.timeStart,
                     finish = item.timeDue,
                     pct = 1 - (finish - this._sim.timeNow) / (finish - start),
-                    pt = getSplinePosition(points, pct, tension),
-                    angle = this.rotateEntities ? getSplineAngle(points, pct, tension) : 0;
+                    pt = getSplinePosition(points, tension, pct),
+                    angle = this.rotateEntities ? getSplineAngle(points, tension, pct) : 0;
                 ae._drawAt(pt, angle);
             }
         });
@@ -203,7 +231,7 @@ export class Animation {
     }
 
     // gets/creates an AnimationEntity for an entity
-    _getAnimationEntity(e: Entity): AnimationEntity {
+    /** @internal */ _getAnimationEntity(e: Entity): AnimationEntity {
         let ae = this._entities.get(e);
         if (!ae) {
             ae = new AnimationEntity(this, e);
@@ -245,14 +273,14 @@ class AnimationQueue {
         if (!this._ptStart) {
             const e = this._element;
             const anim = this._anim;
-            if (anim._svg) {
+            if (anim.isSvg) {
                 const rc = (e as any).getBBox();
                 this._ptStart = new Point(
                     rc.x + rc.width / 2,
                     rc.y + rc.height / 2
                 );
             } else {
-                const rcHost = anim._host.getBoundingClientRect();
+                const rcHost = anim.hostElement.getBoundingClientRect();
                 const rc = e.getBoundingClientRect();
                 this._ptStart = new Point(
                     rc.left - rcHost.left + rc.width / 2,
@@ -333,7 +361,7 @@ class AnimationEntity {
         this._inUse = false;
 
         // create animation element
-        const e = anim._svg
+        const e = anim.isSvg
             ? document.createElementNS('http://www.w3.org/2000/svg', 'g')
             : document.createElement('div');
         e.innerHTML = this._getEntityHtml();
@@ -342,10 +370,10 @@ class AnimationEntity {
         this._element = e;
 
         // append animation element to host
-        anim._host.appendChild(e);
+        anim.hostElement.appendChild(e);
 
         // measure element
-        const rc = anim._svg
+        const rc = anim.isSvg
             ? (e as any).getBBox()
             : e.getBoundingClientRect();
         this._width = rc.width;
@@ -414,8 +442,8 @@ class Point {
             p1.z + (p2.z - p1.z) * pct
         )
     }
-    static interpolateSpline(pts: Point[], pct: number, tension = _DEFAULT_SPLINE_TENSION): Point {
-        return getSplinePosition(pts, pct, tension);
+    static interpolateSpline(pts: Point[], tension: number, pct: number): Point {
+        return getSplinePosition(pts, tension, pct);
     }
 }
 
@@ -423,12 +451,12 @@ class Point {
  * Gets a position along a spline defined by a vector of control points and a tension.
  * 
  * @param pts Vector of points that define the spline.
- * @param pct Position within the spline as a percentage (zero means first point, one means last point).
  * @param tension Spline tension (zero means each segment is a straight line, 0.5 creates wide curves).
+ * @param pct Position within the spline as a percentage (zero means first point, one means last point).
  * 
  * @returns The point along the spline at the given percentage.
  */
-function getSplinePosition(pts: Point[], pct: number, tension): Point {
+function getSplinePosition(pts: Point[], tension: number, pct: number): Point {
 
     // just two points? use linear interpolation 
     if (pts.length == 2) {
@@ -464,18 +492,18 @@ function getSplinePosition(pts: Point[], pct: number, tension): Point {
 
     // interpolate position
     if (index == 0) { // first segment
-        return _getSplinePosition(pts[0], pts[0], pts[1], pts[2], pct, tension);
+        return _getSplinePosition(pts[0], pts[0], pts[1], pts[2], tension, pct);
     } else if (index == pts.length - 2) { // last segment
-        return _getSplinePosition(pts[index - 1], pts[index], pts[index + 1], pts[index + 1], pct, tension);
+        return _getSplinePosition(pts[index - 1], pts[index], pts[index + 1], pts[index + 1], tension, pct);
     } else { // intermediate segment
-        return _getSplinePosition(pts[index - 1], pts[index], pts[index + 1], pts[index + 2], pct, tension);
+        return _getSplinePosition(pts[index - 1], pts[index], pts[index + 1], pts[index + 2], tension, pct);
     }
 }
 
 // See 
 // Petzold, "Programming Microsoft Windows with C#", pages 645-646 or
 // Petzold, "Programming Microsoft Windows with Microsoft Visual Basic .NET", pages 638-639
-function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, pct: number, tension) {
+function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, tension: number, pct: number) {
     const sx1 = tension * (p2.x - p0.x);
     const sy1 = tension * (p2.y - p0.y);
     const sz1 = tension * (p2.z - p0.z);
@@ -506,8 +534,7 @@ function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, pct: num
         az * pct * pct * pct + bz * pct * pct + cz * pct + dz,
     );
 }
-
-function getSplineAngle(pts: Point[], pct: number, tension: number): number {
+function getSplineAngle(pts: Point[], tension: number, pct: number): number {
 
     // just two points? use linear interpolation 
     if (pts.length == 2) {

@@ -32,11 +32,11 @@ import { assert, setOptions } from './util';
  * ```
  */
 export class Entity {
-    protected _serial = 0;
-    protected _prty = 0;
-    static _serial = 0;
-    _sim: Simulation | null = null;
+    /** @internal */ _sim: Simulation | null = null;
     /** @internal */ _queues = new Map();
+    private _serial = 0;
+    private _prty = 0;
+    private static _serial = 0;
 
     /**
      * Initializes a new instance of the {@link Entity} class.
@@ -346,11 +346,11 @@ export class Entity {
  * {@link Simulation.generateEntities} method.
  */
 export class EntityGenerator extends Entity {
-    protected _type: any;
-    protected _interval: RandomVar | null;
-    protected _max: number;
-    protected _tmStart: number;
-    protected _tmEnd: number;
+    private _type: any;
+    private _interval: RandomVar | null;
+    private _max: number;
+    private _tmStart: number;
+    private _tmEnd: number;
 
     /**
      * Initializes a new instance of the {@link EntityGenerator} class.

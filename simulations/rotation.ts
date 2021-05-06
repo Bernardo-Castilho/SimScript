@@ -39,7 +39,7 @@ class EnterLeave extends Entity {
         let sim = this.simulation as Rotation;
         for (; ;) {
             await this.enterQueue(sim.qRotate);
-            await this.delay(1000);
+            await this.delay(1);
             this.leaveQueue(sim.qRotate);
         }
     }

@@ -84,6 +84,7 @@ export enum SimulationState {
  * ```
  */
 export class Simulation {
+    /** @internal */ _fec: FecItem[] = [];
     private _tmNow = 0;
     private _tmEnd: number | null = null;
     private _tmStart = 0;
@@ -93,7 +94,6 @@ export class Simulation {
     private _queues: Queue[] = [];
     private _lastUpdate = 0;
     private _yieldInterval = 100;
-    /** @internal */ _fec: FecItem[] = [];
 
     /**
      * Initializes a new instance of the {@link Simulation} class.
@@ -533,10 +533,15 @@ export class Simulation {
  * Represents options for {@link FecItem} objects.
  */
 export interface IFecItemOptions {
+    /** Number of simulated time units to wait for. */
     delay?: number,
+    /** {@link IMovePath} object that defines the path for moving an entity. */
     path?: IMovePath,
+    /** {@link Queue} that the entity is about to enter. */
     queue?: Queue,
+    /** Number of queue capacity units the entity is about to seize. */
     units?: number,
+    /** Signal that the entity is waiting for. */
     signal?: any,
 }
 
@@ -544,13 +549,13 @@ export interface IFecItemOptions {
  * Represents a simulation event scheduled for future execution.
  */
 export class FecItem {
-    protected _e: Entity;
-    protected _ready: boolean;
-    protected _tmStart: number;
-    protected _tmDue: number;
-    protected _promise: Promise<void>;
-    protected _resolve: Function | undefined;
-    protected _options: IFecItemOptions;
+    private _e: Entity;
+    private _ready: boolean;
+    private _tmStart: number;
+    private _tmDue: number;
+    private _promise: Promise<void>;
+    private _resolve: Function | undefined;
+    private _options: IFecItemOptions;
 
     /**
      * Initializes a new instance of a {@link FecItem} object.
