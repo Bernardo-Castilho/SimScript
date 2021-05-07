@@ -4,8 +4,9 @@ import { Queue } from '../simscript/queue';
 import { Uniform } from '../simscript/random';
 
 export class AnimationOptions extends Simulation {
-    qAngle = 0;
+    qAngle = 270;
     qRotate = new Queue('Rotate');
+    qCenter = new Queue('qcenter')
     q1 = new Queue('q1');
     q2 = new Queue('q2');
     q3 = new Queue('q3');
@@ -26,17 +27,17 @@ export class AnimationOptions extends Simulation {
 
         // create 6 entities to enter and leave the center queue
         for (let i = 0; i < 6; i++) {
-            this.activate(new EnterLeave());
+            this.activate(new EnterLeaveEntity());
         }
 
         // create some entities to roam around
-        for (let i = 0; i < 120; i++) {
-            this.activate(new Roam());
+        for (let i = 0; i < 240; i++) {
+            this.activate(new RoamEntity());
         }
     }
 }
 
-class EnterLeave extends Entity {
+export class EnterLeaveEntity extends Entity {
     async script() {
         let sim = this.simulation as AnimationOptions;
         for (; ;) {
@@ -47,16 +48,16 @@ class EnterLeave extends Entity {
     }
 }
 
-class Roam extends Entity {
+export class RoamEntity extends Entity {
     async script() {
         let sim = this.simulation as AnimationOptions;
         for (; ;) {
             await this.move(sim.moveDelay.sample(), {
                 queues: [
-                    sim.qRotate,
+                    sim.qCenter,
                     sim.q1, sim.q2, sim.q3, sim.q4, sim.q5,
                     sim.q11, sim.q10, sim.q9, sim.q8, sim.q7,
-                    sim.qRotate
+                    sim.qCenter
                     ],
                 tension: sim.splineTension
             });

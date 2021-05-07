@@ -12,7 +12,7 @@ import { BarberShop } from './simulations/barbershop';
 import { MMC } from './simulations/mmc';
 import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { SimpleTest } from './simulations/simpletest';
-import { AnimationOptions } from './simulations/animation-options';
+import { AnimationOptions, EnterLeaveEntity, RoamEntity } from './simulations/animation-options';
 
 //----------------------------------------------------------
 // Simple
@@ -476,36 +476,46 @@ showSimulation(new AnimationOptions(),
         </label>
         <svg class="ss-anim" viewBox="0 0 1000 500" style="width: 100%;height:300px">
 
+            <!-- one rotating queue -->
+            <rect class="ss-queue rotate" x="98%" y="23%" width="4%" height="4%" />
+            <line x1="100%" y1="15%" x2="100%" y2="35%" stroke="black" />
+            <line x1="90%" y1="25%" x2="110%" y2="25%" stroke="black" />
+
             <!-- one queue at the center -->
-            <rect class="ss-queue rotate" x="48%" y="48%" width="4%" height="4%" />
-            <line x1="10%" y1="50%" x2="90%" y2="50%" stroke="black" />
-            <line x1="50%" y1="10%" x2="50%" y2="90%" stroke="black" />
+            <rect class="ss-queue center" x="38%" y="48%" width="4%" height="4%" />
 
             <!-- twelve queues around it -->
-            <rect class="ss-queue q1" x="68%" y="13%" width="4%" height="4%" />
-            <rect class="ss-queue q2" x="86%" y="28%" width="4%" height="4%" />
-            <rect class="ss-queue q3" x="88%" y="48%" width="4%" height="4%" />
-            <rect class="ss-queue q4" x="86%" y="68%" width="4%" height="4%" />
-            <rect class="ss-queue q5" x="68%" y="83%" width="4%" height="4%" />
-            <rect class="ss-queue q6" x="48%" y="88%" width="4%" height="4%" />
-            <rect class="ss-queue q7" x="28%" y="83%" width="4%" height="4%" />
-            <rect class="ss-queue q8" x="10%" y="69%" width="4%" height="4%" />
-            <rect class="ss-queue q9" x="8%" y="48%" width="4%" height="4%" />
-            <rect class="ss-queue q10" x="10%" y="28%" width="4%" height="4% "/>
-            <rect class="ss-queue q11" x="28%" y="13%" width="4%" height="4% "/>
-            <rect class="ss-queue q12" x="48%" y="8%" width="4%" height="4% "/>
+            <rect class="ss-queue q1" x="58%" y="83%" width="4%" height="4%" />
+            <rect class="ss-queue q2" x="73%" y="68%" width="4%" height="4%" />
+            <rect class="ss-queue q3" x="78%" y="48%" width="4%" height="4%" />
+            <rect class="ss-queue q4" x="73%" y="28%" width="4%" height="4%" />
+            <rect class="ss-queue q5" x="58%" y="13%" width="4%" height="4%" />
+            <rect class="ss-queue q6" x="38%" y="8%" width="4%" height="4%" />
+            <rect class="ss-queue q7" x="18%" y="13%" width="4%" height="4%" />
+            <rect class="ss-queue q8" x="3%" y="28%" width="4%" height="4%" />
+            <rect class="ss-queue q9" x="-2%" y="48%" width="4%" height="4%" />
+            <rect class="ss-queue q10" x="3%" y="68%" width="4%" height="4% "/>
+            <rect class="ss-queue q11" x="18%" y="83%" width="4%" height="4% "/>
+            <rect class="ss-queue q12" x="38%" y="88%" width="4%" height="4% "/>
         </svg>
     `,
     (sim: AnimationOptions, animationHost: HTMLElement) => {
         const anim = new Animation(sim, animationHost, {
             rotateEntities: true,
             getEntityHtml: (e: Entity) => {
-                return e.serial % 2 // long/short images
-                    ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="green" opacity="0.8" />'
-                    : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="red" opacity="0.8"/>';
+                if (e instanceof EnterLeaveEntity) {
+                    return e.serial % 2 // long/short images
+                        ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="blue" />'
+                        : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="green" />';
+                } else { // RoamEntity
+                    return e.serial % 2 // long/short images
+                        ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="yellow" opacity="0.5" />'
+                        : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="red" opacity="0.5"/>';
+                }
             },
             queues: [
                 { queue: sim.qRotate, element: 'svg .ss-queue.rotate', angle: sim.qAngle },
+                { queue: sim.qCenter, element: 'svg .ss-queue.center' },
                 { queue: sim.q1, element: 'svg .ss-queue.q1' },
                 { queue: sim.q2, element: 'svg .ss-queue.q2' },
                 { queue: sim.q3, element: 'svg .ss-queue.q3' },

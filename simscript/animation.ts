@@ -41,16 +41,14 @@ interface ISplinePosition {
 }
 
 /**
- * Class used to adds animations to {@link Simulation} objects.
+ * Class used to add animations to {@link Simulation} objects.
  * 
  * The {@link Animation} class adds animations to existing
  * {@link Simulation} objects. 
  * 
  * The animations are shown in a host element defined in the
- * constructor.
- * 
- * Animation host elements can be regular **div** or **svg** 
- * elements.
+ * constructor. The host element can be regular **div** or
+ * **svg** elements.
  * 
  * Animations hosted in **div** elements use absolutely positioned
  * elements (often **img**) to represent entities.
@@ -62,9 +60,11 @@ interface ISplinePosition {
  * host element, as specified by the {@link queues} property.
  * 
  * {@link Entity} objects are represented by HTML elements defined
- * by the {@link getEntityHtml} function. Entities are shown while
- * in animated queues (see {@link Entity.enterQueue}) and while in
- * transit between animated queues (see {@link Entity.move}).
+ * by the {@link getEntityHtml} function.
+ * 
+ * Entities are shown while in animated queues
+ * (see the {@link Entity.enterQueue} method) and while in transit 
+ * between animated queues (see the {@link Entity.move} method).
  */
 export class Animation {
     private _sim: Simulation;
