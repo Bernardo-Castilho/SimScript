@@ -63,7 +63,7 @@ export class Pedestrian extends Entity {
         let sim = this.simulation as Crosswalk;
 
         // walk to crosswalk
-        await this.move(sim.walkToXing.sample(), {
+        await this.delay(sim.walkToXing.sample(), {
             queues: [sim.qPedArr, sim.qPedXing]
         });
 
@@ -79,7 +79,7 @@ export class Pedestrian extends Entity {
         this.leaveQueue(sim.qPedXing);
 
         // walk away
-        await this.move(sim.walkAway.sample(), {
+        await this.delay(sim.walkAway.sample(), {
             queues: [sim.qPedXing, sim.qPedXed, sim.qPedLeave]
         });
     }
@@ -91,7 +91,7 @@ export class Car extends Entity {
         let sim = this.simulation as Crosswalk;
 
         // drive to crosswalk
-        await this.move(sim.driveToXing.sample(), {
+        await this.delay(sim.driveToXing.sample(), {
             queues: [sim.qCarArr, sim.qCarXing]
         });
 
@@ -107,7 +107,7 @@ export class Car extends Entity {
         this.leaveQueue(sim.qCarXing);
 
         // drive away
-        await this.move(sim.driveAway.sample(), {
+        await this.delay(sim.driveAway.sample(), {
             queues: [sim.qCarXing, sim.qCarXed]
         });
     }

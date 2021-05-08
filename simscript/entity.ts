@@ -109,26 +109,11 @@ export class Entity {
      * and {@link delay} should be preceded by the **await** keyword.
      * 
      * @param delay Number of simulated time units to wait for.
+     * @param path {@link IMovePath} object containing information about how
+     * the entity should be animated during the delay.
      */
-    async delay(delay: number) {
-        return new FecItem(this, {
-            delay: delay
-        }).promise;
-    }
-    /**
-     * Async method that simulates a delay representing a move along
-     * a path defined by a {@link IDelayPath} trajectory.
-     * 
-     * In regular (non-animated) simulations, this method is 
-     * equivalent to the {@link delay} method. In animated simulations,
-     * the **path** information is used to animate the entity along
-     * the path as it moves.
-     * 
-     * @param delay Number of simulated time units the move will take.
-     * @param path {@link IMovePath} that defines the motion path.
-     */
-    async move(delay: number, path: IMovePath) {
-        assert(path.queues.length > 1, 'the path should have at least two queues');
+    async delay(delay: number, path?: IMovePath) {
+        assert(path == null || path.queues.length > 1, 'the path should have at least two queues');
         return new FecItem(this, {
             delay: delay,
             path: path

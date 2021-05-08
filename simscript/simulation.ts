@@ -31,7 +31,7 @@ export enum SimulationState {
  * 
  * {@link Simulation} objects are basically schedulers. 
  * They act as a stage where the actors are {@link Entity} objects
- * and have props represents by {@link Queue} objects.
+ * and have props represented by {@link Queue} objects.
  * 
  * Simulations keep a list of active entities and conditions these
  * entities are waiting for within their {@link Entity.script} methods,
@@ -466,7 +466,7 @@ export class Simulation {
 
         // apply frame delay
         if (this.frameDelay && this.frameDelay > 0) {
-            await this.sleep(this.frameDelay);
+            await new Promise(r => setTimeout(r, this.frameDelay));
         }
 
         // call requestAnimationFrame to keep the thread alive
@@ -479,11 +479,6 @@ export class Simulation {
         }
     }
 
-    // wait for a given number of milliseconds
-    private sleep(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-      
     // scan the fec, dispatch entities that are ready
     private async _scanFec(): Promise<number | null> {
         let fec = this._fec,

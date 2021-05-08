@@ -56,10 +56,6 @@ showSimulation(new RandomVarTest(),
         }
         log.innerHTML = `
         <label>
-            String:
-            <input id="foo">
-        </label>
-        <label>
             Type:
             <select id="rand-type">${getRandomVarOptions()}</select>
         </label>
@@ -82,10 +78,9 @@ showSimulation(new RandomVarTest(),
             sim.tally.getHistogramChart(sim.randomVar.name);
         
         // parameters
-        bind('foo', 'banana', v => console.log('changed to', v));
-        bind('rand-type', sim.randomVarIndex, v => { sim.randomVarIndex = v; sim.start() });
-        bind('rand-size', sim.sampleSize, v => { sim.sampleSize = v; sim.start() });
-        bind('rand-seeded', sim.seeded, v => { sim.seeded = v; sim.start() });
+        bind('rand-type', sim.randomVarIndex, v => sim.randomVarIndex = v);
+        bind('rand-size', sim.sampleSize, v => sim.sampleSize = v, ' samples');
+        bind('rand-seeded', sim.seeded, v => sim.seeded = v);
     }
 );
 
@@ -283,9 +278,9 @@ showSimulation(new Crosswalk(),
             sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross');
         
         // parameters
-        bind('xwalk-red', sim.cycle.red, v => sim.cycle.red = v);
-        bind('xwalk-yellow', sim.cycle.yellow, v => sim.cycle.yellow = v);
-        bind('xwalk-green', sim.cycle.green, v => sim.cycle.green = v);
+        bind('xwalk-red', sim.cycle.red, v => sim.cycle.red = v, ' seconds');
+        bind('xwalk-yellow', sim.cycle.yellow, v => sim.cycle.yellow = v, ' seconds');
+        bind('xwalk-green', sim.cycle.green, v => sim.cycle.green = v, ' seconds');
     }
 );
 
@@ -503,14 +498,14 @@ showSimulation(new AnimationOptions(),
         const anim = new Animation(sim, animationHost, {
             rotateEntities: true,
             getEntityHtml: (e: Entity) => {
-                if (e instanceof EnterLeaveEntity) {
+                if (e instanceof RoamEntity) {
+                    return e.fast
+                        ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="yellow" opacity="0.5" />'
+                        : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="red" opacity="0.5"/>';
+                } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
                         ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="blue" />'
                         : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="green" />';
-                } else { // RoamEntity
-                    return e.serial % 2 // long/short images
-                        ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="yellow" opacity="0.5" />'
-                        : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="red" opacity="0.5"/>';
                 }
             },
             queues: [

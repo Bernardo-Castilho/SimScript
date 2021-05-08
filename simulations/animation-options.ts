@@ -2,6 +2,7 @@ import { Simulation } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Uniform } from '../simscript/random';
+import { setOptions } from '../simscript/util';
 
 export class AnimationOptions extends Simulation {
     qAngle = 270;
@@ -20,8 +21,9 @@ export class AnimationOptions extends Simulation {
     q11 = new Queue('q11');
     q12 = new Queue('q12');
     splineTension = 0.5;
-    moveDelay = new Uniform(1, 160);
-
+    moveDelayLong = new Uniform(50, 200);
+    moveDelayShort = new Uniform(1, 50);
+  
     onStarting() {
         super.onStarting();
 
@@ -31,8 +33,10 @@ export class AnimationOptions extends Simulation {
         }
 
         // create some entities to roam around
-        for (let i = 0; i < 240; i++) {
-            this.activate(new RoamEntity());
+        for (let i = 0; i < 60; i++) {
+            this.activate(new RoamEntity({
+                fast: i % 2 == 0
+            }));
         }
     }
 }
@@ -49,10 +53,21 @@ export class EnterLeaveEntity extends Entity {
 }
 
 export class RoamEntity extends Entity {
+    fast = false;
+
+    constructor(options?: any) {
+        super(null); // in case options includes 'fast'
+        setOptions(this, options);
+    }
+
     async script() {
         let sim = this.simulation as AnimationOptions;
         for (; ;) {
-            await this.move(sim.moveDelay.sample(), {
+            const moveDelay = this.fast
+                ? sim.moveDelayShort // fast entity
+                : sim.moveDelayLong; // slow entity
+    
+            await this.delay(moveDelay.sample(), {
                 queues: [
                     sim.qCenter,
                     sim.q1, sim.q2, sim.q3, sim.q4, sim.q5,

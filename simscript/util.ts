@@ -42,8 +42,9 @@ function _getNumberFormat(decimals: number): Intl.NumberFormat {
  * @param id Id of the input element to bind.
  * @param initialValue Initial value applied to the input element.
  * @param onInput Function called when the input value changes.
+ * @param suffix String appended to the span element after input range elements.
  */
-export function bind(id: string, initialValue: any, onInput: Function) {
+export function bind(id: string, initialValue: any, onInput: Function, suffix = '') {
     const input = document.getElementById(id) as any;
     const isCheck = input.type == 'checkbox';
     const isNumber = input.type == 'range' || input.type == 'number';
@@ -65,13 +66,13 @@ export function bind(id: string, initialValue: any, onInput: Function) {
         ? input.insertAdjacentElement('afterend', document.createElement('span'))
         : null;
     if (span) {
-        span.textContent = ' ' + input.value;
+        span.textContent = ` ${input.value}${suffix}`;
     }
     
     // apply changes
     input.addEventListener('input', e => {
         if (span) {
-            span.textContent = ' ' + input.value;
+            span.textContent = ` ${input.value}${suffix}`;
         }
         const value = isCheck ? input.checked :
             isSelect ? input.selectedIndex :
