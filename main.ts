@@ -16,13 +16,19 @@ import { AnimationOptions, EnterLeaveEntity, RoamEntity } from './simulations/an
 
 //----------------------------------------------------------
 // Simple
-showSimulation(new SimpleTest(),
+showSimulation(new SimpleTest({
+    stateChanged: (sim) => {
+        if (sim.state == SimulationState.Finished) {
+            console.log('** SimpleTest done in', sim.timeElapsed, 'ms');
+        }
+    }
+}),
     'SimpleTest Simulation',
     `<p>
         This is a simple test.
     </p>`,
     (sim: SimpleTest, log: HTMLElement) => {
-        log.innerHTML = sim.getStatsTable(true);
+        //log.innerHTML = sim.getStatsTable(true);
     }
 );
 
@@ -459,7 +465,7 @@ showSimulation(new AnimationOptions(),
         </label>
         <label>
             Spline Tension
-            <input id="tension" type="range" min="0" max="1" step=".1">
+            <input id="tension" type="range" min="0" max="2" step=".1">
         </label>
         <label>
             Max Time Step

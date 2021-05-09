@@ -1,6 +1,7 @@
 import { Simulation } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
+import { Uniform } from '../simscript/random';
 import { assert } from '../simscript/util';
 
 // Simple Test
@@ -10,10 +11,10 @@ export class SimpleTest extends Simulation {
     onStarting() {
         super.onStarting();
         this.activate(new SimpleEntity());
+        this.generateEntities(BetterEntity, new Uniform(5, 10), 10000);
     }
 }
 
-// customer
 class SimpleEntity extends Entity {
     async script() {
         let sim = this.simulation as SimpleTest;
@@ -43,5 +44,17 @@ class SimpleEntity extends Entity {
         assert(sim.timeNow == time + 10, 'waited for 10 tu');
 
         console.log('done at', sim.timeNow);
+    }
+}
+
+class BetterEntity extends Entity {
+    service = new Uniform(10, 100);
+    async script() {
+        let sim = this.simulation as SimpleTest;
+        await this.enterQueue(sim.qWait);
+        await this.enterQueue(sim.qService);
+        this.leaveQueue(sim.qWait);
+        await this.delay(this.service.sample());
+        this.leaveQueue(sim.qService);
     }
 }

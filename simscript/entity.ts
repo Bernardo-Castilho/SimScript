@@ -113,7 +113,7 @@ export class Entity {
      * the entity should be animated during the delay.
      */
     async delay(delay: number, path?: IMovePath) {
-        assert(path == null || path.queues.length > 1, 'the path should have at least two queues');
+        assert(path == null || path.queues.length > 1, 'delay path should have at least two queues');
         return new FecItem(this, {
             delay: delay,
             path: path
@@ -286,7 +286,11 @@ export class Entity {
      * its {@link script}.
      */
     dispose() {
-        // entity has finished execution
+        if (this._queues.size) {
+            let queues = [];
+            Array.from(this._queues.keys()).forEach(q => queues.push(q.name));
+            assert(false, `Entity finished script without leaving all queues: ${queues.join(', ')}.`);
+        }
     }
     /**
      * Returns a string representation of the {@link Entity}.

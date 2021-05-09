@@ -57,7 +57,9 @@ button.hide {
 }
 
 label {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: .5em;
     margin-left: 1em;
 }
 
