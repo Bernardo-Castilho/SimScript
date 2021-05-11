@@ -449,7 +449,7 @@ showSimulation(new Crosswalk(),
 );
 
 //----------------------------------------------------------
-// AnimationOptions
+// AnimationOptions (SVG)
 showSimulation(new AnimationOptions(),
     'Animation Options',
     `   <p>
@@ -548,7 +548,9 @@ showSimulation(new AnimationOptions(),
 
 //----------------------------------------------------------
 // AnimationOptions (A-Frame)
-showSimulation(new AnimationOptions(),
+showSimulation(new AnimationOptions({
+    frameDelay: 10
+}),
     'Animation Options A-Frame',
     `   <p>
             Change the animation parameters to see their effect:
@@ -574,7 +576,7 @@ showSimulation(new AnimationOptions(),
             <input id="af-frame-delay" type="range" min="0" max="250" step="10">
         </label>
         <div style="height:500px">
-            <a-scene embedded class="ss-anim" >
+            <a-scene embedded class="ss-anim">
                 <a-assets>
                     <a-mixin id="queue" geometry="radius:4" material="color:orange;opacity:0.3"></a-mixin>
                     <a-mixin id="transparent" opacity="0.6" transparent="true"></a-mixin>
@@ -582,8 +584,17 @@ showSimulation(new AnimationOptions(),
                 
                 <!-- camera -->
                 <a-entity id="rig" position="0 -150 150" rotation="40 0 0">
+                    <a-camera id="camera" far="50000" fov="80"></a-camera>
+                </a-entity>            
+
+                <!-- camera
+                <a-entity id="rig" position="0 -200 50" rotation="70 0 0">
                     <a-camera id="camera" far="50000" fov="60" look-controls></a-camera>
                 </a-entity>            
+                -->
+
+                <!-- add a light light -->
+                <a-entity light="type:directional; castShadow:true;" position="5 5 15"></a-entity>
 
                 <!-- background -->
                 <a-box position="0 0 -1" width="800" height="800" depth="1" color="#009FFF"></a-box>
@@ -608,7 +619,14 @@ showSimulation(new AnimationOptions(),
                 <a-sphere class="ss-queue q10" mixin="queue" position="-87 50 0"></a-sphere>
                 <a-sphere class="ss-queue q11" mixin="queue" position="-50 87 0"></a-sphere>
                 <a-sphere class="ss-queue q12" mixin="queue" position="0 100 0"></a-sphere>
-    
+
+                <!--
+                <a-entity scale="2 2 2">
+                    <a-box width="30" height=".1" depth=".1" color="yellow"></a-box>
+                    <a-cone position="-5 0 0" rotation="0 0 -90" radius-top="0" radius-bottom="5" height="20" color="blue"></a-cone>
+                    <a-cone position="+10 0 0"rotation="0 0 -90" radius-top="0" radius-bottom="5" height="10" color="red"></a-cone>
+                </a-entity>
+                -->
             </a-scene>
         </div>    
     `,
@@ -619,11 +637,11 @@ showSimulation(new AnimationOptions(),
                 if (e instanceof RoamEntity) {
                     return e.fast
                         ? '<a-box width="16" height="8" depth="8" color="yellow" mixin="transparent"></a-box>'
-                        : '<a-box width="8" height="16" depth="8" color="red" mixin="transparent"></a-box>';
+                        : '<a-box width="8" height="16" depth="10" color="red" mixin="transparent"></a-box>';
                 } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
-                        ? '<a-box width="16" height="8" depth="8" color="blue"></a-box>'
-                        : '<a-box width="8" height="16" depth="8" color="green"></a-box>';
+                        ? '<a-box width="16" height="8" depth="8" color="green" mixin="transparent"></a-box>'
+                        : '<a-box width="8" height="16" depth="10" color="blue" mixin="transparent"></a-box>';
             }
             },
             queues: [

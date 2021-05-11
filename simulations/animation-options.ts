@@ -21,8 +21,9 @@ export class AnimationOptions extends Simulation {
     q11 = new Queue('q11');
     q12 = new Queue('q12');
     splineTension = 0.5;
+    interArrival = new Uniform(10, 20);
     moveDelayLong = new Uniform(50, 200);
-    moveDelayShort = new Uniform(1, 50);
+    moveDelayShort = new Uniform(10, 50);
   
     onStarting() {
         super.onStarting();
@@ -33,11 +34,7 @@ export class AnimationOptions extends Simulation {
         }
 
         // create some entities to roam around
-        for (let i = 0; i < 60; i++) {
-            this.activate(new RoamEntity({
-                fast: i % 2 == 0
-            }));
-        }
+        this.generateEntities(RoamEntity, this.interArrival, 20);
     }
 }
 
@@ -57,6 +54,7 @@ export class RoamEntity extends Entity {
 
     constructor(options?: any) {
         super(null); // in case options includes 'fast'
+        this.fast = this.serial % 2 == 0;
         setOptions(this, options);
     }
 

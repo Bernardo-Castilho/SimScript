@@ -270,15 +270,15 @@ export class Animation {
  * Represents a queue in the animation.
  */
 class AnimatedQueue {
-    _anim: Animation;
-    _element: Element;
-    _q: Queue;
-    _max: number;
-    _angle = 0;
-    _sin = 0;
-    _cos = 1;
-    _ptStart: Point;
-    _ptEnd: Point;
+    private _anim: Animation;
+    private _element: Element;
+    private _q: Queue;
+    private _max: number;
+    private _angle = 0;
+    private _sin = 0;
+    private _cos = 1;
+    /** internal */ _ptStart: Point;
+    /** internal */ _ptEnd: Point;
 
     // ctor
     constructor(anim: Animation, options: IAnimatedQueue) {
@@ -377,13 +377,13 @@ class AnimatedQueue {
  * Represents an entity in the animation.
  */
 class AnimatedEntity {
-    _anim: Animation;
-    _entity: Entity;
-    _element: Element;
-    _width: number;
-    _height: number;
-    _depth: number;
-    _inUse: boolean;
+    private _anim: Animation;
+    private _entity: Entity;
+    /** internal */ _element: Element;
+    /** internal */ _width: number;
+    /** internal */ _height: number;
+    /** internal */ _depth: number;
+    /** internal */ _inUse: boolean;
 
     // ctor
     constructor(anim: Animation, entity: Entity) {
@@ -396,8 +396,10 @@ class AnimatedEntity {
             anim.isAFrame ? document.createElement('a-entity') :
             document.createElement('div');
         e.innerHTML = this._getEntityHtml();
-        (e as any).style.opacity = '0';
         e.classList.add('ss-entity');
+        if (!anim.isAFrame) {
+            (e as any).style.opacity = '0';
+        }
         this._element = e;
 
         // append animation element to host
@@ -408,13 +410,11 @@ class AnimatedEntity {
             this._width = this._height = this._depth = 0;
             requestAnimationFrame(() => {
                 const model = (e as any).object3D;
-                //const helper = new THREE.BoxHelper(model);
-                //helper.geometry.computeBoundingBox();
-                //console.log(helper.geometry.boundingBox);
                 const box = new THREE.Box3().setFromObject(model);
-                this._width = box.max.x - box.min.x;
-                this._height = box.max.y - box.min.y;
-                this._depth = box.max.z - box.min.z;
+                const sz = box.size();
+                this._width = sz.x;
+                this._height = sz.y;
+                this._depth = sz.z;
             });
         } else {
             const rc = anim.isSvg
@@ -443,11 +443,16 @@ class AnimatedEntity {
         // update the entity element
         if (anim.isAFrame) {
 
-            // set a-frame entity attributes
-            e.setAttribute('position', `${Math.round(pt.x)} ${Math.round(pt.y)} ${Math.round(pt.z)}`);
-            if (angle && anim.rotateEntities) {
-                e.setAttribute('rotation', `0 0 ${angle}`);
-            }
+            // set a-frame entity properties
+            const model = (e as any).object3D;
+            model.position.set(pt.x, pt.y, pt.z);
+            model.rotation.set(0, 0, angle && anim.rotateEntities ? angle / 180 * Math.PI : 0);
+
+            // set a-frame entity attributes (slower)
+            //e.setAttribute('position', `${Math.round(pt.x)} ${Math.round(pt.y)} ${Math.round(pt.z)}`);
+            //if (angle && anim.rotateEntities) {
+            //    e.setAttribute('rotation', `0 0 ${angle}`);
+            //}
 
         } else {
 
@@ -462,7 +467,9 @@ class AnimatedEntity {
 
             // and apply it
             s.transform = transform;
-            s.opacity = '';
+            if (!anim.isAFrame) {
+                s.opacity = '';
+            }
         }
 
         // remember we're in use
