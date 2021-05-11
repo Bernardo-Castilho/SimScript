@@ -15,7 +15,7 @@ import { SimpleTest } from './simulations/simpletest';
 import { AnimationOptions, EnterLeaveEntity, RoamEntity } from './simulations/animation-options';
 
 //----------------------------------------------------------
-// Simple
+// SimpleTest
 showSimulation(new SimpleTest({
     stateChanged: (sim) => {
         if (sim.state == SimulationState.Finished) {
@@ -33,7 +33,7 @@ showSimulation(new SimpleTest({
 );
 
 //----------------------------------------------------------
-// Random
+// RandomVarTest
 showSimulation(new RandomVarTest(),
     'RandomVarTest Simulation',
     `<p>
@@ -223,7 +223,7 @@ showSimulation(new MMC(),
 
 
 //----------------------------------------------------------
-// CrossWalk
+// Crosswalk
 showSimulation(new Crosswalk(),
     'Crosswalk Simulation',
     `<p>
@@ -292,7 +292,7 @@ showSimulation(new Crosswalk(),
 
 
 //----------------------------------------------------------
-// Animated CrossWalk (div)
+// Animated Crosswalk (div)
 showSimulation(new Crosswalk(),
     'Animated Crosswalk Simulation',
     `   <p>
@@ -371,7 +371,7 @@ showSimulation(new Crosswalk(),
 );
 
 //----------------------------------------------------------
-// Animated CrossWalk (SVG)
+// Animated Crosswalk (SVG)
 showSimulation(new Crosswalk(),
     'Animated Crosswalk Simulation (SVG)',
     `   <p>
@@ -449,7 +449,7 @@ showSimulation(new Crosswalk(),
 );
 
 //----------------------------------------------------------
-// Animation Options
+// AnimationOptions
 showSimulation(new AnimationOptions(),
     'Animation Options',
     `   <p>
@@ -546,6 +546,119 @@ showSimulation(new AnimationOptions(),
     }
 );
 
+//----------------------------------------------------------
+// AnimationOptions (A-Frame)
+showSimulation(new AnimationOptions(),
+    'Animation Options A-Frame',
+    `   <p>
+            Change the animation parameters to see their effect:
+        </p>
+        <label>
+            Queue Angle
+            <input id="af-q-angle" type="range" min="0" max="360" step="15">
+        </label>
+        <label>
+            Rotate Entities
+            <input id="af-rotate-ents" type="checkbox">
+        </label>
+        <label>
+            Spline Tension
+            <input id="af-tension" type="range" min="0" max="2" step=".1">
+        </label>
+        <label>
+            Max Time Step
+            <input id="af-max-step" type="range" min="0" max="1" step=".1">
+        </label>
+        <label>
+            Frame Delay
+            <input id="af-frame-delay" type="range" min="0" max="250" step="10">
+        </label>
+        <div style="height:500px">
+            <a-scene embedded class="ss-anim" >
+                <a-assets>
+                    <a-mixin id="queue" geometry="radius:4" material="color:orange;opacity:0.3"></a-mixin>
+                    <a-mixin id="transparent" opacity="0.6" transparent="true"></a-mixin>
+                </a-assets>
+                
+                <!-- camera -->
+                <a-entity id="rig" position="0 -150 150" rotation="40 0 0">
+                    <a-camera id="camera" far="50000" fov="60" look-controls></a-camera>
+                </a-entity>            
+
+                <!-- background -->
+                <a-box position="0 0 -1" width="800" height="800" depth="1" color="#009FFF"></a-box>
+                <a-sky color="lightblue"></a-sky>
+
+                <!-- one rotating queue -->
+                <a-sphere class="ss-queue rotate" mixin="queue" position="100 100 20"></a-sphere>
+                
+                <!-- one queue at the center -->
+                <a-sphere class="ss-queue center" mixin="queue" position="0 0 20"></a-sphere>
+    
+                <!-- twelve queues around it -->
+                <a-sphere class="ss-queue q1" mixin="queue" position="50 87 0"></a-sphere>
+                <a-sphere class="ss-queue q2" mixin="queue" position="87 50  0"></a-sphere>
+                <a-sphere class="ss-queue q3" mixin="queue" position="100 0 0"></a-sphere>
+                <a-sphere class="ss-queue q4" mixin="queue" position="87 -50 0"></a-sphere>
+                <a-sphere class="ss-queue q5" mixin="queue" position="50 -87 0"></a-sphere>
+                <a-sphere class="ss-queue q6" mixin="queue" position="0 -100 0"></a-sphere>
+                <a-sphere class="ss-queue q7" mixin="queue" position="-50 -87 0"></a-sphere>
+                <a-sphere class="ss-queue q8" mixin="queue" position="-87 -50 0"></a-sphere>
+                <a-sphere class="ss-queue q9" mixin="queue" position="-100 0 0"></a-sphere>
+                <a-sphere class="ss-queue q10" mixin="queue" position="-87 50 0"></a-sphere>
+                <a-sphere class="ss-queue q11" mixin="queue" position="-50 87 0"></a-sphere>
+                <a-sphere class="ss-queue q12" mixin="queue" position="0 100 0"></a-sphere>
+    
+            </a-scene>
+        </div>    
+    `,
+    (sim: AnimationOptions, animationHost: HTMLElement) => {
+        const anim = new Animation(sim, animationHost, {
+            rotateEntities: true,
+            getEntityHtml: (e: Entity) => {
+                if (e instanceof RoamEntity) {
+                    return e.fast
+                        ? '<a-box width="16" height="8" depth="8" color="yellow" mixin="transparent"></a-box>'
+                        : '<a-box width="8" height="16" depth="8" color="red" mixin="transparent"></a-box>';
+                } else { // EnterLeaveEntity
+                    return e.serial % 2 // long/short images
+                        ? '<a-box width="16" height="8" depth="8" color="blue"></a-box>'
+                        : '<a-box width="8" height="16" depth="8" color="green"></a-box>';
+            }
+            },
+            queues: [
+                { queue: sim.qRotate, element: 'a-scene .ss-queue.rotate', angle: sim.qAngle },
+                { queue: sim.qCenter, element: 'a-scene .ss-queue.center' },
+                { queue: sim.q1, element: 'a-scene .ss-queue.q1' },
+                { queue: sim.q2, element: 'a-scene .ss-queue.q2' },
+                { queue: sim.q3, element: 'a-scene .ss-queue.q3' },
+                { queue: sim.q4, element: 'a-scene .ss-queue.q4' },
+                { queue: sim.q5, element: 'a-scene .ss-queue.q5' },
+                { queue: sim.q6, element: 'a-scene .ss-queue.q6' },
+                { queue: sim.q7, element: 'a-scene .ss-queue.q7' },
+                { queue: sim.q8, element: 'a-scene .ss-queue.q8' },
+                { queue: sim.q9, element: 'a-scene .ss-queue.q9' },
+                { queue: sim.q10, element: 'a-scene .ss-queue.q10' },
+                { queue: sim.q11, element: 'a-scene .ss-queue.q11' },
+                { queue: sim.q12, element: 'a-scene .ss-queue.q12' },
+            ]
+        });
+
+        // parameters
+        bind('af-q-angle', sim.qAngle, v => {
+            sim.qAngle = v;
+            let q = anim.queues;
+            q[0].angle = v;
+            anim.queues = q;
+        }, ' degrees');
+        bind('af-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
+        bind('af-tension', sim.splineTension, v => sim.splineTension = v);
+        bind('af-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
+        bind('af-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
+    }
+);
+
+//----------------------------------------------------------
 // my little framework
 function showSimulation(sim: Simulation, title: string, intro: string, showStats?: Function) {
     const runText = '&#9654; Run';

@@ -11,7 +11,7 @@ export class SimpleTest extends Simulation {
     onStarting() {
         super.onStarting();
         this.activate(new SimpleEntity());
-        this.generateEntities(BetterEntity, new Uniform(5, 10), 10000);
+        this.generateEntities(BetterEntity, new Uniform(5, 10), 1000);
     }
 }
 
@@ -26,7 +26,6 @@ class SimpleEntity extends Entity {
         this.leaveQueue(sim.qWait);
         assert(time == sim.timeNow, 'no limit, no wait');
         console.log('left wait at', sim.timeNow);
-
         let noWait = sim.qService.pop == 0;
         time = sim.timeNow;
         await this.enterQueue(sim.qWait);
@@ -37,7 +36,6 @@ class SimpleEntity extends Entity {
         if (noWait) {
             assert(time == sim.timeNow, 'no customer, no wait');
         }
-
         time = sim.timeNow;
         await this.delay(10);
         this.leaveQueue(sim.qService);

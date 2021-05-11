@@ -59,8 +59,8 @@ button.hide {
 label {
     display: flex;
     align-items: center;
-    gap: .5em;
     margin-left: 1em;
+    gap: .5em;
 }
 
 /* crosswalk traffic light cycle parameters */

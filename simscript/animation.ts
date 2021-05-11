@@ -6,6 +6,9 @@ import { assert, setOptions, getElement } from './util';
 const _DEFAULT_ENTITY_ICON = '&#9899;'; // black circle
 const _DEFAULT_SPLINE_TENSION = 0.1;
 
+// included by a-frame
+declare var THREE: any;
+
 /**
  * Defines animation parameters for {@link Queue} objects.
  */
@@ -71,12 +74,12 @@ export class Animation {
     private _host: Element;
     private _width: number;
     private _height: number;
-    private _queues = new Map<Queue, AnimationQueue>();
+    private _queues = new Map<Queue, AnimatedQueue>();
     private _queueArray: IAnimatedQueue[];
     private _rotateEntities = false;
     private _toQueueEnd = true;
     private _getEntityHtml: Function;
-    /** @internal */ _entities = new Map<Entity, AnimationEntity>();
+    /** @internal */ _entities = new Map<Entity, AnimatedEntity>();
     /** @internal */ _lastUpdate: number;
     
     /**
@@ -100,7 +103,7 @@ export class Animation {
 
         // internal stuff
         this._lastUpdate = 0;
-        this._entities = new Map<Entity, AnimationEntity>();
+        this._entities = new Map<Entity, AnimatedEntity>();
 
         // options
         if (options) {
@@ -120,6 +123,13 @@ export class Animation {
      */
     get isSvg(): boolean {
         return this._host instanceof SVGElement;
+    }
+    /**
+     * Gets a value that indicates whether the animation's 
+     * host element is an A-Frame scene.
+     */
+     get isAFrame(): boolean {
+        return this._host.tagName == 'A-SCENE';
     }
     /**
      * Gets or sets a function that returns the HTML to be used
@@ -168,7 +178,7 @@ export class Animation {
     set queues(value: IAnimatedQueue[]) {
         this._queueArray = value;
         value.forEach(item => {
-            let aq = new AnimationQueue(this, item);
+            let aq = new AnimatedQueue(this, item);
             this._queues.set(aq._q, aq);
         });
     }
@@ -206,8 +216,8 @@ export class Animation {
             // see if this entity is in transit between two animated queues
             if (item.options.path && item.timeDue != null) {
 
-                // get AnimationEntity for this entity
-                const ae = this._getAnimationEntity(item.e);
+                // get AnimatedEntity for this entity
+                const ae = this._getAnimatedEntity(item.e);
 
                 // calculate path
                 const path = item.options.path;
@@ -245,11 +255,11 @@ export class Animation {
         });
     }
 
-    // gets/creates an AnimationEntity for an entity
-    /** @internal */ _getAnimationEntity(e: Entity): AnimationEntity {
+    // gets/creates an AnimatedEntity for a regular entity
+    /** @internal */ _getAnimatedEntity(e: Entity): AnimatedEntity {
         let ae = this._entities.get(e);
         if (!ae) {
-            ae = new AnimationEntity(this, e);
+            ae = new AnimatedEntity(this, e);
             this._entities.set(e, ae);
         }
         return ae;
@@ -259,7 +269,7 @@ export class Animation {
 /**
  * Represents a queue in the animation.
  */
-class AnimationQueue {
+class AnimatedQueue {
     _anim: Animation;
     _element: Element;
     _q: Queue;
@@ -292,14 +302,19 @@ class AnimationQueue {
                 const rc = (e as any).getBBox();
                 this._ptStart = new Point(
                     rc.x + rc.width / 2,
-                    rc.y + rc.height / 2
+                    rc.y + rc.height / 2,
+                    0
                 );
+            } else if (anim.isAFrame) {
+                const pt = (e as any).object3D.position;
+                this._ptStart = new Point(pt.x, pt.y, pt.z);
             } else {
                 const rcHost = anim.hostElement.getBoundingClientRect();
                 const rc = e.getBoundingClientRect();
                 this._ptStart = new Point(
                     rc.left - rcHost.left + rc.width / 2,
-                    rc.top - rcHost.top + rc.height / 2
+                    rc.top - rcHost.top + rc.height / 2,
+                    0
                 );
             }
         }
@@ -337,8 +352,8 @@ class AnimationQueue {
             // get entity
             const e = item.entity;
 
-            // get/create AnimationEntity for this entity
-            const ae = anim._getAnimationEntity(e);
+            // get/create AnimatedEntity for this entity
+            const ae = anim._getAnimatedEntity(e);
             const halfWid = ae._width * this._cos / 2;
             const halfHei = (anim.rotateEntities ? ae._width : ae._height) * this._sin / 2;
 
@@ -361,12 +376,13 @@ class AnimationQueue {
 /**
  * Represents an entity in the animation.
  */
-class AnimationEntity {
+class AnimatedEntity {
     _anim: Animation;
     _entity: Entity;
     _element: Element;
     _width: number;
     _height: number;
+    _depth: number;
     _inUse: boolean;
 
     // ctor
@@ -375,10 +391,10 @@ class AnimationEntity {
         this._entity = entity;
         this._inUse = false;
 
-        // create animation element
-        const e = anim.isSvg
-            ? document.createElementNS('http://www.w3.org/2000/svg', 'g')
-            : document.createElement('div');
+        // create animation element 
+        const e = anim.isSvg ? document.createElementNS('http://www.w3.org/2000/svg', 'g') :
+            anim.isAFrame ? document.createElement('a-entity') :
+            document.createElement('div');
         e.innerHTML = this._getEntityHtml();
         (e as any).style.opacity = '0';
         e.classList.add('ss-entity');
@@ -388,11 +404,26 @@ class AnimationEntity {
         anim.hostElement.appendChild(e);
 
         // measure element
-        const rc = anim.isSvg
-            ? (e as any).getBBox()
-            : e.getBoundingClientRect();
-        this._width = rc.width;
-        this._height = rc.height;
+        if (anim.isAFrame) {
+            this._width = this._height = this._depth = 0;
+            requestAnimationFrame(() => {
+                const model = (e as any).object3D;
+                //const helper = new THREE.BoxHelper(model);
+                //helper.geometry.computeBoundingBox();
+                //console.log(helper.geometry.boundingBox);
+                const box = new THREE.Box3().setFromObject(model);
+                this._width = box.max.x - box.min.x;
+                this._height = box.max.y - box.min.y;
+                this._depth = box.max.z - box.min.z;
+            });
+        } else {
+            const rc = anim.isSvg
+                ? (e as any).getBBox()
+                : e.getBoundingClientRect();
+            this._width = rc.width;
+            this._height = rc.height;
+            this._depth = 0;
+        }
     }
 
     // gets the inner HTML for this entity's element
@@ -405,21 +436,34 @@ class AnimationEntity {
 
     // sets the position of this animated entity.
     _drawAt(pt: Point, angle?: number) {
+        const anim = this._anim;
         const e = this._element;
         const s = (e as any).style;
 
-        // adjust reference point (middle of the element)
-        const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2);
-
-        // calculate the transform
-        let transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
-        if (angle && this._anim.rotateEntities) {
-            transform += ` rotate(${angle}deg)`;
-        }
-
         // update the entity element
-        s.transform = transform;
-        s.opacity = '';
+        if (anim.isAFrame) {
+
+            // set a-frame entity attributes
+            e.setAttribute('position', `${Math.round(pt.x)} ${Math.round(pt.y)} ${Math.round(pt.z)}`);
+            if (angle && anim.rotateEntities) {
+                e.setAttribute('rotation', `0 0 ${angle}`);
+            }
+
+        } else {
+
+            // adjust reference point (middle of the element)
+            const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2, pt.z);
+
+            // calculate the transform
+            let transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
+            if (angle && anim.rotateEntities) {
+                transform += ` rotate(${angle}deg)`;
+            }
+
+            // and apply it
+            s.transform = transform;
+            s.opacity = '';
+        }
 
         // remember we're in use
         this._inUse = true;

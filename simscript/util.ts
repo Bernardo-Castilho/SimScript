@@ -93,7 +93,7 @@ export function setOptions(obj: any, options: any) {
         for (let key in options) {
             assert(key in obj, `Property ${key} is not defined`);
             if (obj[key] instanceof Event) { // add event handler
-                obj[key].addEventListener(options[key]);
+                (obj[key] as Event).addEventListener(options[key]);
             } else {
                 obj[key] = options[key]; // property assignment
             }
