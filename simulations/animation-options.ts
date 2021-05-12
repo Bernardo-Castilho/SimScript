@@ -21,7 +21,7 @@ export class AnimationOptions extends Simulation {
     q11 = new Queue('q11');
     q12 = new Queue('q12');
     splineTension = 0.5;
-    interArrival = new Uniform(10, 20);
+    interArrival = new Uniform(5, 10);
     moveDelayLong = new Uniform(50, 200);
     moveDelayShort = new Uniform(10, 50);
   

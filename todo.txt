@@ -2,7 +2,7 @@
 - 3D animations (a-frame)
     * animTest
     - crosswalk
-    - blitzes
+    - blitzes/release
 - more tests
 - blitzes: 
     * animation parameters

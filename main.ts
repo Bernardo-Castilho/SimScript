@@ -577,6 +577,8 @@ showSimulation(new AnimationOptions({
         </label>
         <div style="height:500px">
             <a-scene embedded class="ss-anim">
+
+                <!-- mix-ins -->
                 <a-assets>
                     <a-mixin id="queue" geometry="radius:4" material="color:orange;opacity:0.3"></a-mixin>
                     <a-mixin id="transparent" opacity="0.6" transparent="true"></a-mixin>
@@ -592,8 +594,8 @@ showSimulation(new AnimationOptions({
                     <a-camera id="camera" far="50000" fov="60" look-controls></a-camera>
                 </a-entity>            
                 -->
-
-                <!-- add a light light -->
+                
+                <!-- add a light -->
                 <a-entity light="type:directional; castShadow:true;" position="5 5 15"></a-entity>
 
                 <!-- background -->
@@ -628,7 +630,7 @@ showSimulation(new AnimationOptions({
                 </a-entity>
                 -->
             </a-scene>
-        </div>    
+        </div>
     `,
     (sim: AnimationOptions, animationHost: HTMLElement) => {
         const anim = new Animation(sim, animationHost, {
@@ -642,7 +644,7 @@ showSimulation(new AnimationOptions({
                     return e.serial % 2 // long/short images
                         ? '<a-box width="16" height="8" depth="8" color="green" mixin="transparent"></a-box>'
                         : '<a-box width="8" height="16" depth="10" color="blue" mixin="transparent"></a-box>';
-            }
+                }
             },
             queues: [
                 { queue: sim.qRotate, element: 'a-scene .ss-queue.rotate', angle: sim.qAngle },

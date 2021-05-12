@@ -20,6 +20,9 @@ class SimpleEntity extends Entity {
         let sim = this.simulation as SimpleTest;
 
         console.log('started at', sim.timeNow);
+        await this.doSomeOtherStuff();
+        console.log('done some other stuff at', sim.timeNow);
+
         let time = sim.timeNow;
         await this.enterQueue(sim.qWait);
         await this.delay(0);
@@ -43,6 +46,14 @@ class SimpleEntity extends Entity {
 
         console.log('done at', sim.timeNow);
     }
+    async doSomeOtherStuff() {
+        await this.delay(10);
+        await this.delay(10);
+        await this.delay(10);
+        await this.delay(10);
+        console.log('done 4 delays in 40 tus');
+    }
+
 }
 
 class BetterEntity extends Entity {

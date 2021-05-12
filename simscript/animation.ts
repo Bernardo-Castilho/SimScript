@@ -411,10 +411,11 @@ class AnimatedEntity {
             requestAnimationFrame(() => {
                 const model = (e as any).object3D;
                 const box = new THREE.Box3().setFromObject(model);
-                const sz = box.size();
-                this._width = sz.x;
-                this._height = sz.y;
-                this._depth = sz.z;
+                ////const size = new THREE.Vector3( );
+                ////const sz = box.getSize(size);
+                this._width = box.max.x - box.min.x;
+                this._height = box.max.y - box.min.y;
+                this._depth = box.max.z - box.min.z;
             });
         } else {
             const rc = anim.isSvg
