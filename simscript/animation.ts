@@ -272,7 +272,7 @@ export class Animation {
 class AnimatedQueue {
     private _anim: Animation;
     private _element: Element;
-    private _q: Queue;
+    /** internal */ _q: Queue;
     private _max: number;
     private _angle = 0;
     private _sin = 0;

@@ -40,6 +40,9 @@ through the simulation.
 Animations use HTML or SVG elements to render entities waiting in queues 
 or in transit between queues.
 
+Animations may also use [A-Frame](https://aframe.io) to render entities
+in 3D/VR.
+
 Animations are useful for presentations and also for debugging simulations.
 
 ## Styles
@@ -105,5 +108,10 @@ The links below show some samples of **SimScript** simulations:
 - [Animated Crosswalk](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)\
     Uses the **Animation** class to show an animated version of the **Crosswalk** simulation.
 
-- [Animation Options](https://stackblitz.com/edit/typescript-3zcuw1?file=animation-options.ts)\
-    Shows the effect of some **Animation** and **Simulation** properties.
+- [Animation Options (SVG)](https://stackblitz.com/edit/typescript-3zcuw1?file=animation-options.ts)\
+    Uses an SVG-based 2D animation to show the effect of some
+    **Animation** and **Simulation** properties.
+
+- [Animation Options (A-Frame)](https://stackblitz.com/edit/typescript-pmkehn?file=animation-options.ts)\
+    Uses an [A-Frame](https://aframe.io)-based 3D animation to show the effect of some
+    **Animation** and **Simulation** properties.    
