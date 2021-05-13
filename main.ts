@@ -12,17 +12,18 @@ import { BarberShop } from './simulations/barbershop';
 import { MMC } from './simulations/mmc';
 import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { SimpleTest } from './simulations/simpletest';
-import { AnimationOptions, EnterLeaveEntity, RoamEntity } from './simulations/animation-options';
+import { AnimationOptions, RoamEntity } from './simulations/animation-options';
 
 //----------------------------------------------------------
 // SimpleTest
-showSimulation(new SimpleTest({
-    stateChanged: (sim) => {
-        if (sim.state == SimulationState.Finished) {
-            console.log('** SimpleTest done in', sim.timeElapsed, 'ms');
+showSimulation(
+    new SimpleTest({
+        stateChanged: (sim) => {
+            if (sim.state == SimulationState.Finished) {
+                console.log('** SimpleTest done in', sim.timeElapsed, 'ms');
+            }
         }
-    }
-}),
+    }),
     'SimpleTest Simulation',
     `<p>
         This is a simple test.
@@ -34,7 +35,8 @@ showSimulation(new SimpleTest({
 
 //----------------------------------------------------------
 // RandomVarTest
-showSimulation(new RandomVarTest(),
+showSimulation(
+    new RandomVarTest(),
     'RandomVarTest Simulation',
     `<p>
         This demo shows how to create and use
@@ -93,7 +95,8 @@ showSimulation(new RandomVarTest(),
 
 //----------------------------------------------------------
 // BarberShop
-showSimulation(new BarberShop(),
+showSimulation(
+    new BarberShop(),
     'BarberShop Simulation',
     `<p>
         This is a
@@ -125,7 +128,8 @@ showSimulation(new BarberShop(),
 
 //----------------------------------------------------------
 // MMC
-showSimulation(new MMC(),
+showSimulation(
+    new MMC(),
     'M/M/C Simulation',
     `<p>
         This is a classical
@@ -224,7 +228,8 @@ showSimulation(new MMC(),
 
 //----------------------------------------------------------
 // Crosswalk
-showSimulation(new Crosswalk(),
+showSimulation(
+    new Crosswalk(),
     'Crosswalk Simulation',
     `<p>
         Simulates a crosswalk with a traffic light.
@@ -293,7 +298,8 @@ showSimulation(new Crosswalk(),
 
 //----------------------------------------------------------
 // Animated Crosswalk (div)
-showSimulation(new Crosswalk(),
+showSimulation(
+    new Crosswalk(),
     'Animated Crosswalk Simulation',
     `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
@@ -372,7 +378,8 @@ showSimulation(new Crosswalk(),
 
 //----------------------------------------------------------
 // Animated Crosswalk (SVG)
-showSimulation(new Crosswalk(),
+showSimulation(
+    new Crosswalk(),
     'Animated Crosswalk Simulation (SVG)',
     `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
@@ -450,7 +457,8 @@ showSimulation(new Crosswalk(),
 
 //----------------------------------------------------------
 // AnimationOptions (SVG)
-showSimulation(new AnimationOptions(),
+showSimulation(
+    new AnimationOptions(),
     'Animation Options',
     `   <p>
             Change the animation parameters to see their effect:
@@ -548,9 +556,10 @@ showSimulation(new AnimationOptions(),
 
 //----------------------------------------------------------
 // AnimationOptions (A-Frame)
-showSimulation(new AnimationOptions({
-    frameDelay: 10
-}),
+showSimulation(
+    new AnimationOptions({
+        frameDelay: 10
+    }),
     'Animation Options A-Frame',
     `   <p>
             Change the animation parameters to see their effect:
@@ -677,6 +686,141 @@ showSimulation(new AnimationOptions({
         bind('af-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
     }
 );
+
+
+//----------------------------------------------------------
+// AnimationOptions (X3DOM)
+showSimulation(new AnimationOptions({
+        frameDelay: 10
+    }),
+    'Animation Options X3DOM',
+    `   <p>
+            Change the animation parameters to see their effect:
+        </p>
+        <label>
+            Queue Angle
+            <input id="x3-q-angle" type="range" min="0" max="360" step="15">
+        </label>
+        <label>
+            Rotate Entities
+            <input id="x3-rotate-ents" type="checkbox">
+        </label>
+        <label>
+            Spline Tension
+            <input id="x3-tension" type="range" min="0" max="2" step=".1">
+        </label>
+        <label>
+            Max Time Step
+            <input id="x3-max-step" type="range" min="0" max="1" step=".1">
+        </label>
+        <label>
+            Frame Delay
+            <input id="x3-frame-delay" type="range" min="0" max="250" step="10">
+        </label>
+
+        <x3d class="ss-anim"> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position="0 -200 180"
+                    orientation="1 0 0 .75"
+                    centerOfRotation="0 0 -20">
+                </viewpoint>
+
+                <!-- background -->
+                <transform scale='150 150 0.1'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='.7 .7 1'/>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- one rotating queue -->
+                ${createX3Queue('rotate', 100, 100, 20)}
+                
+                <!-- one queue at the center -->
+                ${createX3Queue('center', 0, 0, 20)}
+    
+                <!-- twelve queues around it -->
+                ${createX3Queue('q1', 50, 87)}
+                ${createX3Queue('q2', 87, 50)}
+                ${createX3Queue('q3', 100, 0)}
+                ${createX3Queue('q4', 87, -50)}
+                ${createX3Queue('q5', 50, -87)}
+
+                ${createX3Queue('q6', 0, -100)}
+                ${createX3Queue('q7', -50, -87)}
+                ${createX3Queue('q8', -87, -50)}
+                ${createX3Queue('q9', -100, 0)}
+                ${createX3Queue('q10', -87, 50)}
+                ${createX3Queue('q11', -50, 87)}
+                ${createX3Queue('q12', 0, 100)}
+            </scene> 
+        </x3d>
+    `,
+    (sim: AnimationOptions, animationHost: HTMLElement) => {
+        const anim = new Animation(sim, animationHost, {
+            rotateEntities: true,
+            /*
+            getEntityHtml: (e: Entity) => {
+                if (e instanceof RoamEntity) {
+                    return e.fast
+                        ? '<a-box width="16" height="8" depth="8" color="yellow" mixin="transparent"></a-box>'
+                        : '<a-box width="8" height="16" depth="10" color="red" mixin="transparent"></a-box>';
+                } else { // EnterLeaveEntity
+                    return e.serial % 2 // long/short images
+                        ? '<a-box width="16" height="8" depth="8" color="green" mixin="transparent"></a-box>'
+                        : '<a-box width="8" height="16" depth="10" color="blue" mixin="transparent"></a-box>';
+                }
+            },
+            queues: [
+                { queue: sim.qRotate, element: 'a-scene .ss-queue.rotate', angle: sim.qAngle },
+                { queue: sim.qCenter, element: 'a-scene .ss-queue.center' },
+                { queue: sim.q1, element: 'a-scene .ss-queue.q1' },
+                { queue: sim.q2, element: 'a-scene .ss-queue.q2' },
+                { queue: sim.q3, element: 'a-scene .ss-queue.q3' },
+                { queue: sim.q4, element: 'a-scene .ss-queue.q4' },
+                { queue: sim.q5, element: 'a-scene .ss-queue.q5' },
+                { queue: sim.q6, element: 'a-scene .ss-queue.q6' },
+                { queue: sim.q7, element: 'a-scene .ss-queue.q7' },
+                { queue: sim.q8, element: 'a-scene .ss-queue.q8' },
+                { queue: sim.q9, element: 'a-scene .ss-queue.q9' },
+                { queue: sim.q10, element: 'a-scene .ss-queue.q10' },
+                { queue: sim.q11, element: 'a-scene .ss-queue.q11' },
+                { queue: sim.q12, element: 'a-scene .ss-queue.q12' },
+            ]
+            */
+        });
+
+        // parameters
+        bind('x3-q-angle', sim.qAngle, v => {
+            sim.qAngle = v;
+            let q = anim.queues;
+            q[0].angle = v;
+            anim.queues = q;
+        }, ' degrees');
+        bind('x3-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
+        bind('x3-tension', sim.splineTension, v => sim.splineTension = v);
+        bind('x3-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
+        bind('x3-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
+    }
+);
+
+function createX3Queue(name: string, x: number, y: number, z = 0): string {
+    return `
+        <transform class="ss-queue ${name}" translation='${x} ${y} ${z}' >
+            <shape>
+                <appearance>
+                    <material transparency='0.5' diffuseColor='1 1 0'/>
+                </appearance>
+                <sphere radius='4'/>
+            </shape>
+        </transform>`;
+}
+
 
 //----------------------------------------------------------
 // my little framework

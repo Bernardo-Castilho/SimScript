@@ -1,6 +1,7 @@
 # SimScript
 
-A Discrete Event Simulation Library in TypeScript.
+A Discrete Event Simulation Library in TypeScript
+with support for 2D and 3D animations.
 
 For details, see the 
 [API Documentation](https://bernardo-castilho.github.io/simscript/docs/).

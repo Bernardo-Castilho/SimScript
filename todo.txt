@@ -1,8 +1,8 @@
 # Todo
 - 3D animations (a-frame)
-    * animTest
+    * animTest/blitz
     - crosswalk
-    - blitzes/release
+    - more docs
 - more tests
 - blitzes: 
     * animation parameters
