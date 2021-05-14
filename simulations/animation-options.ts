@@ -23,7 +23,7 @@ export class AnimationOptions extends Simulation {
     splineTension = 0.5;
     interArrival = new Uniform(5, 10);
     moveDelayLong = new Uniform(50, 200);
-    moveDelayShort = new Uniform(10, 50);
+    moveDelayShort = new Uniform(30, 60);
   
     onStarting() {
         super.onStarting();

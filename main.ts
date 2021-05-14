@@ -40,7 +40,7 @@ showSimulation(
     'RandomVarTest Simulation',
     `<p>
         This demo shows how to create and use
-        <a href="https://en.wikipedia.org/wiki/Random_variable">random variable</a>
+        <a href='https://en.wikipedia.org/wiki/Random_variable'>random variable</a>
         objects.
     </p>
     <p>
@@ -56,7 +56,7 @@ showSimulation(
         function getRandomVarOptions() {
             let options = '';
             sim.randomVars.forEach((rnd, index) => {
-                options += `<option ${index == sim.randomVarIndex ? "selected" : ""}>
+                options += `<option ${index == sim.randomVarIndex ? 'selected' : ''}>
                     ${rnd.name}
                 </option>`
             });
@@ -65,15 +65,15 @@ showSimulation(
         log.innerHTML = `
         <label>
             Type:
-            <select id="rand-type">${getRandomVarOptions()}</select>
+            <select id='rand-type'>${getRandomVarOptions()}</select>
         </label>
         <label>
             Sample size:
-            <input id="rand-size" type="range" data="size" min="10" max="100000">
+            <input id='rand-size' type='range' data='size' min='10' max='100000'>
         </label>
         <label>
             Seeded:
-            <input id="rand-seeded" type="checkbox">
+            <input id='rand-seeded' type='checkbox'>
         </label>
         <ul>
             <li>Count: <b>${format(sim.tally.cnt, 0)}</b></li>
@@ -101,7 +101,7 @@ showSimulation(
     `<p>
         This is a
         <a
-            href="https://try-mts.com/gpss-introduction-and-barber-shop-simulation/"
+            href='https://try-mts.com/gpss-introduction-and-barber-shop-simulation/'
         >classic GPSS simulation example</a>:
         customers arrive at a barbershop,
         wait until the barber is available, get serviced, and leave.
@@ -133,7 +133,7 @@ showSimulation(
     'M/M/C Simulation',
     `<p>
         This is a classical
-        <a href="https://en.wikipedia.org/wiki/M/M/c_queue">M/M/C queueing system</a>.
+        <a href='https://en.wikipedia.org/wiki/M/M/c_queue'>M/M/C queueing system</a>.
         Entities arrive, are served by one of C servers, and leave.
     </p>
     <p>
@@ -157,15 +157,15 @@ showSimulation(
         log.innerHTML = `
             <label>
                 Number of Servers:
-                <input id="mmc-capy" type="range" min="2" max="10">
+                <input id='mmc-capy' type='range' min='2' max='10'>
             </label>
             <label>
                 Mean inter-arrival time:
-                <input id="mmc-inter-arr" type="range" min="10" max="200">
+                <input id='mmc-inter-arr' type='range' min='10' max='200'>
             </label>
             <label>
                 Mean service time:
-                <input id="mmc-service" type="range" min="10" max="200">
+                <input id='mmc-service' type='range' min='10' max='200'>
             </label>
             <ul>
                 <li>Simulated time: <b>${format(sim.timeNow / 60, 0)}</b> hours</li>
@@ -195,7 +195,7 @@ showSimulation(
             </ul>`;
         
         if (rho > 1) {
-            log.innerHTML += `<p class="error">
+            log.innerHTML += `<p class='error'>
                 ** The server utilization exceeds 100%; the system will not reach a steady-state **
             </p>`;
         }
@@ -248,16 +248,16 @@ showSimulation(
                 Pedestrian light cycle times (seconds):
             </p>
             <label>
-                <span class="light red"></span>Red:
-                <input id="xwalk-red" type="range" min="0" max="120" >
+                <span class='light red'></span>Red:
+                <input id='xwalk-red' type='range' min='0' max='120' >
             </label>
             <label>
-                <span class="light yellow"></span>Yellow:
-                <input id="xwalk-yellow" type="range" min="0" max="120" >
+                <span class='light yellow'></span>Yellow:
+                <input id='xwalk-yellow' type='range' min='0' max='120' >
             </label>
             <label>
-                <span class="light green"></span>Green:
-                <input id="xwalk-green" type="range" min="0" max="120" >
+                <span class='light green'></span>Green:
+                <input id='xwalk-green' type='range' min='0' max='120' >
             </label>
             <ul>
                 <li>Simulated time: <b>${format(sim.timeNow / 60 / 60)}</b> hours</li>
@@ -319,27 +319,27 @@ showSimulation(
             Keeping them decoupled from the simulations keeps <b>SimScript</b>
             simple and flexible.
         </p>
-        <div class="ss-anim">
-            <div class="time-now">
+        <div class='ss-anim'>
+            <div class='time-now'>
                 Time: <span>0.00</span> hours
             </div>
-            <div class="light">
-                <div class="red"></div>
-                <div class="yellow"></div>
-                <div class="green"></div>
+            <div class='light'>
+                <div class='red'></div>
+                <div class='yellow'></div>
+                <div class='green'></div>
             </div>
 
-            <div class="street"></div>
-            <div class="crosswalk"></div>
+            <div class='street'></div>
+            <div class='crosswalk'></div>
 
-            <div class="ss-queue car-arr"></div>
-            <div class="ss-queue car-xing"></div>
-            <div class="ss-queue car-xed"></div>
+            <div class='ss-queue car-arr'></div>
+            <div class='ss-queue car-xing'></div>
+            <div class='ss-queue car-xed'></div>
 
-            <div class="ss-queue ped-arr"></div>
-            <div class="ss-queue ped-xing"></div>
-            <div class="ss-queue ped-xed"></div>
-            <div class="ss-queue ped-leave"></div>
+            <div class='ss-queue ped-arr'></div>
+            <div class='ss-queue ped-xing'></div>
+            <div class='ss-queue ped-xed'></div>
+            <div class='ss-queue ped-leave'></div>
         </div>
     `,
     (sim: Crosswalk, animationHost: HTMLElement) => {
@@ -348,8 +348,8 @@ showSimulation(
 
                 // use explicit image sizes to measuring errors while loading images
                 return e instanceof Pedestrian
-                    ? '<img class="ped" src="resources/blueped.png" width="15" height="19">'
-                    : '<img class="car" src="resources/redcar.png" width="55" height="19">';
+                    ? `<img class='ped' src='resources/blueped.png' width='15' height='19'>`
+                    : `<img class='car' src='resources/redcar.png' width='55' height='19'>`;
                 
             },
             queues: [
@@ -385,28 +385,28 @@ showSimulation(
             This sample uses the same Crosswalk <b>Simulation</b> class
             as shown earlier, this time using an SVG-based animation.
         </p>
-        <div class="ss-time-now">
+        <div class='ss-time-now'>
             Time: <b><span>0.00</span></b> hours
         </div>
-        <svg class="ss-anim" viewBox="0 0 1000 500" style="width: 100%;height:300px">
-            <g class="light" >
-                <rect class="light" x="47.5%" y="0%" width="5%" height="25%" rx="2%"></rect>
-                <circle class="red" cx="50%" cy="5%" r="2%"></circle>
-                <circle class="yellow" cx="50%" cy="12.5%" r="2%"></circle>
-                <circle class="green" cx="50%" cy="20%" r="2%"></circle>
+        <svg class='ss-anim' viewBox='0 0 1000 500'>
+            <g class='light' >
+                <rect class='light' x='47.5%' y='0%' width='5%' height='25%' rx='2%'></rect>
+                <circle class='red' cx='50%' cy='5%' r='2%'></circle>
+                <circle class='yellow' cx='50%' cy='12.5%' r='2%'></circle>
+                <circle class='green' cx='50%' cy='20%' r='2%'></circle>
             </g>
 
-            <rect class="street" x="10%" y="50%" width="80%" height="20%"></rect>
-            <rect class="crosswalk" x="45%" y="50%" width="10%" height="20%"></rect>
+            <rect class='street' x='10%' y='50%' width='80%' height='20%'></rect>
+            <rect class='crosswalk' x='45%' y='50%' width='10%' height='20%'></rect>
 
-            <circle class="ss-queue car-arr" cx="10%" cy="60%" r="10"></circle>
-            <circle class="ss-queue car-xing" cx="40%" cy="60%" r="10"></circle>
-            <circle class="ss-queue car-xed" cx="90%" cy="60%" r="10"></circle>
+            <circle class='ss-queue car-arr' cx='10%' cy='60%' r='10'></circle>
+            <circle class='ss-queue car-xing' cx='40%' cy='60%' r='10'></circle>
+            <circle class='ss-queue car-xed' cx='90%' cy='60%' r='10'></circle>
 
-            <circle class="ss-queue ped-arr" cx="10%" cy="85%" r="10"></circle>
-            <circle class="ss-queue ped-xing" cx="50%" cy="75%" r="10"></circle>
-            <circle class="ss-queue ped-xed" cx="50%" cy="45%" r="10"></circle>
-            <circle class="ss-queue ped-leave" cx="90%" cy="35%" r="10"></circle>
+            <circle class='ss-queue ped-arr' cx='10%' cy='85%' r='10'></circle>
+            <circle class='ss-queue ped-xing' cx='50%' cy='75%' r='10'></circle>
+            <circle class='ss-queue ped-xed' cx='50%' cy='45%' r='10'></circle>
+            <circle class='ss-queue ped-leave' cx='90%' cy='35%' r='10'></circle>
         </svg>
     `,
     (sim: Crosswalk, animationHost: HTMLElement) => {
@@ -414,20 +414,20 @@ showSimulation(
             getEntityHtml: e => {
                 if (e instanceof Pedestrian) {
                     return `
-                        <g class="ped" fill="black" stroke="black" opacity="0.8" transform="scale(1,0.8)">
-                            <circle cx="1%" cy="1%" r="0.5%" fill="orange"></circle>
-                            <rect x=".4%" y="2%" width="1.3%" height="4%" fill="green" rx="0.7%"></rect>
-                            <rect x=".66%" y="4%" width=".8%" height="3%" fill="blue"></rect>
-                            <rect x=".4%" y="7%" width="1.3%" height=".75%" rx="0.5%"></rect>
+                        <g class='ped' fill='black' stroke='black' opacity='0.8' transform='scale(1,0.8)'>
+                            <circle cx='1%' cy='1%' r='0.5%' fill='orange'></circle>
+                            <rect x='.4%' y='2%' width='1.3%' height='4%' fill='green' rx='0.7%'></rect>
+                            <rect x='.66%' y='4%' width='.8%' height='3%' fill='blue'></rect>
+                            <rect x='.4%' y='7%' width='1.3%' height='.75%' rx='0.5%'></rect>
                         </g>`;
                 } else {
                     return `
-                        <g class="car" fill="black" stroke="black">
-                            <rect x="1%" y="0" width="5%" height="4%" rx="1%"></rect>
-                            <rect x="0" y="1.5%" width="9%" height="3%" fill="red" rx="0.5%"></rect>
-                            <circle cx="1.5%" cy="4%" r=".9%" opacity="0.8"></circle>
-                            <circle cx="7.5%" cy="4%" r=".9%" opacity="0.8"></circle>
-                            <rect x="0" y="0" width="10%" height="1%" opacity="0"></rect>
+                        <g class='car' fill='black' stroke='black'>
+                            <rect x='1%' y='0' width='5%' height='4%' rx='1%'></rect>
+                            <rect x='0' y='1.5%' width='9%' height='3%' fill='red' rx='0.5%'></rect>
+                            <circle cx='1.5%' cy='4%' r='.9%' opacity='0.8'></circle>
+                            <circle cx='7.5%' cy='4%' r='.9%' opacity='0.8'></circle>
+                            <rect x='0' y='0' width='10%' height='1%' opacity='0'></rect>
                         </g>`;
                 }
             },
@@ -459,53 +459,53 @@ showSimulation(
 // AnimationOptions (SVG)
 showSimulation(
     new AnimationOptions(),
-    'Animation Options',
+    'Animation Options (SVG)',
     `   <p>
             Change the animation parameters to see their effect:
         </p>
         <label>
             Queue Angle
-            <input id="q-angle" type="range" min="0" max="360" step="15">
+            <input id='q-angle' type='range' min='0' max='360' step='15'>
         </label>
         <label>
             Rotate Entities
-            <input id="rotate-ents" type="checkbox">
+            <input id='rotate-ents' type='checkbox'>
         </label>
         <label>
             Spline Tension
-            <input id="tension" type="range" min="0" max="2" step=".1">
+            <input id='tension' type='range' min='0' max='2' step='.1'>
         </label>
         <label>
             Max Time Step
-            <input id="max-step" type="range" min="0" max="1" step=".1">
+            <input id='max-step' type='range' min='0' max='1' step='.1'>
         </label>
         <label>
             Frame Delay
-            <input id="frame-delay" type="range" min="0" max="250" step="10">
+            <input id='frame-delay' type='range' min='0' max='250' step='10'>
         </label>
-        <svg class="ss-anim" viewBox="0 0 1000 500" style="width: 100%;height:300px">
+        <svg class='ss-anim' viewBox='0 0 1000 500'>
 
             <!-- one rotating queue -->
-            <rect class="ss-queue rotate" x="98%" y="23%" width="4%" height="4%" />
-            <line x1="100%" y1="15%" x2="100%" y2="35%" stroke="black" />
-            <line x1="90%" y1="25%" x2="110%" y2="25%" stroke="black" />
+            <rect class='ss-queue rotate' x='98%' y='23%' width='4%' height='4%' />
+            <line x1='100%' y1='15%' x2='100%' y2='35%' stroke='black' />
+            <line x1='90%' y1='25%' x2='110%' y2='25%' stroke='black' />
 
             <!-- one queue at the center -->
-            <rect class="ss-queue center" x="38%" y="48%" width="4%" height="4%" />
+            <rect class='ss-queue center' x='38%' y='48%' width='4%' height='4%' />
 
             <!-- twelve queues around it -->
-            <rect class="ss-queue q1" x="58%" y="83%" width="4%" height="4%" />
-            <rect class="ss-queue q2" x="73%" y="68%" width="4%" height="4%" />
-            <rect class="ss-queue q3" x="78%" y="48%" width="4%" height="4%" />
-            <rect class="ss-queue q4" x="73%" y="28%" width="4%" height="4%" />
-            <rect class="ss-queue q5" x="58%" y="13%" width="4%" height="4%" />
-            <rect class="ss-queue q6" x="38%" y="8%" width="4%" height="4%" />
-            <rect class="ss-queue q7" x="18%" y="13%" width="4%" height="4%" />
-            <rect class="ss-queue q8" x="3%" y="28%" width="4%" height="4%" />
-            <rect class="ss-queue q9" x="-2%" y="48%" width="4%" height="4%" />
-            <rect class="ss-queue q10" x="3%" y="68%" width="4%" height="4% "/>
-            <rect class="ss-queue q11" x="18%" y="83%" width="4%" height="4% "/>
-            <rect class="ss-queue q12" x="38%" y="88%" width="4%" height="4% "/>
+            <rect class='ss-queue q1' x='58%' y='83%' width='4%' height='4%' />
+            <rect class='ss-queue q2' x='73%' y='68%' width='4%' height='4%' />
+            <rect class='ss-queue q3' x='78%' y='48%' width='4%' height='4%' />
+            <rect class='ss-queue q4' x='73%' y='28%' width='4%' height='4%' />
+            <rect class='ss-queue q5' x='58%' y='13%' width='4%' height='4%' />
+            <rect class='ss-queue q6' x='38%' y='8%' width='4%' height='4%' />
+            <rect class='ss-queue q7' x='18%' y='13%' width='4%' height='4%' />
+            <rect class='ss-queue q8' x='3%' y='28%' width='4%' height='4%' />
+            <rect class='ss-queue q9' x='-2%' y='48%' width='4%' height='4%' />
+            <rect class='ss-queue q10' x='3%' y='68%' width='4%' height='4%' />
+            <rect class='ss-queue q11' x='18%' y='83%' width='4%' height='4%' />
+            <rect class='ss-queue q12' x='38%' y='88%' width='4%' height='4%' />
         </svg>
     `,
     (sim: AnimationOptions, animationHost: HTMLElement) => {
@@ -514,12 +514,12 @@ showSimulation(
             getEntityHtml: (e: Entity) => {
                 if (e instanceof RoamEntity) {
                     return e.fast
-                        ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="yellow" opacity="0.5" />'
-                        : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="red" opacity="0.5"/>';
+                        ? `<polygon points='0,0 40,0 50,10 40,20 0,20' stroke='black' fill='yellow' opacity='0.5' />`
+                        : `<polygon points='0,0 20,0 30,20 20,40 0,40' stroke='black' fill='red' opacity='0.5'/>`;
                 } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
-                        ? '<polygon points="0,0 40,0 50,10 40,20 0,20" stroke="black" fill="blue" />'
-                        : '<polygon points="0,0 20,0 30,20 20,40 0,40" stroke="black" fill="green" />';
+                        ? `<polygon points='0,0 40,0 50,10 40,20 0,20' stroke='black' fill='blue' />`
+                        : `<polygon points='0,0 20,0 30,20 20,40 0,40' stroke='black' fill='green' />`;
                 }
             },
             queues: [
@@ -560,84 +560,81 @@ showSimulation(
     new AnimationOptions({
         frameDelay: 10
     }),
-    'Animation Options A-Frame',
-    `   <p>
+    'Animation Options (A-Frame)',
+    `
+        <p>
+            This sample uses the same Crosswalk Simulation class as shown earlier,
+            this time using an <a href="https://aframe.io">A-Frame-based</a> animation.
+        </p>
+        <p>
             Change the animation parameters to see their effect:
         </p>
         <label>
             Queue Angle
-            <input id="af-q-angle" type="range" min="0" max="360" step="15">
+            <input id='af-q-angle' type='range' min='0' max='360' step='15'>
         </label>
         <label>
             Rotate Entities
-            <input id="af-rotate-ents" type="checkbox">
+            <input id='af-rotate-ents' type='checkbox'>
         </label>
         <label>
             Spline Tension
-            <input id="af-tension" type="range" min="0" max="2" step=".1">
+            <input id='af-tension' type='range' min='0' max='2' step='.1'>
         </label>
         <label>
             Max Time Step
-            <input id="af-max-step" type="range" min="0" max="1" step=".1">
+            <input id='af-max-step' type='range' min='0' max='1' step='.1'>
         </label>
         <label>
             Frame Delay
-            <input id="af-frame-delay" type="range" min="0" max="250" step="10">
+            <input id='af-frame-delay' type='range' min='0' max='250' step='10'>
         </label>
-        <div style="height:500px">
-            <a-scene embedded class="ss-anim">
+        <div class="anim-host">
+            <a-scene embedded class='ss-anim'>
 
                 <!-- mix-ins -->
                 <a-assets>
-                    <a-mixin id="queue" geometry="radius:4" material="color:orange;opacity:0.3"></a-mixin>
-                    <a-mixin id="transparent" opacity="0.6" transparent="true"></a-mixin>
+                    <a-mixin id='queue' geometry='radius:4' material='color:orange;opacity:0.3'></a-mixin>
+                    <a-mixin id='transparent' opacity='0.6' transparent='true'></a-mixin>
                 </a-assets>
                 
                 <!-- camera -->
-                <a-entity id="rig" position="0 -150 150" rotation="40 0 0">
-                    <a-camera id="camera" far="50000" fov="80"></a-camera>
+                <a-entity id='rig' position='0 -150 150' rotation='40 0 0'>
+                    <a-camera id='camera' far='50000' fov='80'></a-camera>
                 </a-entity>            
 
                 <!-- camera
-                <a-entity id="rig" position="0 -200 50" rotation="70 0 0">
-                    <a-camera id="camera" far="50000" fov="60" look-controls></a-camera>
+                <a-entity id='rig' position='0 -200 50' rotation='70 0 0'>
+                    <a-camera id='camera' far='50000' fov='60' look-controls></a-camera>
                 </a-entity>            
                 -->
                 
                 <!-- add a light -->
-                <a-entity light="type:directional; castShadow:true;" position="5 5 15"></a-entity>
+                <a-entity light='type:directional; castShadow:true;' position='5 5 15'></a-entity>
 
                 <!-- background -->
-                <a-box position="0 0 -1" width="800" height="800" depth="1" color="#009FFF"></a-box>
-                <a-sky color="lightblue"></a-sky>
+                <a-box position='0 0 -1' width='800' height='800' depth='1' color='#009FFF'></a-box>
+                <a-sky color='lightblue'></a-sky>
 
                 <!-- one rotating queue -->
-                <a-sphere class="ss-queue rotate" mixin="queue" position="100 100 20"></a-sphere>
+                <a-sphere class='ss-queue rotate' mixin='queue' position='100 100 20'></a-sphere>
                 
                 <!-- one queue at the center -->
-                <a-sphere class="ss-queue center" mixin="queue" position="0 0 20"></a-sphere>
+                <a-sphere class='ss-queue center' mixin='queue' position='0 0 20'></a-sphere>
     
                 <!-- twelve queues around it -->
-                <a-sphere class="ss-queue q1" mixin="queue" position="50 87 0"></a-sphere>
-                <a-sphere class="ss-queue q2" mixin="queue" position="87 50  0"></a-sphere>
-                <a-sphere class="ss-queue q3" mixin="queue" position="100 0 0"></a-sphere>
-                <a-sphere class="ss-queue q4" mixin="queue" position="87 -50 0"></a-sphere>
-                <a-sphere class="ss-queue q5" mixin="queue" position="50 -87 0"></a-sphere>
-                <a-sphere class="ss-queue q6" mixin="queue" position="0 -100 0"></a-sphere>
-                <a-sphere class="ss-queue q7" mixin="queue" position="-50 -87 0"></a-sphere>
-                <a-sphere class="ss-queue q8" mixin="queue" position="-87 -50 0"></a-sphere>
-                <a-sphere class="ss-queue q9" mixin="queue" position="-100 0 0"></a-sphere>
-                <a-sphere class="ss-queue q10" mixin="queue" position="-87 50 0"></a-sphere>
-                <a-sphere class="ss-queue q11" mixin="queue" position="-50 87 0"></a-sphere>
-                <a-sphere class="ss-queue q12" mixin="queue" position="0 100 0"></a-sphere>
-
-                <!--
-                <a-entity scale="2 2 2">
-                    <a-box width="30" height=".1" depth=".1" color="yellow"></a-box>
-                    <a-cone position="-5 0 0" rotation="0 0 -90" radius-top="0" radius-bottom="5" height="20" color="blue"></a-cone>
-                    <a-cone position="+10 0 0"rotation="0 0 -90" radius-top="0" radius-bottom="5" height="10" color="red"></a-cone>
-                </a-entity>
-                -->
+                <a-sphere class='ss-queue q1' mixin='queue' position='50 87 0'></a-sphere>
+                <a-sphere class='ss-queue q2' mixin='queue' position='87 50  0'></a-sphere>
+                <a-sphere class='ss-queue q3' mixin='queue' position='100 0 0'></a-sphere>
+                <a-sphere class='ss-queue q4' mixin='queue' position='87 -50 0'></a-sphere>
+                <a-sphere class='ss-queue q5' mixin='queue' position='50 -87 0'></a-sphere>
+                <a-sphere class='ss-queue q6' mixin='queue' position='0 -100 0'></a-sphere>
+                <a-sphere class='ss-queue q7' mixin='queue' position='-50 -87 0'></a-sphere>
+                <a-sphere class='ss-queue q8' mixin='queue' position='-87 -50 0'></a-sphere>
+                <a-sphere class='ss-queue q9' mixin='queue' position='-100 0 0'></a-sphere>
+                <a-sphere class='ss-queue q10' mixin='queue' position='-87 50 0'></a-sphere>
+                <a-sphere class='ss-queue q11' mixin='queue' position='-50 87 0'></a-sphere>
+                <a-sphere class='ss-queue q12' mixin='queue' position='0 100 0'></a-sphere>
             </a-scene>
         </div>
     `,
@@ -647,12 +644,12 @@ showSimulation(
             getEntityHtml: (e: Entity) => {
                 if (e instanceof RoamEntity) {
                     return e.fast
-                        ? '<a-box width="16" height="8" depth="8" color="yellow" mixin="transparent"></a-box>'
-                        : '<a-box width="8" height="16" depth="10" color="red" mixin="transparent"></a-box>';
+                        ? `<a-box width='16' height='8' depth='8' color='yellow' mixin='transparent'></a-box>`
+                        : `<a-box width='8' height='16' depth='10' color='red' mixin='transparent'></a-box>`;
                 } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
-                        ? '<a-box width="16" height="8" depth="8" color="green" mixin="transparent"></a-box>'
-                        : '<a-box width="8" height="16" depth="10" color="blue" mixin="transparent"></a-box>';
+                        ? `<a-box width='16' height='8' depth='8' color='green' mixin='transparent'></a-box>`
+                        : `<a-box width='8' height='16' depth='10' color='blue' mixin='transparent'></a-box>`;
                 }
             },
             queues: [
@@ -693,48 +690,56 @@ showSimulation(
 showSimulation(new AnimationOptions({
         frameDelay: 10
     }),
-    'Animation Options X3DOM',
-    `   <p>
+    'Animation Options (X3DOM)',
+    `
+        <p>
+            This sample uses the same Crosswalk Simulation class as shown earlier,
+            this time using an <a href="https://www.x3dom.org/">X3DOM-based</a> animation.
+        </p>
+        <p>
+            Press 'A' to view <b>all</b> elements or 'R' to <b>reset</b> the viewpoint.
+        </p>
+        <p>
             Change the animation parameters to see their effect:
         </p>
         <label>
             Queue Angle
-            <input id="x3-q-angle" type="range" min="0" max="360" step="15">
+            <input id='x3-q-angle' type='range' min='0' max='360' step='15'>
         </label>
         <label>
             Rotate Entities
-            <input id="x3-rotate-ents" type="checkbox">
+            <input id='x3-rotate-ents' type='checkbox'>
         </label>
         <label>
             Spline Tension
-            <input id="x3-tension" type="range" min="0" max="2" step=".1">
+            <input id='x3-tension' type='range' min='0' max='2' step='.1'>
         </label>
         <label>
             Max Time Step
-            <input id="x3-max-step" type="range" min="0" max="1" step=".1">
+            <input id='x3-max-step' type='range' min='0' max='1' step='.1'>
         </label>
         <label>
             Frame Delay
-            <input id="x3-frame-delay" type="range" min="0" max="250" step="10">
+            <input id='x3-frame-delay' type='range' min='0' max='250' step='10'>
         </label>
 
-        <x3d class="ss-anim"> 
+        <x3d class='ss-anim anim-host'> 
             <scene>
 
                 <!-- default viewpoint -->
                 <viewpoint
-                    position="0 -200 180"
-                    orientation="1 0 0 .75"
-                    centerOfRotation="0 0 -20">
+                    position='0 -200 180'
+                    orientation='1 0 0 .75'
+                    centerOfRotation='0 0 -20'>
                 </viewpoint>
 
                 <!-- background -->
                 <transform scale='150 150 0.1'>
                     <shape>
                         <appearance> 
-                            <material diffuseColor='.7 .7 1'/>
+                            <material diffuseColor='0 .9 1'></material>
                         </appearance>
-                        <box/>
+                        <box></box>
                     </shape>
                 </transform>
 
@@ -758,41 +763,70 @@ showSimulation(new AnimationOptions({
                 ${createX3Queue('q10', -87, 50)}
                 ${createX3Queue('q11', -50, 87)}
                 ${createX3Queue('q12', 0, 100)}
-            </scene> 
+
+                <!-- bounding box test
+                <transform class='bbox-test' translation='10 20 30' >
+                    <shape>
+                        <appearance>
+                            <material diffuseColor='1 1 0'/>
+                        </appearance>
+                        <box size='10 20 30'></box>
+                    </shape>
+                    <shape>
+                        <appearance>
+                            <material diffuseColor='1 1 0'/>
+                        </appearance>
+                        <cone height='10' topRadius='5' bottomRadius='10'></cone>
+                    </shape>
+                    <shape>
+                        <appearance>
+                            <material diffuseColor='1 1 0'/>
+                        </appearance>
+                        <cylinder height='15' radius='5'></cylinder>
+                    </shape>
+                    <transform class='bbox-test' translation='20 0 0' scale='1 2 3'>
+                        <shape>
+                            <appearance>
+                                <material transparency='0.5' diffuseColor='1 1 0'/>
+                            </appearance>
+                            <sphere radius='4'></sphere>
+                        </shape>
+                    </transform>
+                </transform>
+                -->
+            </scene>
         </x3d>
     `,
     (sim: AnimationOptions, animationHost: HTMLElement) => {
         const anim = new Animation(sim, animationHost, {
             rotateEntities: true,
-            /*
             getEntityHtml: (e: Entity) => {
                 if (e instanceof RoamEntity) {
                     return e.fast
-                        ? '<a-box width="16" height="8" depth="8" color="yellow" mixin="transparent"></a-box>'
-                        : '<a-box width="8" height="16" depth="10" color="red" mixin="transparent"></a-box>';
+                        ? createX3Car('yellow', 16, 8, 8, 1, 1, 0)
+                        : createX3Car('red', 8, 16, 10, 1, 0, 0);
                 } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
-                        ? '<a-box width="16" height="8" depth="8" color="green" mixin="transparent"></a-box>'
-                        : '<a-box width="8" height="16" depth="10" color="blue" mixin="transparent"></a-box>';
+                        ? createX3Car('green', 16, 8, 8, 0, 1, 0)
+                        : createX3Car('blue', 8, 16, 10, 0, 0, 1);
                 }
             },
             queues: [
-                { queue: sim.qRotate, element: 'a-scene .ss-queue.rotate', angle: sim.qAngle },
-                { queue: sim.qCenter, element: 'a-scene .ss-queue.center' },
-                { queue: sim.q1, element: 'a-scene .ss-queue.q1' },
-                { queue: sim.q2, element: 'a-scene .ss-queue.q2' },
-                { queue: sim.q3, element: 'a-scene .ss-queue.q3' },
-                { queue: sim.q4, element: 'a-scene .ss-queue.q4' },
-                { queue: sim.q5, element: 'a-scene .ss-queue.q5' },
-                { queue: sim.q6, element: 'a-scene .ss-queue.q6' },
-                { queue: sim.q7, element: 'a-scene .ss-queue.q7' },
-                { queue: sim.q8, element: 'a-scene .ss-queue.q8' },
-                { queue: sim.q9, element: 'a-scene .ss-queue.q9' },
-                { queue: sim.q10, element: 'a-scene .ss-queue.q10' },
-                { queue: sim.q11, element: 'a-scene .ss-queue.q11' },
-                { queue: sim.q12, element: 'a-scene .ss-queue.q12' },
+                { queue: sim.qRotate, element: 'x3d .ss-queue.rotate', angle: sim.qAngle },
+                { queue: sim.qCenter, element: 'x3d .ss-queue.center' },
+                { queue: sim.q1, element: 'x3d .ss-queue.q1' },
+                { queue: sim.q2, element: 'x3d .ss-queue.q2' },
+                { queue: sim.q3, element: 'x3d .ss-queue.q3' },
+                { queue: sim.q4, element: 'x3d .ss-queue.q4' },
+                { queue: sim.q5, element: 'x3d .ss-queue.q5' },
+                { queue: sim.q6, element: 'x3d .ss-queue.q6' },
+                { queue: sim.q7, element: 'x3d .ss-queue.q7' },
+                { queue: sim.q8, element: 'x3d .ss-queue.q8' },
+                { queue: sim.q9, element: 'x3d .ss-queue.q9' },
+                { queue: sim.q10, element: 'x3d .ss-queue.q10' },
+                { queue: sim.q11, element: 'x3d .ss-queue.q11' },
+                { queue: sim.q12, element: 'x3d .ss-queue.q12' },
             ]
-            */
         });
 
         // parameters
@@ -811,12 +845,23 @@ showSimulation(new AnimationOptions({
 
 function createX3Queue(name: string, x: number, y: number, z = 0): string {
     return `
-        <transform class="ss-queue ${name}" translation='${x} ${y} ${z}' >
+        <transform class='ss-queue ${name}' translation='${x} ${y} ${z}'>
             <shape>
                 <appearance>
-                    <material transparency='0.5' diffuseColor='1 1 0'/>
+                    <material transparency='0.8' diffuseColor='1 1 0'/>
                 </appearance>
-                <sphere radius='4'/>
+                <sphere radius='1'></sphere>
+            </shape>
+        </transform>`;
+}
+function createX3Car(name: string, w: number, h: number, d: number, r: number, g: number, b: number): string {
+    return `
+        <transform class='ss-car ${name}'>
+            <shape>
+                <appearance>
+                    <material transparency='0.2' diffuseColor='${r} ${g} ${b}'/>
+                </appearance>
+                <box size='${w} ${h} ${d}'></box>
             </shape>
         </transform>`;
 }
@@ -830,16 +875,16 @@ function showSimulation(sim: Simulation, title: string, intro: string, showStats
 
     // create the simulation item on the page
     let e = createElement(`
-        <div class="sim">
+        <div class='sim'>
             <h2>
-                <button class="collapse">-</button> ${title}
+                <button class='collapse'>-</button> ${title}
             </h2>
-            <div class="body">
-                <div class="intro">
+            <div class='body'>
+                <div class='intro'>
                     ${intro}
                 </div>
-                <button class="run"></button>
-                <div class="log"></div>
+                <button class='run'></button>
+                <div class='log'></div>
             </div>
         </div>`,
         document.body);

@@ -72,6 +72,7 @@ interface ISplinePosition {
 export class Animation {
     private _sim: Simulation;
     private _host: Element;
+    private _scene: Element;
     private _width: number;
     private _height: number;
     private _queues = new Map<Queue, AnimatedQueue>();
@@ -93,6 +94,12 @@ export class Animation {
 
         // host element
         this._host = getElement(animationHost);
+
+        // scene element
+        this._scene = this._host;
+        if (this.hostTag == 'X3D') {
+            this._scene = this._host.querySelector('scene');
+        }
 
         // simulation
         this._sim = sim;
@@ -118,18 +125,27 @@ export class Animation {
         return this._host;
     }
     /**
-     * Gets a value that indicates whether the animation's 
-     * host element is an SVG element.
+     * Gets the host element's tagName.
      */
-    get isSvg(): boolean {
-        return this._host instanceof SVGElement;
+    get hostTag(): string {
+        return this._host.tagName.toUpperCase();
     }
     /**
-     * Gets a value that indicates whether the animation's 
-     * host element is an A-Frame scene.
+     * Gets a value that determines whether this animation is a 3D animation.
      */
-     get isAFrame(): boolean {
-        return this._host.tagName == 'A-SCENE';
+    get isThreeD(): boolean {
+        const tag = this.hostTag;
+        return tag == 'X3D' || tag == 'A-SCENE';
+    }
+    /**
+     * Gets a reference to the scene element.
+     * 
+     * In most cases, the scene element is the host element.
+     * If the host is an X3D element, the scene element is
+     * the host's SCENE child element.
+     */
+    get sceneElement(): Element {
+        return this._scene;
     }
     /**
      * Gets or sets a function that returns the HTML to be used
@@ -235,8 +251,9 @@ export class Animation {
                 let start = item.timeStart,
                     finish = item.timeDue,
                     pct = 1 - (finish - this._sim.timeNow) / (finish - start),
-                    splinePos = getSplinePosition(points, tension, pct);
-                ae._drawAt(splinePos.point, this.rotateEntities ? splinePos.angle : 0);
+                    pos = getSplinePosition(points, tension, pct),
+                    angle = pos.angle;
+                ae._drawAt(pos.point, this.rotateEntities ? angle : 0);
             }
         });
 
@@ -275,8 +292,6 @@ class AnimatedQueue {
     /** internal */ _q: Queue;
     private _max: number;
     private _angle = 0;
-    private _sin = 0;
-    private _cos = 1;
     /** internal */ _ptStart: Point;
     /** internal */ _ptEnd: Point;
 
@@ -285,11 +300,8 @@ class AnimatedQueue {
         this._anim = anim;
         this._q = options.queue;
         this._element = getElement(options.element);
-        this._angle = options.angle || 0;
         this._max = options.max;
-        const angle = this._angle / 180 * Math.PI;
-        this._sin = Math.sin(-angle);
-        this._cos = -Math.cos(-angle);
+        this._angle = (options.angle || 0) * (anim.isThreeD ? -1 : +1);
         assert(this._q instanceof Queue, 'q parameter should be a Queue');
     }
 
@@ -298,24 +310,27 @@ class AnimatedQueue {
         if (!this._ptStart) {
             const e = this._element;
             const anim = this._anim;
-            if (anim.isSvg) {
-                const rc = (e as any).getBBox();
-                this._ptStart = new Point(
-                    rc.x + rc.width / 2,
-                    rc.y + rc.height / 2,
-                    0
-                );
-            } else if (anim.isAFrame) {
-                const pt = (e as any).object3D.position;
-                this._ptStart = new Point(pt.x, pt.y, pt.z);
-            } else {
-                const rcHost = anim.hostElement.getBoundingClientRect();
-                const rc = e.getBoundingClientRect();
-                this._ptStart = new Point(
-                    rc.left - rcHost.left + rc.width / 2,
-                    rc.top - rcHost.top + rc.height / 2,
-                    0
-                );
+            switch (anim.hostTag) {
+                case 'X3D':
+                    this._ptStart = getBoundingBox(e).center;
+                    break;
+                case 'A-SCENE':
+                    const pt = (e as any).object3D.position;
+                    this._ptStart = new Point(pt.x, pt.y, pt.z);
+                    break;
+                case 'SVG':
+                    const rcSvg = (e as any).getBBox();
+                    this._ptStart = new Point(rcSvg.x + rcSvg.width / 2, rcSvg.y + rcSvg.height / 2, 0 );
+                    break;
+                default:
+                    const rcHost = anim.hostElement.getBoundingClientRect();
+                    const rcEl = e.getBoundingClientRect();
+                    this._ptStart = new Point(
+                        rcEl.left - rcHost.left + rcEl.width / 2,
+                        rcEl.top - rcHost.top + rcEl.height / 2,
+                        0
+                    );
+                    break;
             }
         }
         return this._ptStart;
@@ -352,10 +367,15 @@ class AnimatedQueue {
             // get entity
             const e = item.entity;
 
+            // get queue angle
+            const rad = -this._angle / 180 * Math.PI;
+            const sin = Math.sin(rad);
+            const cos = -Math.cos(rad);
+    
             // get/create AnimatedEntity for this entity
             const ae = anim._getAnimatedEntity(e);
-            const halfWid = ae._width * this._cos / 2;
-            const halfHei = (anim.rotateEntities ? ae._width : ae._height) * this._sin / 2;
+            const halfWid = ae._width * cos / 2;
+            const halfHei = (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
 
             // update entity position and insertion point position
             pt.x += halfWid;
@@ -392,38 +412,58 @@ class AnimatedEntity {
         this._inUse = false;
 
         // create animation element 
-        const e = anim.isSvg ? document.createElementNS('http://www.w3.org/2000/svg', 'g') :
-            anim.isAFrame ? document.createElement('a-entity') :
-            document.createElement('div');
+        let e: Element;
+        switch (anim.hostTag) {
+            case 'X3D':
+                e = document.createElement('transform');
+                break;
+            case 'A-SCENE':
+                e = document.createElement('a-entity');
+                break;
+            case 'SVG':
+                e = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                (e as any).style.opacity = '0';
+                break;
+            default:
+                e = document.createElement('div');
+                (e as any).style.opacity = '0';
+                break;
+        }
         e.innerHTML = this._getEntityHtml();
         e.classList.add('ss-entity');
-        if (!anim.isAFrame) {
-            (e as any).style.opacity = '0';
-        }
         this._element = e;
 
         // append animation element to host
-        anim.hostElement.appendChild(e);
+        anim.sceneElement.appendChild(e);
 
         // measure element
-        if (anim.isAFrame) {
-            this._width = this._height = this._depth = 0;
-            requestAnimationFrame(() => {
-                const model = (e as any).object3D;
-                const box = new THREE.Box3().setFromObject(model);
-                ////const size = new THREE.Vector3( );
-                ////const sz = box.getSize(size);
-                this._width = box.max.x - box.min.x;
-                this._height = box.max.y - box.min.y;
-                this._depth = box.max.z - box.min.z;
-            });
-        } else {
-            const rc = anim.isSvg
-                ? (e as any).getBBox()
-                : e.getBoundingClientRect();
-            this._width = rc.width;
-            this._height = rc.height;
-            this._depth = 0;
+        this._width = this._height = this._depth = 0;
+        switch (anim.hostTag) {
+            case 'X3D':
+                const box = getBoundingBox(e);
+                this._width = box.width;
+                this._height = box.height;
+                this._depth = box.depth;
+                break;
+            case 'A-SCENE':
+                requestAnimationFrame(() => {
+                    const model = (e as any).object3D;
+                    const box = new THREE.Box3().setFromObject(model);
+                    this._width = box.max.x - box.min.x;
+                    this._height = box.max.y - box.min.y;
+                    this._depth = box.max.z - box.min.z;
+                });
+                break;
+            case 'SVG':
+                const rcSvg = (e as any).getBBox();
+                this._width = rcSvg.width;
+                this._height = rcSvg.height;
+                break;
+            default:
+                const rcEl = e.getBoundingClientRect();
+                this._width = rcEl.width;
+                this._height = rcEl.height;
+                break;
         }
     }
 
@@ -439,38 +479,35 @@ class AnimatedEntity {
     _drawAt(pt: Point, angle?: number) {
         const anim = this._anim;
         const e = this._element;
-        const s = (e as any).style;
 
         // update the entity element
-        if (anim.isAFrame) {
+        switch (anim.hostTag) {
+            case 'X3D':
+                e.setAttribute('translation', `${pt.x} ${pt.y} ${pt.z}`);
+                e.setAttribute('rotation', `0 0 1 ${anim.rotateEntities ? angle / 180 * Math.PI : 0}`);
+                break;
+            case 'A-SCENE':
+                const model = (e as any).object3D;
+                model.position.set(pt.x, pt.y, pt.z);
+                model.rotation.set(0, 0, angle && anim.rotateEntities ? angle / 180 * Math.PI : 0);
+                break;
+            case 'SVG':
+            default:
 
-            // set a-frame entity properties
-            const model = (e as any).object3D;
-            model.position.set(pt.x, pt.y, pt.z);
-            model.rotation.set(0, 0, angle && anim.rotateEntities ? angle / 180 * Math.PI : 0);
+                // adjust reference point (middle of the element)
+                const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2, pt.z);
 
-            // set a-frame entity attributes (slower)
-            //e.setAttribute('position', `${Math.round(pt.x)} ${Math.round(pt.y)} ${Math.round(pt.z)}`);
-            //if (angle && anim.rotateEntities) {
-            //    e.setAttribute('rotation', `0 0 ${angle}`);
-            //}
+                // calculate the transform
+                let transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
+                if (angle && anim.rotateEntities) {
+                    transform += ` rotate(${angle}deg)`;
+                }
 
-        } else {
-
-            // adjust reference point (middle of the element)
-            const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2, pt.z);
-
-            // calculate the transform
-            let transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
-            if (angle && anim.rotateEntities) {
-                transform += ` rotate(${angle}deg)`;
-            }
-
-            // and apply it
-            s.transform = transform;
-            if (!anim.isAFrame) {
+                // and apply it
+                const s = (e as any).style;
+                s.transform = transform;
                 s.opacity = '';
-            }
+                break;
         }
 
         // remember we're in use
@@ -479,14 +516,14 @@ class AnimatedEntity {
 }
 
 /**
- * Represents a point with x and y coordinates.
+ * Represents a point with x, y, and z coordinates.
  */
 class Point {
     x: number;
     y: number;
     z: number;
 
-    constructor(x: number, y: number, z = 0) {
+    constructor(x = 0, y = 0, z = 0) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -554,7 +591,7 @@ function getSplinePosition(pts: Point[], tension: number, pct: number): ISplineP
 
     // calculate percentage traveled within the current segment
     position -= distance;
-    pct = position / length;
+    pct = position / (length || 0.01);
     assert(pct >= 0 && pct <= 1.0000001, 'position percentage out of range');
 
     // interpolate position
@@ -620,4 +657,97 @@ function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, tension:
 function getAngle(pt1: Point, pt2: Point): number {
     const angle = Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x);
     return Math.round(angle * 180 / Math.PI);
+}
+
+/**
+ * Represents a bounding box for an X3D element.
+ */
+class Box {
+    element: Element;
+    valid = false;
+    center = new Point();
+    width = 0;
+    height = 0;
+    depth = 0;
+
+    constructor(element?: Element) {
+        this.element = element;
+        this.applyGeometry();
+        this.applyTransforms();
+    }
+    applyGeometry() {
+        const geom = this.element;
+        if (geom) {
+            this.valid = true;
+
+            switch (geom.tagName) {
+                case 'BOX':
+                    this.width = this.height = this.depth = 2;
+                    let atts = getAttributes(geom, 'size');
+                    if (atts && atts.length >= 3) {
+                        this.width = atts[0];
+                        this.height = atts[1];
+                        this.depth = atts[2];
+                    }
+                    break;
+                case 'CONE':
+                    this.width = this.depth = 2 * Math.max(getAttribute(geom, 'topRadius', 0), getAttribute(geom, 'BottomRadius', 0));
+                    this.height = getAttribute(geom, 'height', 0);
+                    break;
+                case 'CYLINDER':
+                    this.width = this.depth = 2 * getAttribute(geom, 'radius', 0);
+                    this.height = getAttribute(geom, 'height', 0);
+                    break;
+                case 'SPHERE':
+                    this.width = this.depth = this.height = 2 * getAttribute(geom, 'radius', 1);
+                    break;
+                default:
+                    console.log('skipping unknown geometry', geom.tagName);
+                    this.valid = false;
+                    break;
+            }
+        }
+    }
+    applyTransforms() {
+        if (this.element && this.valid) {
+            for (let e = this.element.closest('transform'); e != null; e = e.parentElement.closest('transform')) {
+                const t = getAttributes(e, 'translation');
+                if (t && t.length >= 3) {
+                    this.center.x += t[0];
+                    this.center.y += t[1];
+                    this.center.z += t[2];
+                }
+                const s = getAttributes(e, 'scale');
+                if (s && s.length >= 3) {
+                    this.width *= s[0];
+                    this.height *= s[1];
+                    this.depth *= s[2];
+                }
+            }
+        }
+    }
+}
+function getBoundingBox(e: Element): Box {
+
+    // get boxes for all geometries
+    let boxes: Box[] = [];
+    const geoms = e.querySelectorAll('shape>:not(appearance)');
+    for (let i = 0; i < geoms.length; i++) {
+        const box = new Box(geoms[i]);
+        if (box.valid) {
+            boxes.push(box);
+        }
+    }
+
+    // return the merged box
+    //// TODO
+    return boxes.length ? boxes[0] : null;
+}
+function getAttributes(e: Element, attName: string): number[] {
+    const atts = e.getAttribute(attName).split(/\s+|,/);
+    return atts ? atts.map(item => parseFloat(item)) : null;
+}
+function getAttribute(e: Element, attName: string, defVal: number): number {
+    const att = e.getAttribute(attName);
+    return att ? parseFloat(att) : defVal;
 }

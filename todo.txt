@@ -1,17 +1,14 @@
 # Todo
-- 3D animations (a-frame)
-    * animTest/blitz
+- X3D
+    - combine boxes
+    - queue angle
+    - docs
+    - animTest blitz
+    - crosswalk
+- a-frame
+    - queue angle
+    - docs
+    * animTest blitz
     - crosswalk
     - more docs
 - more tests
-- blitzes: 
-    * animation parameters
-    * barbershop
-    * mmc
-    * randomvar
-    * crosswalk
-    * crosswalk anim svg
-    - Le Mans
-    - mmc anim
-    - barbershop anim
-- svelte/React
