@@ -301,7 +301,7 @@ class AnimatedQueue {
         this._q = options.queue;
         this._element = getElement(options.element);
         this._max = options.max;
-        this._angle = (options.angle || 0) * (anim.isThreeD ? -1 : +1);
+        this._angle = (options.angle || 0);
         assert(this._q instanceof Queue, 'q parameter should be a Queue');
     }
 
@@ -368,7 +368,8 @@ class AnimatedQueue {
             const e = item.entity;
 
             // get queue angle
-            const rad = -this._angle / 180 * Math.PI;
+            const angle = this._angle * (anim.isThreeD ? -1 : +1)
+            const rad = -angle / 180 * Math.PI;
             const sin = Math.sin(rad);
             const cos = -Math.cos(rad);
     
@@ -380,7 +381,7 @@ class AnimatedQueue {
             // update entity position and insertion point position
             pt.x += halfWid;
             pt.y += halfHei;
-            ae._drawAt(pt, this._angle);
+            ae._drawAt(pt, angle);
             pt.x += halfWid;
             pt.y += halfHei;
 
@@ -739,9 +740,35 @@ function getBoundingBox(e: Element): Box {
         }
     }
 
-    // return the merged box
-    //// TODO
-    return boxes.length ? boxes[0] : null;
+    // get the box
+    let box = boxes.length ? boxes[0] : null;
+
+    // merge boxes if we have more than one
+    if (boxes.length > 1) {
+        let c = box.center;
+        const min = new Point(c.x - box.width / 2, c.y - box.height / 2, c.z - box.depth / 2);
+        const max = new Point(c.x + box.width / 2, c.y + box.height / 2, c.z + box.depth / 2);
+        boxes.forEach(box => {
+            c = box.center;
+            min.x = Math.min(min.x, c.x - box.width / 2);
+            min.y = Math.min(min.y, c.y - box.height / 2);
+            min.z = Math.min(min.z, c.z - box.depth / 2);
+            max.x = Math.max(max.x, c.x + box.width / 2);
+            max.y = Math.max(max.y, c.y + box.height / 2);
+            max.z = Math.max(max.z, c.z + box.depth / 2);
+        });
+
+        // update box
+        box.center.x = (min.x + max.x) / 2;
+        box.center.y = (min.y + max.y) / 2;
+        box.center.z = (min.z + max.z) / 2;
+        box.width = max.x - min.x;
+        box.height = max.y - min.y;
+        box.depth = max.y - min.y;
+    }
+
+    // done
+    return box;
 }
 function getAttributes(e: Element, attName: string): number[] {
     const atts = e.getAttribute(attName).split(/\s+|,/);
