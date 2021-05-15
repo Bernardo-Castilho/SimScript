@@ -734,7 +734,7 @@ showSimulation(new AnimationOptions({
                 </viewpoint>
 
                 <!-- background -->
-                <transform scale='150 150 0.1'>
+                <transform scale='150 150 0.1' translation='0 0 -5'>
                     <shape>
                         <appearance> 
                             <material diffuseColor='0 .9 1'></material>
@@ -763,27 +763,6 @@ showSimulation(new AnimationOptions({
                 ${createX3Queue('q10', -87, 50)}
                 ${createX3Queue('q11', -50, 87)}
                 ${createX3Queue('q12', 0, 100)}
-
-                <!-- bounding box test
-                <transform class='ss-car'>
-                    <transform>
-                        <shape>
-                            <appearance>
-                                <material diffuseColor='1 0 0'></material>
-                            </appearance>
-                            <box size='16 8 8'></box>
-                        </shape>
-                    </transform>
-                    <transform translation='10 0 2'>
-                        <shape>
-                            <appearance>
-                                <material diffuseColor='0 1 0'></material>
-                            </appearance>
-                            <sphere radius='4'></sphere>
-                        </shape>
-                    </transform>
-                </transform>
-                -->
             </scene>
         </x3d>
     `,
@@ -792,52 +771,13 @@ showSimulation(new AnimationOptions({
             rotateEntities: true,
             getEntityHtml: (e: Entity) => {
                 if (e instanceof RoamEntity) {
-                    return `
-                        <transform class='ss-car'>
-                            <transform>
-                                <shape>
-                                    <appearance>
-                                        <material diffuseColor='1 0 0'></material>
-                                    </appearance>
-                                    <box size='16 8 8'></box>
-                                </shape>
-                            </transform>
-                            <transform translation='10 0 2'>
-                                <shape>
-                                    <appearance>
-                                        <material diffuseColor='0 1 0'></material>
-                                    </appearance>
-                                    <sphere radius='4'></sphere>
-                                </shape>
-                            </transform>
-                        </transform>`;
-                    ////return e.fast
-                    ////    ? createX3Car('yellow', 16, 8, 8, 1, 1, 0)
-                    ////    : createX3Car('red', 8, 16, 10, 1, 0, 0);
+                    return e.fast
+                        ? createX3Car('yellow', 16, 8, 8, 1, 1, 0)
+                        : createX3Car('red', 8, 16, 10, 1, 0, 0);
                 } else { // EnterLeaveEntity
-                    return `
-                        <transform class='ss-car'>
-                            <transform>
-                                <shape>
-                                    <appearance>
-                                        <material diffuseColor='0 0 1'></material>
-                                    </appearance>
-                                    <box size='16 8 8'></box>
-                                </shape>
-                            </transform>
-                            <transform translation='10 0 2'>
-                                <shape>
-                                    <appearance>
-                                        <material diffuseColor='0 1 0'></material>
-                                    </appearance>
-                                    <sphere radius='4'></sphere>
-                                </shape>
-                            </transform>
-                        </transform>`;
-
-                    ////return e.serial % 2 // long/short images
-                    ////    ? createX3Car('green', 16, 8, 8, 0, 1, 0)
-                    ////    : createX3Car('blue', 8, 16, 10, 0, 0, 1);
+                    return e.serial % 2 // long/short images
+                        ? createX3Car('green', 16, 8, 8, 0, 1, 0)
+                        : createX3Car('blue', 8, 16, 10, 0, 0, 1);
                 }
             },
             queues: [
@@ -884,15 +824,24 @@ function createX3Queue(name: string, x: number, y: number, z = 0): string {
         </transform>`;
 }
 function createX3Car(name: string, w: number, h: number, d: number, r: number, g: number, b: number): string {
-    return `
-        <transform class='ss-car ${name}'>
+    return `<transform class='ss-car ${name}'>
+        <transform>
             <shape>
                 <appearance>
-                    <material transparency='0.2' diffuseColor='${r} ${g} ${b}'/>
+                    <material diffuseColor='${r} ${g} ${b}'></material>
                 </appearance>
-                <box size='${w} ${h} ${d}'></box>
+                <box size='${w} ${h} ${d}' lit='true'></box>
             </shape>
-        </transform>`;
+        </transform>
+        <transform translation='${-w/2} 0 ${d/2}' scale='0.5 1 1'>
+            <shape>
+                <appearance>
+                    <material diffuseColor='0 0 1' transparency='0.5'></material>
+                </appearance>
+                <sphere radius='4' lit='true'></sphere>
+            </shape>
+        </transform>
+    </transform>`;
 }
 
 

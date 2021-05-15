@@ -53,11 +53,24 @@ interface ISplinePosition {
  * constructor. The host element can be regular **div** or
  * **svg** elements.
  * 
- * Animations hosted in **div** elements use absolutely positioned
- * elements (often **img**) to represent entities.
+ * Animations may be in 2D or 3D.
  * 
- * Animations hosted in **svg** elements use SVG (often *g*)
- * elements to represent entities.
+ * 2D animations may be hosted in regular **div** elements. 
+ * In this case, they use absolutely positioned elements
+ * (such as **img**) to represent entities.
+ * 
+ * 2D animations may also be hosted in **svg** elements.
+ * In this case, they use SVG (often *g*) elements to represent
+ * entities. You can see a sample here:
+ * [Animated Crosswalk (SVG)](https://stackblitz.com/edit/typescript-ehhn4e?file=index.html).
+ * 
+ * 3D animations may be hosted in [A-Frame](https://aframe.io)
+ * elements. **A-Frame** is a 3D/VR framework that makes it easy
+ * to create 3D/VR animations. You can see an example here:
+ * [Animation Options (A-Frame)](https://stackblitz.com/edit/typescript-pmkehn?file=index.html).
+ * 
+ * 3D animations may also be hosted in [X3DOM](https://www.x3dom.org/) 
+ * elements. **X3DOM** is the latest W3C standard for 3D content.
  * 
  * {@link Queue} positions are defined by elements in the animation
  * host element, as specified by the {@link queues} property.
