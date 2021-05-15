@@ -775,7 +775,8 @@ class BoundingBox {
     }
 }
 function getAttributes(e: Element, attName: string): number[] {
-    const atts = e.getAttribute(attName).split(/\s+|,/);
+    const att = e.getAttribute(attName);
+    const atts = att ? att.split(/\s+|,/) : null;
     return atts ? atts.map(item => parseFloat(item)) : null;
 }
 function getAttribute(e: Element, attName: string, defVal: number): number {

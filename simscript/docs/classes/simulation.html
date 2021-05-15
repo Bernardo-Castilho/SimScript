@@ -1,0 +1,1294 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Simulation | simscript</title>
+	<meta name="description" content="Documentation for simscript">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">simscript</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">simscript</a>
+				</li>
+				<li>
+					<a href="simulation.html">Simulation</a>
+				</li>
+			</ul>
+			<h1>Class Simulation</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Abstract base class for simulations.</p>
+					</div>
+					<p><a href="simulation.html">Simulation</a> objects are basically schedulers.
+						They act as a stage where the actors are <a href="entity.html">Entity</a> objects
+					and have props represented by <a href="queue.html">Queue</a> objects.</p>
+					<p>Simulations keep a list of active entities and conditions these
+						entities are waiting for within their <a href="entity.html#script">Entity.script</a> methods,
+						which execute asynchronously.
+						As these conditions are satisfied along the simulated time, the
+						<a href="entity.html">Entity</a> objects resume executing their scripts.
+						When the simulation runs out of active entities, that means all
+					entities have finished their scripts and the simulation ends.</p>
+					<p>To create simulations follow these steps:</p>
+					<ol>
+						<li><p>Create one or more classes that extend the <a href="entity.html">Entity</a> class
+								and override the <a href="entity.html#script">Entity.script</a> method to describe the entity&#39;s
+							actions within the simulation.</p>
+						</li>
+						<li><p>Create a class that extends <a href="simulation.html">Simulation</a> to use the entities
+							you defined in step 1.</p>
+						</li>
+						<li><p>Override the simulation&#39;s <a href="simulation.html#onstarting">onStarting</a> method to create and activate
+							one or more of the entities you defined in step 1.</p>
+						</li>
+					</ol>
+					<p>For example:</p>
+					<pre><code class="language-typescript"><span style="color: #008000">// define the BarberShop simulation </span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">BarberShop</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Simulation</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">qJoe</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Queue</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Joe&#039;</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">qWait</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Queue</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Wait Area&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// generate Customer entities with inter-arrival times of 18 min for 8 hours</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onStarting</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">super</span><span style="color: #000000">.</span><span style="color: #795E26">onStarting</span><span style="color: #000000">();</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">.</span><span style="color: #001080">grossDwell</span><span style="color: #000000">.</span><span style="color: #001080">binSize</span><span style="color: #000000"> = </span><span style="color: #098658">1</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">generateEntities</span><span style="color: #000000">(</span><span style="color: #001080">Customer</span><span style="color: #000000">, </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">18</span><span style="color: #000000"> - </span><span style="color: #098658">6</span><span style="color: #000000">, </span><span style="color: #098658">18</span><span style="color: #000000"> + </span><span style="color: #098658">6</span><span style="color: #000000">));</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #008000">// define the Customer entity used by the Barbershop simulation</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">service</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">15</span><span style="color: #000000"> - </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000"> + </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">shop</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">BarberShop</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// enter the line</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qJoe</span><span style="color: #000000">); </span><span style="color: #008000">// seize Joe the barber</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// leave the line</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">service</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">()); </span><span style="color: #008000">// get a haircut</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qJoe</span><span style="color: #000000">); </span><span style="color: #008000">// free Joe        </span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Simulation</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="simulation.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#finished" class="tsd-kind-icon">finished</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#finishing" class="tsd-kind-icon">finishing</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#started" class="tsd-kind-icon">started</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#starting" class="tsd-kind-icon">starting</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#statechanged" class="tsd-kind-icon">state<wbr>Changed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#statechanging" class="tsd-kind-icon">state<wbr>Changing</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#timenowchanged" class="tsd-kind-icon">time<wbr>Now<wbr>Changed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="simulation.html#timenowchanging" class="tsd-kind-icon">time<wbr>Now<wbr>Changing</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="simulation.html#framedelay" class="tsd-kind-icon">frame<wbr>Delay</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="simulation.html#maxtimestep" class="tsd-kind-icon">max<wbr>Time<wbr>Step</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="simulation.html#queues" class="tsd-kind-icon">queues</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="simulation.html#state" class="tsd-kind-icon">state</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="simulation.html#timeelapsed" class="tsd-kind-icon">time<wbr>Elapsed</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="simulation.html#timeend" class="tsd-kind-icon">time<wbr>End</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="simulation.html#timenow" class="tsd-kind-icon">time<wbr>Now</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="simulation.html#yieldinterval" class="tsd-kind-icon">yield<wbr>Interval</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#activate" class="tsd-kind-icon">activate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#generateentities" class="tsd-kind-icon">generate<wbr>Entities</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#getstatstable" class="tsd-kind-icon">get<wbr>Stats<wbr>Table</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#onfinished" class="tsd-kind-icon">on<wbr>Finished</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#onfinishing" class="tsd-kind-icon">on<wbr>Finishing</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#onstarted" class="tsd-kind-icon">on<wbr>Started</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#onstarting" class="tsd-kind-icon">on<wbr>Starting</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#onstatechanged" class="tsd-kind-icon">on<wbr>State<wbr>Changed</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#onstatechanging" class="tsd-kind-icon">on<wbr>State<wbr>Changing</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#ontimenowchanged" class="tsd-kind-icon">on<wbr>Time<wbr>Now<wbr>Changed</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#ontimenowchanging" class="tsd-kind-icon">on<wbr>Time<wbr>Now<wbr>Changing</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#start" class="tsd-kind-icon">start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="simulation.html#stop" class="tsd-kind-icon">stop</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Simulation<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L98">simulation.ts:98</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Initializes a new instance of the <a href="simulation.html">Simulation</a> class.</p>
+								</div>
+								<p>Override the <a href="simulation.html#onstarting">onStarting</a> method to generate entities when
+								the simulation starts running.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Object with parameters used to initialize the
+										simulation (properties and event handlers).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="finished" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> finished</h3>
+					<div class="tsd-signature tsd-kind-icon">finished<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L351">simulation.ts:351</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs after the simulation finishes executing.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="finishing" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> finishing</h3>
+					<div class="tsd-signature tsd-kind-icon">finishing<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L341">simulation.ts:341</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs before the simulation finishes executing.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="started" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> started</h3>
+					<div class="tsd-signature tsd-kind-icon">started<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L331">simulation.ts:331</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs after the simulation starts executing.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="starting" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> starting</h3>
+					<div class="tsd-signature tsd-kind-icon">starting<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L303">simulation.ts:303</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs before the simulation starts executing.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="statechanged" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> state<wbr>Changed</h3>
+					<div class="tsd-signature tsd-kind-icon">state<wbr>Changed<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L379">simulation.ts:379</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs after the simulation&#39;s <a href="simulation.html#state">state</a> property changes.</p>
+						</div>
+						<p>For example:</p>
+						<pre><code class="language-typescript"><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">stateChanged</span><span style="color: #000000">.</span><span style="color: #795E26">addEventListener</span><span style="color: #000000">(</span><span style="color: #001080">s</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;the simulation state changed to&#039;</span><span style="color: #000000">, </span><span style="color: #001080">SimulationState</span><span style="color: #000000">[</span><span style="color: #001080">s</span><span style="color: #000000">.</span><span style="color: #001080">state</span><span style="color: #000000">]);</span>
+<span style="color: #000000">});</span>
+</code></pre>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="statechanging" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> state<wbr>Changing</h3>
+					<div class="tsd-signature tsd-kind-icon">state<wbr>Changing<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L361">simulation.ts:361</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs before the simulation&#39;s <a href="simulation.html#state">state</a> property changes.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="timenowchanged" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> time<wbr>Now<wbr>Changed</h3>
+					<div class="tsd-signature tsd-kind-icon">time<wbr>Now<wbr>Changed<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L407">simulation.ts:407</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs after the simulation&#39;s <a href="simulation.html#timenow">timeNow</a> property changes.</p>
+						</div>
+						<p>For example:</p>
+						<pre><code class="language-typescript"><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">timeChanged</span><span style="color: #000000">.</span><span style="color: #795E26">addEventListener</span><span style="color: #000000">(</span><span style="color: #001080">s</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;the simulation time advanced to&#039;</span><span style="color: #000000">, </span><span style="color: #001080">s</span><span style="color: #000000">.</span><span style="color: #001080">timeNow</span><span style="color: #000000">);</span>
+<span style="color: #000000">});</span>
+</code></pre>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="timenowchanging" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> time<wbr>Now<wbr>Changing</h3>
+					<div class="tsd-signature tsd-kind-icon">time<wbr>Now<wbr>Changing<span class="tsd-signature-symbol">:</span> <a href="event.html" class="tsd-signature-type" data-tsd-kind="Class">Event</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">, </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L389">simulation.ts:389</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Event that occurs before the simulation&#39;s <a href="simulation.html#timenow">timeNow</a> property changes.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="framedelay" class="tsd-anchor"></a>
+					<h3>frame<wbr>Delay</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> frameDelay<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> frameDelay<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L159">simulation.ts:159</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets a delay, measured in milliseconds, that should
+									be applied after each simulated time advance.</p>
+								</div>
+								<p>The default value for this property is <strong>0</strong>, which means
+								no frame delays should be applied.</p>
+								<p>This property can be useful to slow down animated simulations.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L162">simulation.ts:162</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets a delay, measured in milliseconds, that should
+									be applied after each simulated time advance.</p>
+								</div>
+								<p>The default value for this property is <strong>0</strong>, which means
+								no frame delays should be applied.</p>
+								<p>This property can be useful to slow down animated simulations.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="maxtimestep" class="tsd-anchor"></a>
+					<h3>max<wbr>Time<wbr>Step</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> maxTimeStep<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> maxTimeStep<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L144">simulation.ts:144</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the maximum time step allowed by the simulation.</p>
+								</div>
+								<p>The default value for this property is <strong>0</strong>, which allows
+								the simulation to advance the time in steps of any size.</p>
+								<p>This property can be useful to slow down and set the pace for
+								animated simulations.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L147">simulation.ts:147</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the maximum time step allowed by the simulation.</p>
+								</div>
+								<p>The default value for this property is <strong>0</strong>, which allows
+								the simulation to advance the time in steps of any size.</p>
+								<p>This property can be useful to slow down and set the pace for
+								animated simulations.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="queues" class="tsd-anchor"></a>
+					<h3>queues</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> queues<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L277">simulation.ts:277</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets an array with the <a href="queue.html">Queue</a> objects in use by this <a href="simulation.html">Simulation</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="state" class="tsd-anchor"></a>
+					<h3>state</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> state<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/simulationstate.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SimulationState</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L119">simulation.ts:119</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the simulation state.</p>
+								</div>
+								<p>Use the <a href="simulation.html#start">start</a> and <a href="simulation.html#stop">stop</a> methods to change the
+								simulation state.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/simulationstate.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SimulationState</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="timeelapsed" class="tsd-anchor"></a>
+					<h3>time<wbr>Elapsed</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> timeElapsed<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L168">simulation.ts:168</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the actual simulation time in milliseconds.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="timeend" class="tsd-anchor"></a>
+					<h3>time<wbr>End</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> timeEnd<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> timeEnd<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L129">simulation.ts:129</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the simulation end time.</p>
+								</div>
+								<p>The default value for this property is <strong>null</strong>, which causes the
+									simulation to run until the <a href="simulation.html#stop">stop</a> method is called or
+								until it runs out of things to do.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L132">simulation.ts:132</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the simulation end time.</p>
+								</div>
+								<p>The default value for this property is <strong>null</strong>, which causes the
+									simulation to run until the <a href="simulation.html#stop">stop</a> method is called or
+								until it runs out of things to do.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="timenow" class="tsd-anchor"></a>
+					<h3>time<wbr>Now</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> timeNow<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L176">simulation.ts:176</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the current simulated time in simulation time units.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="yieldinterval" class="tsd-anchor"></a>
+					<h3>yield<wbr>Interval</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> yieldInterval<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> yieldInterval<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L187">simulation.ts:187</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets a value that determines how often the <a href="simulation.html">Simulation</a>
+									will release control of the thread so the brower remains responsive.</p>
+								</div>
+								<p>The default value for this property is <strong>100</strong> ms, which is enough to
+									keep the UI responsive. Use higher values to increase the simulation
+								speed at the expense of UI responsiveness.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L190">simulation.ts:190</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets a value that determines how often the <a href="simulation.html">Simulation</a>
+									will release control of the thread so the brower remains responsive.</p>
+								</div>
+								<p>The default value for this property is <strong>100</strong> ms, which is enough to
+									keep the UI responsive. Use higher values to increase the simulation
+								speed at the expense of UI responsiveness.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="activate" class="tsd-anchor"></a>
+					<h3>activate</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">activate<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L245">simulation.ts:245</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Activates an <a href="entity.html">Entity</a>.</p>
+								</div>
+								<p>Activating an <a href="entity.html">Entity</a> causes it to enter the simulation
+								and start executing its <a href="entity.html#script">Entity.script</a> method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p><a href="entity.html">Entity</a> to activate.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="generateentities" class="tsd-anchor"></a>
+					<h3>generate<wbr>Entities</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">generate<wbr>Entities<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, interArrival<span class="tsd-signature-symbol">: </span><a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a>, max<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, startTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, endTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L270">simulation.ts:270</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates <a href="entity.html">Entity</a> objects and activates them.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>type: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Type of <a href="entity.html">Entity</a> to generate.</p>
+									</div>
+								</li>
+								<li>
+									<h5>interArrival: <a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p><a href="randomvar.html">RandomVar</a> that returns the inter-arrival time,
+										or <strong>null</strong> to generate a single entity.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> max: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Maximum number of entities to generate.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> startTime: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Time to start generating entities.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> endTime: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Time to stop generating entities.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getstatstable" class="tsd-anchor"></a>
+					<h3>get<wbr>Stats<wbr>Table</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Stats<wbr>Table<span class="tsd-signature-symbol">(</span>showNetValues<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L288">simulation.ts:288</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a table with the <a href="simulation.html">Simulation</a> statistics.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>showNetValues: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether to include net statistics (non-zero <a href="queue.html">Queue</a>
+										dwell times and populations).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<p>An HTML string defining a table with statistics for all <a href="queue.html">Queue</a>
+							objects in the simulation.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="onfinished" class="tsd-anchor"></a>
+					<h3>on<wbr>Finished</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Finished<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L355">simulation.ts:355</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#finished">finished</a> event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="onfinishing" class="tsd-anchor"></a>
+					<h3>on<wbr>Finishing</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Finishing<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L345">simulation.ts:345</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#finishing">finishing</a> event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="onstarted" class="tsd-anchor"></a>
+					<h3>on<wbr>Started</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Started<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L335">simulation.ts:335</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#started">started</a> event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="onstarting" class="tsd-anchor"></a>
+					<h3>on<wbr>Starting</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Starting<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L325">simulation.ts:325</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#starting">starting</a> event.</p>
+								</div>
+								<p>Classes that extend <a href="simulation.html">Simulation</a> typically override this
+								method to create the entities that will drive the simulation.</p>
+								<p>For example:</p>
+								<pre><code class="language-typescript"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">BarberShop</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Simulation</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">qJoe</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Queue</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Joe&#039;</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">qWait</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Queue</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Wait Area&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// generate entities with inter-arrival times of 18 min for 8 hours</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onStarting</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">.</span><span style="color: #001080">grossDwell</span><span style="color: #000000">.</span><span style="color: #001080">binSize</span><span style="color: #000000"> = </span><span style="color: #098658">1</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">generateEntities</span><span style="color: #000000">(</span><span style="color: #001080">Customer</span><span style="color: #000000">, </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">18</span><span style="color: #000000"> - </span><span style="color: #098658">6</span><span style="color: #000000">, </span><span style="color: #098658">18</span><span style="color: #000000"> + </span><span style="color: #098658">6</span><span style="color: #000000">));</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="onstatechanged" class="tsd-anchor"></a>
+					<h3>on<wbr>State<wbr>Changed</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>State<wbr>Changed<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L383">simulation.ts:383</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#statechanged">stateChanged</a> event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="onstatechanging" class="tsd-anchor"></a>
+					<h3>on<wbr>State<wbr>Changing</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>State<wbr>Changing<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L365">simulation.ts:365</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#statechanging">stateChanging</a> event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="ontimenowchanged" class="tsd-anchor"></a>
+					<h3>on<wbr>Time<wbr>Now<wbr>Changed</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Time<wbr>Now<wbr>Changed<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L411">simulation.ts:411</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#timenowchanged">timeNowChanged</a> event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="ontimenowchanging" class="tsd-anchor"></a>
+					<h3>on<wbr>Time<wbr>Now<wbr>Changing</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Time<wbr>Now<wbr>Changing<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">?: </span><a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L393">simulation.ts:393</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Raises the <a href="simulation.html#timenowchanging">timeNowChanging</a> event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="eventargs.html" class="tsd-signature-type" data-tsd-kind="Class">EventArgs</a><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="start" class="tsd-anchor"></a>
+					<h3>start</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span>reset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L199">simulation.ts:199</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Starts the <a href="simulation.html">Simulation</a> or resumes the execution of a stopped simulation.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>reset: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether to restart the simulation or resume execution
+										from where it stopped.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="stop" class="tsd-anchor"></a>
+					<h3>stop</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/simulation.ts#L232">simulation.ts:232</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stops the <a href="simulation.html">Simulation</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="../enums/simulationstate.html" class="tsd-kind-icon">Simulation<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="animation.html" class="tsd-kind-icon">Animation</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="empirical.html" class="tsd-kind-icon">Empirical</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="entity.html" class="tsd-kind-icon">Entity</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="entitygenerator.html" class="tsd-kind-icon">Entity<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="event.html" class="tsd-kind-icon">Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="eventargs.html" class="tsd-kind-icon">Event<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="exponential.html" class="tsd-kind-icon">Exponential</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="fecitem.html" class="tsd-kind-icon">Fec<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="normal.html" class="tsd-kind-icon">Normal</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="queue.html" class="tsd-kind-icon">Queue</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="randomvar.html" class="tsd-kind-icon">Random<wbr>Var</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="simulation.html" class="tsd-kind-icon">Simulation</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="simulation.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#finished" class="tsd-kind-icon">finished</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#finishing" class="tsd-kind-icon">finishing</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#started" class="tsd-kind-icon">started</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#starting" class="tsd-kind-icon">starting</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#statechanged" class="tsd-kind-icon">state<wbr>Changed</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#statechanging" class="tsd-kind-icon">state<wbr>Changing</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#timenowchanged" class="tsd-kind-icon">time<wbr>Now<wbr>Changed</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="simulation.html#timenowchanging" class="tsd-kind-icon">time<wbr>Now<wbr>Changing</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="simulation.html#framedelay" class="tsd-kind-icon">frame<wbr>Delay</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="simulation.html#maxtimestep" class="tsd-kind-icon">max<wbr>Time<wbr>Step</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="simulation.html#queues" class="tsd-kind-icon">queues</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="simulation.html#state" class="tsd-kind-icon">state</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="simulation.html#timeelapsed" class="tsd-kind-icon">time<wbr>Elapsed</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="simulation.html#timeend" class="tsd-kind-icon">time<wbr>End</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="simulation.html#timenow" class="tsd-kind-icon">time<wbr>Now</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="simulation.html#yieldinterval" class="tsd-kind-icon">yield<wbr>Interval</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#activate" class="tsd-kind-icon">activate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#generateentities" class="tsd-kind-icon">generate<wbr>Entities</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#getstatstable" class="tsd-kind-icon">get<wbr>Stats<wbr>Table</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#onfinished" class="tsd-kind-icon">on<wbr>Finished</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#onfinishing" class="tsd-kind-icon">on<wbr>Finishing</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#onstarted" class="tsd-kind-icon">on<wbr>Started</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#onstarting" class="tsd-kind-icon">on<wbr>Starting</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#onstatechanged" class="tsd-kind-icon">on<wbr>State<wbr>Changed</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#onstatechanging" class="tsd-kind-icon">on<wbr>State<wbr>Changing</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#ontimenowchanged" class="tsd-kind-icon">on<wbr>Time<wbr>Now<wbr>Changed</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#ontimenowchanging" class="tsd-kind-icon">on<wbr>Time<wbr>Now<wbr>Changing</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#start" class="tsd-kind-icon">start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="simulation.html#stop" class="tsd-kind-icon">stop</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-class">
+						<a href="tally.html" class="tsd-kind-icon">Tally</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="triangular.html" class="tsd-kind-icon">Triangular</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="uniform.html" class="tsd-kind-icon">Uniform</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ianimatedqueue.html" class="tsd-kind-icon">IAnimated<wbr>Queue</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="../interfaces/ieventlistener.html" class="tsd-kind-icon">IEvent<wbr>Listener</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ifecitemoptions.html" class="tsd-kind-icon">IFec<wbr>Item<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ihistogramentry.html" class="tsd-kind-icon">IHistogram<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/imovepath.html" class="tsd-kind-icon">IMove<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#assert" class="tsd-kind-icon">assert</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#bind" class="tsd-kind-icon">bind</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#clamp" class="tsd-kind-icon">clamp</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#format" class="tsd-kind-icon">format</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
