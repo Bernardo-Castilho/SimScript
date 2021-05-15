@@ -1,6 +1,6 @@
 {
     "name": "simscript",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "A Discrete Event Simulation Library in TypeScript",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",

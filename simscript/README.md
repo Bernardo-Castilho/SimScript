@@ -1,6 +1,7 @@
 # SimScript
 
-A Discrete Event Simulation Library in TypeScript.
+A Discrete Event Simulation Library in TypeScript
+with support for 2D and 3D animations.
 
 For details, see the 
 [API Documentation](https://bernardo-castilho.github.io/simscript/docs/).
@@ -114,4 +115,8 @@ The links below show some samples of **SimScript** simulations:
 
 - [Animation Options (A-Frame)](https://stackblitz.com/edit/typescript-pmkehn?file=animation-options.ts)\
     Uses an [A-Frame](https://aframe.io)-based 3D animation to show the effect of some
-    **Animation** and **Simulation** properties.    
+    **Animation** and **Simulation** properties.
+
+- [Animation Options (X3DOM)](https://stackblitz.com/edit/typescript-oncuqe?file=animation-options.ts)\
+    Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show the effect of some
+    **Animation** and **Simulation** properties.
