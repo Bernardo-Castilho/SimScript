@@ -325,7 +325,7 @@ class AnimatedQueue {
             const anim = this._anim;
             switch (anim.hostTag) {
                 case 'X3D':
-                    this._ptStart = getBoundingBox(e).center;
+                    this._ptStart = new BoundingBox(e).center;
                     break;
                 case 'A-SCENE':
                     const pt = (e as any).object3D.position;
@@ -388,15 +388,15 @@ class AnimatedQueue {
     
             // get/create AnimatedEntity for this entity
             const ae = anim._getAnimatedEntity(e);
-            const halfWid = ae._width * cos / 2;
-            const halfHei = (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
+            const hWid = ae._width * cos / 2;
+            const hHei = (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
 
             // update entity position and insertion point position
-            pt.x += halfWid;
-            pt.y += halfHei;
+            pt.x += hWid;
+            pt.y += hHei;
             ae._drawAt(pt, angle);
-            pt.x += halfWid;
-            pt.y += halfHei;
+            pt.x += hWid;
+            pt.y += hHei;
 
             // keep track of entity count
             cnt++;
@@ -454,7 +454,7 @@ class AnimatedEntity {
         this._width = this._height = this._depth = 0;
         switch (anim.hostTag) {
             case 'X3D':
-                const sz = getBoundingBox(e).size;
+                const sz = new BoundingBox(e).size;
                 this._width = sz.x;
                 this._height = sz.y;
                 this._depth = sz.z;
@@ -681,13 +681,24 @@ function getAngle(pt1: Point, pt2: Point): number {
  * {@link Box.size} properties that defines the position
  * and dimensions of the X3D element.
  */
-class Box {
+class BoundingBox {
     center = new Point();
     size = new Point();
 
     constructor(e: Element) {
-        this.applyGeometry(e);
-        this.applyTransforms(e);
+
+        // check if we have multiple elements to merge
+        const g = e.querySelectorAll('shape>:not(appearance)');
+        if (g.length == 0) { // single element
+            this.applyGeometry(e);
+            this.applyTransforms(e);
+        } else { // multiple elements
+            this.applyGeometry(g[0]);
+            this.applyTransforms(g[0]);
+            for (let i = 1; i < g.length; i++) {
+                this.merge(new BoundingBox(g[i]));
+            }
+        }
     }
 
     private applyGeometry(e: Element) {
@@ -736,6 +747,32 @@ class Box {
             }
         }
     }
+    private merge(box: BoundingBox) {
+        const c = this.center;
+        const sz = this.size;
+        const bc = box.center;
+        const bsz = box.size;
+
+        // compute min/max points
+        const min = new Point(
+            Math.min(c.x - sz.x / 2, bc.x - bsz.x / 2),
+            Math.min(c.y - sz.y / 2, bc.y - bsz.y / 2),
+            Math.min(c.z - sz.z / 2, bc.z - bsz.z / 2),
+        );
+        const max = new Point(
+            Math.max(c.x + sz.x / 2, bc.x + bsz.x / 2),
+            Math.max(c.y + sz.y / 2, bc.y + bsz.y / 2),
+            Math.max(c.z + sz.z / 2, bc.z + bsz.z / 2),
+        );
+
+        // update this box
+        c.x = (min.x + max.x) / 2;
+        c.y = (min.y + max.y) / 2;
+        c.z = (min.z + max.z) / 2;
+        sz.x = max.x - min.x;
+        sz.y = max.y - min.y;
+        sz.z = max.y - min.y;
+    }
 }
 function getAttributes(e: Element, attName: string): number[] {
     const atts = e.getAttribute(attName).split(/\s+|,/);
@@ -744,46 +781,4 @@ function getAttributes(e: Element, attName: string): number[] {
 function getAttribute(e: Element, attName: string, defVal: number): number {
     const att = e.getAttribute(attName);
     return att ? parseFloat(att) : defVal;
-}
-
-function getBoundingBox(e: Element): Box {
-
-    // get boxes for all geometries
-    let boxes: Box[] = [];
-    const geoms = e.querySelectorAll('shape>:not(appearance)');
-    for (let i = 0; i < geoms.length; i++) {
-        boxes.push(new Box(geoms[i]));
-    }
-
-    // get the box
-    let box = boxes.length ? boxes[0] : null;
-
-    // merge boxes if we have more than one
-    if (boxes.length > 1) {
-        const c = box.center;
-        const sz = box.size;
-        const min = new Point(c.x - sz.x / 2, c.y - sz.y / 2, c.z - sz.z / 2);
-        const max = new Point(c.x + sz.x / 2, c.y + sz.y / 2, c.z + sz.z / 2);
-        boxes.forEach(box => {
-            const bc = box.center;
-            const bsz = box.size;
-            min.x = Math.min(min.x, bc.x - bsz.x / 2);
-            min.y = Math.min(min.y, bc.y - bsz.y / 2);
-            min.z = Math.min(min.z, bc.z - bsz.z / 2);
-            max.x = Math.max(max.x, bc.x + bsz.x / 2);
-            max.y = Math.max(max.y, bc.y + bsz.y / 2);
-            max.z = Math.max(max.z, bc.z + bsz.z / 2);
-        });
-
-        // update box
-        c.x = (min.x + max.x) / 2;
-        c.y = (min.y + max.y) / 2;
-        c.z = (min.z + max.z) / 2;
-        sz.x = max.x - min.x;
-        sz.y = max.y - min.y;
-        sz.z = max.y - min.y;
-    }
-
-    // done
-    return box;
 }
