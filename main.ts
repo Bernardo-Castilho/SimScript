@@ -833,7 +833,7 @@ function createX3Car(name: string, w: number, h: number, d: number, r: number, g
                 <box size='${w} ${h} ${d}' lit='true'></box>
             </shape>
         </transform>
-        <transform translation='${-w/2} 0 ${d/2}' scale='0.5 1 1'>
+        <transform translation='${-w*2} 0 ${d/2}' scale='0.5 1 1'>
             <shape>
                 <appearance>
                     <material diffuseColor='0 0 1' transparency='0.5'></material>

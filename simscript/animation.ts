@@ -454,10 +454,10 @@ class AnimatedEntity {
         this._width = this._height = this._depth = 0;
         switch (anim.hostTag) {
             case 'X3D':
-                const box = getBoundingBox(e);
-                this._width = box.width;
-                this._height = box.height;
-                this._depth = box.depth;
+                const sz = getBoundingBox(e).size;
+                this._width = sz.x;
+                this._height = sz.y;
+                this._depth = sz.z;
                 break;
             case 'A-SCENE':
                 requestAnimationFrame(() => {
@@ -673,115 +673,69 @@ function getAngle(pt1: Point, pt2: Point): number {
     return Math.round(angle * 180 / Math.PI);
 }
 
+
 /**
  * Represents a bounding box for an X3D element.
+ * 
+ * The {@link Box} class has a {@link Box.center} and a 
+ * {@link Box.size} properties that defines the position
+ * and dimensions of the X3D element.
  */
 class Box {
-    element: Element;
-    valid = false;
     center = new Point();
-    width = 0;
-    height = 0;
-    depth = 0;
+    size = new Point();
 
-    constructor(element?: Element) {
-        this.element = element;
-        this.applyGeometry();
-        this.applyTransforms();
+    constructor(e: Element) {
+        this.applyGeometry(e);
+        this.applyTransforms(e);
     }
-    applyGeometry() {
-        const geom = this.element;
-        if (geom) {
-            this.valid = true;
 
-            switch (geom.tagName) {
-                case 'BOX':
-                    this.width = this.height = this.depth = 2;
-                    let atts = getAttributes(geom, 'size');
-                    if (atts && atts.length >= 3) {
-                        this.width = atts[0];
-                        this.height = atts[1];
-                        this.depth = atts[2];
-                    }
-                    break;
-                case 'CONE':
-                    this.width = this.depth = 2 * Math.max(getAttribute(geom, 'topRadius', 0), getAttribute(geom, 'BottomRadius', 0));
-                    this.height = getAttribute(geom, 'height', 0);
-                    break;
-                case 'CYLINDER':
-                    this.width = this.depth = 2 * getAttribute(geom, 'radius', 0);
-                    this.height = getAttribute(geom, 'height', 0);
-                    break;
-                case 'SPHERE':
-                    this.width = this.depth = this.height = 2 * getAttribute(geom, 'radius', 1);
-                    break;
-                default:
-                    console.log('skipping unknown geometry', geom.tagName);
-                    this.valid = false;
-                    break;
+    private applyGeometry(e: Element) {
+        const sz = this.size;
+        switch (e.tagName) {
+            case 'BOX':
+                sz.x = sz.y = sz.z = 2;
+                let atts = getAttributes(e, 'size');
+                if (atts && atts.length >= 3) {
+                    sz.x = atts[0];
+                    sz.y = atts[1];
+                    sz.z = atts[2];
+                }
+                break;
+            case 'CONE':
+                sz.x = sz.z = 2 * Math.max(getAttribute(e, 'topRadius', 0), getAttribute(e, 'BottomRadius', 0));
+                sz.y = getAttribute(e, 'height', 0);
+                break;
+            case 'CYLINDER':
+                sz.x = sz.y = 2 * getAttribute(e, 'radius', 0);
+                sz.z = getAttribute(e, 'height', 0);
+                break;
+            case 'SPHERE':
+                sz.x = sz.y = sz.z = 2 * getAttribute(e, 'radius', 1);
+                break;
+            default:
+                console.log('skipping unknown geometry', e.tagName);
+                break;
+        }
+    }
+    private applyTransforms(el: Element) {
+        for (let e = el.closest('transform'); e != null; e = e.parentElement.closest('transform')) {
+            const t = getAttributes(e, 'translation');
+            if (t && t.length >= 3) {
+                const c = this.center;
+                c.x += t[0];
+                c.y += t[1];
+                c.z += t[2];
+            }
+            const s = getAttributes(e, 'scale');
+            if (s && s.length >= 3) {
+                const sz = this.size;
+                sz.x *= s[0];
+                sz.y *= s[1];
+                sz.z *= s[2];
             }
         }
     }
-    applyTransforms() {
-        if (this.element && this.valid) {
-            for (let e = this.element.closest('transform'); e != null; e = e.parentElement.closest('transform')) {
-                const t = getAttributes(e, 'translation');
-                if (t && t.length >= 3) {
-                    this.center.x += t[0];
-                    this.center.y += t[1];
-                    this.center.z += t[2];
-                }
-                const s = getAttributes(e, 'scale');
-                if (s && s.length >= 3) {
-                    this.width *= s[0];
-                    this.height *= s[1];
-                    this.depth *= s[2];
-                }
-            }
-        }
-    }
-}
-function getBoundingBox(e: Element): Box {
-
-    // get boxes for all geometries
-    let boxes: Box[] = [];
-    const geoms = e.querySelectorAll('shape>:not(appearance)');
-    for (let i = 0; i < geoms.length; i++) {
-        const box = new Box(geoms[i]);
-        if (box.valid) {
-            boxes.push(box);
-        }
-    }
-
-    // get the box
-    let box = boxes.length ? boxes[0] : null;
-
-    // merge boxes if we have more than one
-    if (boxes.length > 1) {
-        let c = box.center;
-        const min = new Point(c.x - box.width / 2, c.y - box.height / 2, c.z - box.depth / 2);
-        const max = new Point(c.x + box.width / 2, c.y + box.height / 2, c.z + box.depth / 2);
-        boxes.forEach(box => {
-            c = box.center;
-            min.x = Math.min(min.x, c.x - box.width / 2);
-            min.y = Math.min(min.y, c.y - box.height / 2);
-            min.z = Math.min(min.z, c.z - box.depth / 2);
-            max.x = Math.max(max.x, c.x + box.width / 2);
-            max.y = Math.max(max.y, c.y + box.height / 2);
-            max.z = Math.max(max.z, c.z + box.depth / 2);
-        });
-
-        // update box
-        box.center.x = (min.x + max.x) / 2;
-        box.center.y = (min.y + max.y) / 2;
-        box.center.z = (min.z + max.z) / 2;
-        box.width = max.x - min.x;
-        box.height = max.y - min.y;
-        box.depth = max.y - min.y;
-    }
-
-    // done
-    return box;
 }
 function getAttributes(e: Element, attName: string): number[] {
     const atts = e.getAttribute(attName).split(/\s+|,/);
@@ -790,4 +744,46 @@ function getAttributes(e: Element, attName: string): number[] {
 function getAttribute(e: Element, attName: string, defVal: number): number {
     const att = e.getAttribute(attName);
     return att ? parseFloat(att) : defVal;
+}
+
+function getBoundingBox(e: Element): Box {
+
+    // get boxes for all geometries
+    let boxes: Box[] = [];
+    const geoms = e.querySelectorAll('shape>:not(appearance)');
+    for (let i = 0; i < geoms.length; i++) {
+        boxes.push(new Box(geoms[i]));
+    }
+
+    // get the box
+    let box = boxes.length ? boxes[0] : null;
+
+    // merge boxes if we have more than one
+    if (boxes.length > 1) {
+        const c = box.center;
+        const sz = box.size;
+        const min = new Point(c.x - sz.x / 2, c.y - sz.y / 2, c.z - sz.z / 2);
+        const max = new Point(c.x + sz.x / 2, c.y + sz.y / 2, c.z + sz.z / 2);
+        boxes.forEach(box => {
+            const bc = box.center;
+            const bsz = box.size;
+            min.x = Math.min(min.x, bc.x - bsz.x / 2);
+            min.y = Math.min(min.y, bc.y - bsz.y / 2);
+            min.z = Math.min(min.z, bc.z - bsz.z / 2);
+            max.x = Math.max(max.x, bc.x + bsz.x / 2);
+            max.y = Math.max(max.y, bc.y + bsz.y / 2);
+            max.z = Math.max(max.z, bc.z + bsz.z / 2);
+        });
+
+        // update box
+        c.x = (min.x + max.x) / 2;
+        c.y = (min.y + max.y) / 2;
+        c.z = (min.z + max.z) / 2;
+        sz.x = max.x - min.x;
+        sz.y = max.y - min.y;
+        sz.z = max.y - min.y;
+    }
+
+    // done
+    return box;
 }
