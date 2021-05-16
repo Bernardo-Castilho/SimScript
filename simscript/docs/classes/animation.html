@@ -72,9 +72,8 @@
 					</div>
 					<p>The <a href="animation.html">Animation</a> class adds animations to existing
 					<a href="simulation.html">Simulation</a> objects.</p>
-					<p>The animations are shown in a host element defined in the
-						constructor. The host element can be regular <strong>div</strong> or
-					<strong>svg</strong> elements.</p>
+					<p>Animations are shown in a host element defined in the
+					constructor.</p>
 					<p>Animations may be in 2D or 3D.</p>
 					<p>2D animations may be hosted in regular <strong>div</strong> elements.
 						In this case, they use absolutely positioned elements
@@ -89,13 +88,13 @@
 					<a href="https://stackblitz.com/edit/typescript-pmkehn?file=index.html">Animation Options (A-Frame)</a>.</p>
 					<p>3D animations may also be hosted in <a href="https://www.x3dom.org/">X3DOM</a>
 					elements. <strong>X3DOM</strong> is the latest W3C standard for 3D content.</p>
-					<p><a href="queue.html">Queue</a> positions are defined by elements in the animation
-					host element, as specified by the <a href="animation.html#queues">queues</a> property.</p>
-					<p><a href="entity.html">Entity</a> objects are represented by HTML elements defined
-					by the <a href="animation.html#getentityhtml">getEntityHtml</a> function.</p>
 					<p>Entities are shown while in animated queues
 						(see the <a href="entity.html#enterqueue">Entity.enterQueue</a> method) and while in transit
-					between animated queues (see the {@link Entity.move} method).</p>
+					between animated queues (see the <a href="entity.html#delay">Entity.delay</a> method).</p>
+					<p><a href="queue.html">Queue</a> positions are defined by elements in the animation
+					host element, as specified by the <a href="animation.html#queues">queues</a> property.</p>
+					<p><a href="entity.html">Entity</a> objects are represented by elements defined by
+					the <a href="animation.html#getentityhtml">getEntityHtml</a> function.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -129,6 +128,12 @@
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="animation.html#sceneelement" class="tsd-kind-icon">scene<wbr>Element</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="animation.html#updatedisplay" class="tsd-kind-icon">update<wbr>Display</a></li>
+							</ul>
+						</section>
 					</div>
 				</section>
 			</section>
@@ -144,7 +149,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L97">animation.ts:97</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L96">animation.ts:96</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -191,7 +196,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L193">animation.ts:193</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L192">animation.ts:192</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -207,7 +212,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L196">animation.ts:196</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L195">animation.ts:195</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -239,7 +244,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L167">animation.ts:167</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L166">animation.ts:166</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -253,7 +258,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L170">animation.ts:170</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L169">animation.ts:169</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -282,7 +287,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L137">animation.ts:137</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L136">animation.ts:136</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -304,7 +309,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L143">animation.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L142">animation.ts:142</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -326,7 +331,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L149">animation.ts:149</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L148">animation.ts:148</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -349,7 +354,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L204">animation.ts:204</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L203">animation.ts:203</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -363,7 +368,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L207">animation.ts:207</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L206">animation.ts:206</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -393,7 +398,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L180">animation.ts:180</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L179">animation.ts:179</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -409,7 +414,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L183">animation.ts:183</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L182">animation.ts:182</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -440,7 +445,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/a1deca5/simscript/animation.ts#L160">animation.ts:160</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L159">animation.ts:159</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -452,6 +457,32 @@
 								the host&#39;s SCENE child element.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Element</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="updatedisplay" class="tsd-anchor"></a>
+					<h3>update<wbr>Display</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Display<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L230">animation.ts:230</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Updates the animation display by showing all entities in
+									animated queues or in transit between animated queues.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -501,6 +532,9 @@
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="animation.html#sceneelement" class="tsd-kind-icon">scene<wbr>Element</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="animation.html#updatedisplay" class="tsd-kind-icon">update<wbr>Display</a>
 							</li>
 						</ul>
 					</li>

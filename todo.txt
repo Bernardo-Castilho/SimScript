@@ -1,9 +1,4 @@
 # Todo
-- X3D
-    * crosswalk
-    - crosswalk/blitz
-    - more docs
-- a-frame
-    - crosswalk/blitz
-    - more docs
+- more docs/examples
 - more tests
+- network module

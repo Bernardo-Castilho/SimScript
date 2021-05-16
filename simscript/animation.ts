@@ -115,7 +115,7 @@ export class Animation {
 
         // simulation
         this._sim = sim;
-        this._sim.timeNowChanged.addEventListener(this._timeNowChanged, this);
+        this._sim.timeNowChanged.addEventListener(this.updateDisplay, this);
 
         // slow down the simulation to keep the animation smooth
         sim.yieldInterval = 15; // about 60 fps
@@ -213,8 +213,21 @@ export class Animation {
 
     // ** implementation
 
-    // updates entities in transit and in animated queues
-    protected _timeNowChanged() {
+    // gets/creates an AnimatedEntity for a regular entity
+    /** @internal */ _getAnimatedEntity(e: Entity): AnimatedEntity {
+        let ae = this._entities.get(e);
+        if (!ae) {
+            ae = new AnimatedEntity(this, e);
+            this._entities.set(e, ae);
+        }
+        return ae;
+    }
+
+    /**
+     * Updates the animation display by showing all entities in 
+     * animated queues or in transit between animated queues.
+     */
+    updateDisplay() {
 
         // reset queue start positions
         const host = this._host;
@@ -282,16 +295,6 @@ export class Animation {
                 }
             }
         });
-    }
-
-    // gets/creates an AnimatedEntity for a regular entity
-    /** @internal */ _getAnimatedEntity(e: Entity): AnimatedEntity {
-        let ae = this._entities.get(e);
-        if (!ae) {
-            ae = new AnimatedEntity(this, e);
-            this._entities.set(e, ae);
-        }
-        return ae;
     }
 }
 

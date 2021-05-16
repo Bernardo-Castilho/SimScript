@@ -1,6 +1,6 @@
 {
     "name": "simscript",
-    "version": "1.0.15",
+    "version": "1.0.16",
     "description": "A Discrete Event Simulation Library in TypeScript",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -8,7 +8,7 @@
         "/dist"
     ],
     "keywords": [
-        "Discrete Event Simulation", "Simulation", "Animation", "X3DOM"
+        "Discrete Event Simulation", "Simulation", "Animation", "X3DOM Simulation", "A-Frame Simulation"
     ],
     "author": "Bernardo Castilho",
     "license": "ISC",

@@ -14,6 +14,7 @@ import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { SimpleTest } from './simulations/simpletest';
 import { AnimationOptions, RoamEntity } from './simulations/animation-options';
 
+
 //----------------------------------------------------------
 // SimpleTest
 showSimulation(
@@ -478,10 +479,10 @@ showSimulation(
                 </viewpoint>
 
                 <!-- ground -->
-                <transform scale='300 150 .1' translation='0 0 -0.1'>
+                <transform scale='300 150 .1' translation='0 0 -0.5'>
                     <shape>
                         <appearance> 
-                            <material diffuseColor='0 .2 0' transparency='0.2'></material>
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.2'></material>
                         </appearance>
                         <box></box>
                     </shape>
@@ -510,13 +511,29 @@ showSimulation(
                 <!-- light -->
                 <transform class='light'>
                     <transform translation='0 120 25' rotation='1 0 0 1.57'>
-                        <shape>
+                        <shape> <!-- post -->
                             <appearance> 
-                                <material diffuseColor='.7 .7 .7'></material>
+                                <material diffuseColor='.5 .5 .0'></material>
                             </appearance>
-                            <cylinder height='50' radius='3'></cone>
+                            <cylinder height='50' radius='3'></cylinder>
                         </shape>
-                        <transform translation='0 75 0'>
+                        <transform translation='0 -21 0'>
+                            <shape> <!-- bottom rim -->
+                                <appearance> 
+                                    <material diffuseColor='.5 .5 .0'></material>
+                                </appearance>
+                                <cylinder height='5' radius='15'></cylinder>
+                            </shape>
+                        </transform>
+                        <transform translation='0 55 0'>
+                            <shape> <!-- box -->
+                                <appearance> 
+                                    <material diffuseColor='.5 .5 .0'></material>
+                                </appearance>
+                                <box size='22 65 20'></box>
+                            </shape>
+                        </transform>
+                        <transform translation='0 75 5'>
                             <shape>
                                 <appearance> 
                                     <material class='light red' diffuseColor='1 0 0'></material>
@@ -524,7 +541,7 @@ showSimulation(
                                 <sphere radius='10'></sphere>
                             </shape>
                         </transform>
-                        <transform translation='0 55 0'>
+                        <transform translation='0 55 5'>
                             <shape>
                                 <appearance> 
                                     <material class='light yellow' diffuseColor='1 1 0'></material>
@@ -532,7 +549,7 @@ showSimulation(
                                 <sphere radius='10'></sphere>
                             </shape>
                         </transform>
-                        <transform translation='0 35 0'>
+                        <transform translation='0 35 5'>
                             <shape>
                                 <appearance> 
                                     <material class='light green' diffuseColor='0 1 0'></material>
@@ -585,7 +602,7 @@ showSimulation(
             for (let i = 0; i < lights.length; i++) {
                 const e = lights[i] as HTMLElement;
                 e.setAttribute('transparency', i == sim.light ? '0' : '0.7');
-                e.closest('transform').setAttribute('scale', i == sim.light ? '1.2 1.2 1.2' : '1 1 1');
+                e.closest('transform').setAttribute('scale', i == sim.light ? '1.1 1.1 1.1' : '.9 .9 .9');
             }
         });
 
@@ -963,7 +980,7 @@ function createX3Queue(name: string, x: number, y: number, z = 0): string {
 function createX3Car(name: string, w: number, h: number, d: number, r: number, g: number, b: number): string {
     return `<transform class='ss-car ${name}' translation='0 0 ${h/2}'>
         <transform>
-            <shape>
+            <shape> <!-- body -->
                 <appearance>
                     <material diffuseColor='${r} ${g} ${b}'></material>
                 </appearance>
@@ -974,11 +991,27 @@ function createX3Car(name: string, w: number, h: number, d: number, r: number, g
             </shape>
         </transform>
         <transform translation='${-w * .2} 0 ${+d * .5}'>
-            <shape>
+            <shape> <!-- cabin -->
                 <appearance>
                     <material diffuseColor='${r/3} ${g/3} ${b/3}'></material>
                 </appearance>
-                <box size='${w * .5} ${h * .9} ${d}'></box>
+                <box size='${w * .5} ${h * .75} ${d}'></box>
+            </shape>
+        </transform>
+        <transform translation='${-w/2 + 4} 0 -2'>
+            <shape> <!-- front wheels -->
+                <appearance>
+                    <material diffuseColor='0 0 0'></material>
+                </appearance>
+                <cylinder radius='3' height='${h + 2}'></cylinder>
+            </shape>
+        </transform>
+        <transform translation='${+w/2 - 4} 0 -2'>
+            <shape> <!-- rear wheels -->
+                <appearance>
+                    <material diffuseColor='0 0 0'></material>
+                </appearance>
+                <cylinder radius='3' height='${h + 2}'></cylinder>
             </shape>
         </transform>
     </transform>`;
