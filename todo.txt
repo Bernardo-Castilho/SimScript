@@ -1,14 +1,9 @@
 # Todo
 - X3D
-    - combine boxes
-    - queue angle
-    - docs
-    - animTest blitz
-    - crosswalk
+    * crosswalk
+    - crosswalk/blitz
+    - more docs
 - a-frame
-    - queue angle
-    - docs
-    * animTest blitz
-    - crosswalk
+    - crosswalk/blitz
     - more docs
 - more tests

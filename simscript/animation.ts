@@ -49,9 +49,8 @@ interface ISplinePosition {
  * The {@link Animation} class adds animations to existing
  * {@link Simulation} objects. 
  * 
- * The animations are shown in a host element defined in the
- * constructor. The host element can be regular **div** or
- * **svg** elements.
+ * Animations are shown in a host element defined in the
+ * constructor. 
  * 
  * Animations may be in 2D or 3D.
  * 
@@ -72,15 +71,15 @@ interface ISplinePosition {
  * 3D animations may also be hosted in [X3DOM](https://www.x3dom.org/) 
  * elements. **X3DOM** is the latest W3C standard for 3D content.
  * 
+ * Entities are shown while in animated queues
+ * (see the {@link Entity.enterQueue} method) and while in transit 
+ * between animated queues (see the {@link Entity.delay} method).
+ * 
  * {@link Queue} positions are defined by elements in the animation
  * host element, as specified by the {@link queues} property.
  * 
- * {@link Entity} objects are represented by HTML elements defined
- * by the {@link getEntityHtml} function.
- * 
- * Entities are shown while in animated queues
- * (see the {@link Entity.enterQueue} method) and while in transit 
- * between animated queues (see the {@link Entity.move} method).
+ * {@link Entity} objects are represented by elements defined by 
+ * the {@link getEntityHtml} function.
  */
 export class Animation {
     private _sim: Simulation;

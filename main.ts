@@ -385,7 +385,7 @@ showSimulation(
             This sample uses the same Crosswalk <b>Simulation</b> class
             as shown earlier, this time using an SVG-based animation.
         </p>
-        <div class='ss-time-now'>
+        <div class='svg ss-time-now'>
             Time: <b><span>0.00</span></b> hours
         </div>
         <svg class='ss-anim' viewBox='0 0 1000 500'>
@@ -445,13 +445,150 @@ showSimulation(
 
         // update semaphore and timeNow display when the time changes
         const lights = animationHost.querySelectorAll('.light circle');
-        const timeNow = document.querySelector('.ss-time-now span');
+        const timeNow = document.querySelector('.svg.ss-time-now span');
         sim.timeNowChanged.addEventListener(() => {
             timeNow.textContent = format(sim.timeNow / 3600);
             for (let i = 0; i < lights.length; i++) {
                 (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
             }
         });
+    }
+);
+
+//----------------------------------------------------------
+// Animated Crosswalk (X3DOM)
+showSimulation(
+    new Crosswalk(),
+    'Animated Crosswalk Simulation (X3DOM)',
+    `   <p>
+            This sample uses the same Crosswalk <b>Simulation</b> class
+            as shown earlier, this time using an X3DOM-based animation.
+        </p>
+        <div class='x3d ss-time-now'>
+            Time: <b><span>0.00</span></b> hours
+        </div>
+        <x3d class='ss-anim anim-host'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='0 -320 320'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='300 150 .1' translation='0 0 -0.1'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0 .2 0' transparency='0.2'></material>
+                        </appearance>
+                        <box></box>
+                    </shape>
+                </transform>
+
+                <!-- street -->
+                <transform scale='250 50 .1'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='.95 .95 .95'></material>
+                        </appearance>
+                        <box></box>
+                    </shape>
+                </transform>
+
+                <!-- crosswalk -->
+                <transform scale='50 50 .1' translation='0 0 .1'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='.6 .6 .6'></material>
+                        </appearance>
+                        <box></box>
+                    </shape>
+                </transform>
+
+                <!-- light -->
+                <transform class='light'>
+                    <transform translation='0 120 25' rotation='1 0 0 1.57'>
+                        <shape>
+                            <appearance> 
+                                <material diffuseColor='.7 .7 .7'></material>
+                            </appearance>
+                            <cylinder height='50' radius='3'></cone>
+                        </shape>
+                        <transform translation='0 75 0'>
+                            <shape>
+                                <appearance> 
+                                    <material class='light red' diffuseColor='1 0 0'></material>
+                                </appearance>
+                                <sphere radius='10'></sphere>
+                            </shape>
+                        </transform>
+                        <transform translation='0 55 0'>
+                            <shape>
+                                <appearance> 
+                                    <material class='light yellow' diffuseColor='1 1 0'></material>
+                                </appearance>
+                                <sphere radius='10'></sphere>
+                            </shape>
+                        </transform>
+                        <transform translation='0 35 0'>
+                            <shape>
+                                <appearance> 
+                                    <material class='light green' diffuseColor='0 1 0'></material>
+                                </appearance>
+                                <sphere radius='10'></sphere>
+                            </shape>
+                        </transform>
+                    </transform>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('car-arr', -250, 0)}
+                ${createX3Queue('car-xing', -50, 0)}
+                ${createX3Queue('car-xed', +250, 0)}
+                ${createX3Queue('ped-arr', -125, -100)}
+                ${createX3Queue('ped-xing', 0, -75, 5)}
+                ${createX3Queue('ped-xed', 0, 75, 5)}
+                ${createX3Queue('ped-leave', +250, 100)}
+            </scene>
+        </x3d>
+    `,
+    (sim: Crosswalk, animationHost: HTMLElement) => {
+        new Animation(sim, animationHost, {
+            getEntityHtml: (e: Entity) => {
+                if (e instanceof Pedestrian) {
+                    return createX3Person('pedestrian');
+                } else {
+                    return e.serial % 2
+                        ? createX3Car('car red', 30, 14, 8, 1, 0, 0)
+                        : createX3Car('car green', 25, 12, 8, 1, 1, 0);
+                }
+            },
+            queues: [
+                { queue: sim.qPedArr, element: 'x3d .ss-queue.ped-arr' },
+                { queue: sim.qPedXing, element: 'x3d .ss-queue.ped-xing', angle: -45, max: 8 },
+                { queue: sim.qPedXed, element: 'x3d .ss-queue.ped-xed' },
+                { queue: sim.qPedLeave, element: 'x3d .ss-queue.ped-leave' },
+
+                { queue: sim.qCarArr, element: 'x3d .ss-queue.car-arr' },
+                { queue: sim.qCarXing, element: 'x3d .ss-queue.car-xing', angle: 0, max: 16 },
+                { queue: sim.qCarXed, element: 'x3d .ss-queue.car-xed' },
+            ]
+        });
+
+        // update semaphore and timeNow display when the time changes
+        const lights = animationHost.querySelectorAll('material.light');
+        const timeNow = document.querySelector('.x3d.ss-time-now span');
+        sim.timeNowChanged.addEventListener(() => {
+            timeNow.textContent = format(sim.timeNow / 3600);
+            for (let i = 0; i < lights.length; i++) {
+                const e = lights[i] as HTMLElement;
+                e.setAttribute('transparency', i == sim.light ? '0' : '0.7');
+                e.closest('transform').setAttribute('scale', i == sim.light ? '1.2 1.2 1.2' : '1 1 1');
+            }
+        });
+
     }
 );
 
@@ -734,7 +871,7 @@ showSimulation(new AnimationOptions({
                 </viewpoint>
 
                 <!-- background -->
-                <transform scale='150 150 0.1' translation='0 0 -5'>
+                <transform scale='150 150 0.1'>
                     <shape>
                         <appearance> 
                             <material diffuseColor='0 .9 1'></material>
@@ -772,12 +909,12 @@ showSimulation(new AnimationOptions({
             getEntityHtml: (e: Entity) => {
                 if (e instanceof RoamEntity) {
                     return e.fast
-                        ? createX3Car('yellow', 16, 8, 8, 1, 1, 0)
-                        : createX3Car('red', 8, 16, 10, 1, 0, 0);
+                        ? createX3Car('yellow', 30, 10, 4, 1, 1, 0)
+                        : createX3Car('red', 20, 8, 4, 1, 0, 0);
                 } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
-                        ? createX3Car('green', 16, 8, 8, 0, 1, 0)
-                        : createX3Car('blue', 8, 16, 10, 0, 0, 1);
+                        ? createX3Car('green', 30, 10, 4, 0, 1, 0)
+                        : createX3Car('blue', 20, 8, 4, 0, 0, 1);
                 }
             },
             queues: [
@@ -817,31 +954,62 @@ function createX3Queue(name: string, x: number, y: number, z = 0): string {
         <transform class='ss-queue ${name}' translation='${x} ${y} ${z}'>
             <shape>
                 <appearance>
-                    <material transparency='0.8' diffuseColor='1 1 0'/>
+                    <material transparency='0.9' diffuseColor='1 1 0'/>
                 </appearance>
-                <sphere radius='1'></sphere>
+                <sphere radius='4'></sphere>
             </shape>
         </transform>`;
 }
 function createX3Car(name: string, w: number, h: number, d: number, r: number, g: number, b: number): string {
-    return `<transform class='ss-car ${name}'>
+    return `<transform class='ss-car ${name}' translation='0 0 ${h/2}'>
         <transform>
             <shape>
                 <appearance>
                     <material diffuseColor='${r} ${g} ${b}'></material>
                 </appearance>
-                <box size='${w} ${h} ${d}' lit='true'></box>
+                <box size='${w} ${h} ${d}'></box>
             </shape>
             <shape render='false'> <!-- 5 unit padding -->
-                <box size='${w + 5} ${h + 5} ${d + 5}' lit='true'></box>
+                <box size='${w * 1.1} ${h * 1.1} ${d * 1.1}'></box>
             </shape>
         </transform>
-        <transform translation='${-w/2} 0 ${+d/2}' scale='0.5 1 1'>
+        <transform translation='${-w * .2} 0 ${+d * .5}'>
             <shape>
                 <appearance>
-                    <material diffuseColor='0 0 1' transparency='0.5'></material>
+                    <material diffuseColor='${r/3} ${g/3} ${b/3}'></material>
                 </appearance>
-                <sphere radius='4' lit='true'></sphere>
+                <box size='${w * .5} ${h * .9} ${d}'></box>
+            </shape>
+        </transform>
+    </transform>`;
+}
+function createX3Person(name: string) {
+    return `<transform class='${name}'>
+        <transform>
+            <shape>
+                <appearance> 
+                    <material diffuseColor='0 0 .5'></material>
+                </appearance>
+                <box size='5 5 8'></box>
+            </shape>
+            <shape render='false'> <!-- padding -->
+                <box size='7 10 8'></box>
+            </shape>
+        </transform>
+        <transform translation='0 0 8'>
+            <shape>
+                <appearance> 
+                    <material diffuseColor='0 1 0'></material>
+                </appearance>
+                <box size='5 8 8'></box>
+            </shape>
+        </transform>
+        <transform translation='0 0 16'>
+            <shape>
+                <appearance> 
+                    <material diffuseColor='.5 .5 0'></material>
+                </appearance>
+                <sphere radius='3'></sphere>
             </shape>
         </transform>
     </transform>`;
