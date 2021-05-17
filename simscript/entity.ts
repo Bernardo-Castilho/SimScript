@@ -180,7 +180,7 @@ export class Entity {
      *         if (sim.qWait.canEnter()) { // queue has enough capacity
      *             this.enterQueueImmediately(sim.qWait); // no need to wait (faster)
      *         } else {
-     *             await this.enterQueue(sim.qWait); // might have to wait (slower)
+     *             await this.enterQueue(sim.qWait); // will have to wait (slower)
      *         }
      * 
      *         await this.enterQueue(sim.qService);
@@ -259,9 +259,10 @@ export class Entity {
         }).promise;
     }
     /**
-     * Releases entities that are currently waiting for a signal.
+     * Sends a signal that releases entities that are currently waiting
+     * for the signal.
      * 
-     * @param signal Value of the signal.
+     * @param signal Signal value.
      * @param releaseMax Maximum number of entities to release.
      * If not specified, all entities waiting for the signal are
      * released.
@@ -294,7 +295,10 @@ export class Entity {
     }
     /**
      * Returns a string representation of the {@link Entity}.
-     * @returns 
+     * 
+     * This method is typically used for debugging.
+     * 
+     * @returns A string representation of the {@link Entity}.
      */
     toString() {
         return this.constructor.name + '#' + this.serial.toString()

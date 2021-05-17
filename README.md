@@ -1,10 +1,13 @@
 # SimScript
 
-A Discrete Event Simulation Library in TypeScript
-with support for 2D and 3D animations.
+A Discrete Event Simulation Library in TypeScript with
+support for 2D and 3D animations.
 
-For details, see the 
-[API Documentation](https://bernardo-castilho.github.io/simscript/docs/).
+This [SimScript Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
+shows several simulations, including 2D and 3D animations.
+
+The [SimScript API Documentation](https://bernardo-castilho.github.io/simscript/docs/)
+describes all the classes in the **SimScript** library and their properties.
 
 **SimScript** uses JavaScript's
 [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
@@ -14,27 +17,27 @@ features to make simulations easy to write and understand.
 
 ## Simulation Class
 
-Simulations create resources (queues) and entities which execute an async **script**
-method that describes the actions each entity should perform.
+Simulations create resources (queues) and entities which execute an async
+**script** method that describes the actions each entity should perform.
 
-The **Simulation** class is abstract. In most cases, you will create a class that
-extends it to create the queues and entities you need.
+The **Simulation** class is abstract. In most cases, you will create a class 
+that extends it to create the queues and entities you need.
 
 ## Entity Class
 
 Entities represent active elements that execute scripts. Scripts are async
 methods that contain instructions for entities.
-Typical actions include entering and leaving **queues**, going through **delays**,
-and sending or waiting for **signals**.
+Typical actions include entering and leaving **queues**, going through
+**delays**, and sending or waiting for **signals**.
 
-The **Entity** class is abstract. In most cases, you will create one of more classes that
-extend it to perform the actions required by your simulations.
+The **Entity** class is abstract. In most cases, you will create one of more 
+classes that extend it to perform the actions required by your simulations.
 
 ## Queue Class
 
 Queues represent resources that can be seized and released by entities.
-Queues keep track of their utilization and may constrain the flow of entities 
-through the simulation.
+Queues keep track of their utilization and may constrain the flow of 
+entities through the simulation.
 
 ## Animation Class
 
@@ -106,8 +109,11 @@ The links below show some samples of **SimScript** simulations:
 - [Crosswalk](https://stackblitz.com/edit/typescript-nq3vvd?file=index.ts)\
     Uses the **waitSignal** and **sendSignal** methods to simulate a crosswalk.
 
-- [Animated Crosswalk](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)\
-    Uses the **Animation** class to show an animated version of the **Crosswalk** simulation.
+- [Animated Crosswalk (SVG)](https://stackblitz.com/edit/typescript-395kik?file=index.ts)\
+    Uses the **Animation** class to show an SVG-based animated version of the **Crosswalk** simulation.
+
+- [Animated Crosswalk (X3DOM)](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)\
+    Uses the **Animation** class to show an X3DOM-based animated version of the **Crosswalk** simulation.
 
 - [Animation Options (SVG)](https://stackblitz.com/edit/typescript-3zcuw1?file=animation-options.ts)\
     Uses an SVG-based 2D animation to show the effect of some

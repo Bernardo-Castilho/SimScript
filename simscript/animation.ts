@@ -10,7 +10,7 @@ const _DEFAULT_SPLINE_TENSION = 0.1;
 declare var THREE: any;
 
 /**
- * Defines animation parameters for {@link Queue} objects.
+ * Defines animation parameters for animated {@link Queue} objects.
  */
 export interface IAnimatedQueue {
     /**
@@ -49,36 +49,38 @@ interface ISplinePosition {
  * The {@link Animation} class adds animations to existing
  * {@link Simulation} objects. 
  * 
- * Animations are shown in a host element defined in the
- * constructor. 
+ * Animations are shown in a host element defined in the constructor. 
  * 
  * Animations may be in 2D or 3D.
  * 
  * 2D animations may be hosted in regular **div** elements. 
- * In this case, they use absolutely positioned elements
- * (such as **img**) to represent entities.
+ * In this case, they use absolutely positioned elements (such as **img**)
+ * to represent entities.
  * 
  * 2D animations may also be hosted in **svg** elements.
- * In this case, they use SVG (often *g*) elements to represent
- * entities. You can see a sample here:
- * [Animated Crosswalk (SVG)](https://stackblitz.com/edit/typescript-ehhn4e?file=index.html).
+ * In this case, they use SVG (often *g*) elements to represent entities.
+ * You can see a sample here:
+ * [Animated Crosswalk (SVG)](https://stackblitz.com/edit/typescript-395kik?file=index.ts).
  * 
- * 3D animations may be hosted in [A-Frame](https://aframe.io)
- * elements. **A-Frame** is a 3D/VR framework that makes it easy
- * to create 3D/VR animations. You can see an example here:
- * [Animation Options (A-Frame)](https://stackblitz.com/edit/typescript-pmkehn?file=index.html).
+ * 3D animations may be hosted in [A-Frame](https://aframe.io) elements.
+ * **A-Frame** is a 3D/VR framework that makes it easy to create 3D/VR animations.
+ * You can see an example here:
+ * [Animation Options (A-Frame)](https://stackblitz.com/edit/typescript-pmkehn?file=index.ts).
  * 
  * 3D animations may also be hosted in [X3DOM](https://www.x3dom.org/) 
  * elements. **X3DOM** is the latest W3C standard for 3D content.
+ * You can see examples here:
+ * [Animated Crosswalk (X3DOM)](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)
+ * and
+ * [Animation Options (X3DOM)](https://stackblitz.com/edit/typescript-oncuqe?file=index.ts).
  * 
- * Entities are shown while in animated queues
- * (see the {@link Entity.enterQueue} method) and while in transit 
- * between animated queues (see the {@link Entity.delay} method).
+ * Entities are shown while in animated queues (see the {@link Entity.enterQueue} method)
+ * and while in transit between animated queues (see the {@link Entity.delay} method).
  * 
- * {@link Queue} positions are defined by elements in the animation
- * host element, as specified by the {@link queues} property.
+ * {@link Queue} positions are defined by elements in the animation host element,
+ * as specified when you set the {@link queues} property.
  * 
- * {@link Entity} objects are represented by elements defined by 
+ * {@link Entity} objects are represented by elements whose appearance is specified by 
  * the {@link getEntityHtml} function.
  */
 export class Animation {
@@ -137,7 +139,7 @@ export class Animation {
         return this._host;
     }
     /**
-     * Gets the host element's tagName.
+     * Gets the tag name of the element's host element.
      */
     get hostTag(): string {
         return this._host.tagName.toUpperCase();
@@ -153,8 +155,8 @@ export class Animation {
      * Gets a reference to the scene element.
      * 
      * In most cases, the scene element is the host element.
-     * If the host is an X3D element, the scene element is
-     * the host's SCENE child element.
+     * If the host is an X3D element, the scene element is the host's SCENE
+     * child element.
      */
     get sceneElement(): Element {
         return this._scene;
@@ -162,6 +164,26 @@ export class Animation {
     /**
      * Gets or sets a function that returns the HTML to be used
      * to create elements that represent the animated entity.
+     * 
+     * The function should return the element's innerHTML.
+     * The {@link Animation} class creates the outer HTML.
+     * 
+     * The innerHTML string format depends on the animation's
+     * host element.
+     * 
+     * For regular **div** hosts, the function will usually
+     * return a **div** or an **img** element.
+     * 
+     * For **SVG** hosts, the function will usually return
+     * a **g** element, which represents an **SVG** group,
+     * or an **SVG** primitive such as **polygon** or **circle**.
+     * 
+     * For **A-Frame** hosts, the function will usually return
+     * an **a-entity** element.
+     * 
+     * For **X3D** hosts, the function will usually return a
+     * **transform** element containing one of more **shape**
+     * elements.
      */
     get getEntityHtml(): Function {
         return this._getEntityHtml;
@@ -198,7 +220,22 @@ export class Animation {
     /**
      * Gets or sets an array with queue animation information.
      * 
-     * The items in the array should implement the {@link IAnimatedQueue} interface,
+     * The items in the array should implement the {@link IAnimatedQueue} interface.
+     * 
+     * For example:
+     * 
+     * ```typescript
+     * new Animation(sim, animationHost, {
+     *     getEntityHtml: e => {...},
+     *     queues: [
+     *         { queue: sim.qPedArr, element: '.ss-queue.ped-arr' },
+     *         { queue: sim.qPedXing, element: '.ss-queue.ped-xing', angle: -45, max: 8 },
+     *         { queue: sim.qPedXed, element: '.ss-queue.ped-xed' },
+     *         { queue: sim.qPedLeave, element: '.ss-queue.ped-leave' },
+     *         ...
+     *     ]
+     * });
+     * ```
      */
     get queues(): IAnimatedQueue[] {
         return this._queueArray;
@@ -210,24 +247,14 @@ export class Animation {
             this._queues.set(aq._q, aq);
         });
     }
-
-    // ** implementation
-
-    // gets/creates an AnimatedEntity for a regular entity
-    /** @internal */ _getAnimatedEntity(e: Entity): AnimatedEntity {
-        let ae = this._entities.get(e);
-        if (!ae) {
-            ae = new AnimatedEntity(this, e);
-            this._entities.set(e, ae);
-        }
-        return ae;
-    }
-
     /**
      * Updates the animation display by showing all entities in 
      * animated queues or in transit between animated queues.
+     * 
+     * This method is called by the {@link Animation} class 
+     * automatically when the simulation time advances.
      */
-    updateDisplay() {
+     updateDisplay() {
 
         // reset queue start positions
         const host = this._host;
@@ -295,6 +322,18 @@ export class Animation {
                 }
             }
         });
+    }
+
+    // ** implementation
+
+    // gets/creates an AnimatedEntity for a regular entity
+    /** @internal */ _getAnimatedEntity(e: Entity): AnimatedEntity {
+        let ae = this._entities.get(e);
+        if (!ae) {
+            ae = new AnimatedEntity(this, e);
+            this._entities.set(e, ae);
+        }
+        return ae;
     }
 }
 

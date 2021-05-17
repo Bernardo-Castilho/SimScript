@@ -72,28 +72,30 @@
 					</div>
 					<p>The <a href="animation.html">Animation</a> class adds animations to existing
 					<a href="simulation.html">Simulation</a> objects.</p>
-					<p>Animations are shown in a host element defined in the
-					constructor.</p>
+					<p>Animations are shown in a host element defined in the constructor.</p>
 					<p>Animations may be in 2D or 3D.</p>
 					<p>2D animations may be hosted in regular <strong>div</strong> elements.
-						In this case, they use absolutely positioned elements
-					(such as <strong>img</strong>) to represent entities.</p>
+						In this case, they use absolutely positioned elements (such as <strong>img</strong>)
+					to represent entities.</p>
 					<p>2D animations may also be hosted in <strong>svg</strong> elements.
-						In this case, they use SVG (often <em>g</em>) elements to represent
-						entities. You can see a sample here:
-					<a href="https://stackblitz.com/edit/typescript-ehhn4e?file=index.html">Animated Crosswalk (SVG)</a>.</p>
-					<p>3D animations may be hosted in <a href="https://aframe.io">A-Frame</a>
-						elements. <strong>A-Frame</strong> is a 3D/VR framework that makes it easy
-						to create 3D/VR animations. You can see an example here:
-					<a href="https://stackblitz.com/edit/typescript-pmkehn?file=index.html">Animation Options (A-Frame)</a>.</p>
+						In this case, they use SVG (often <em>g</em>) elements to represent entities.
+						You can see a sample here:
+					<a href="https://stackblitz.com/edit/typescript-395kik?file=index.ts">Animated Crosswalk (SVG)</a>.</p>
+					<p>3D animations may be hosted in <a href="https://aframe.io">A-Frame</a> elements.
+						<strong>A-Frame</strong> is a 3D/VR framework that makes it easy to create 3D/VR animations.
+						You can see an example here:
+					<a href="https://stackblitz.com/edit/typescript-pmkehn?file=index.ts">Animation Options (A-Frame)</a>.</p>
 					<p>3D animations may also be hosted in <a href="https://www.x3dom.org/">X3DOM</a>
-					elements. <strong>X3DOM</strong> is the latest W3C standard for 3D content.</p>
-					<p>Entities are shown while in animated queues
-						(see the <a href="entity.html#enterqueue">Entity.enterQueue</a> method) and while in transit
-					between animated queues (see the <a href="entity.html#delay">Entity.delay</a> method).</p>
-					<p><a href="queue.html">Queue</a> positions are defined by elements in the animation
-					host element, as specified by the <a href="animation.html#queues">queues</a> property.</p>
-					<p><a href="entity.html">Entity</a> objects are represented by elements defined by
+						elements. <strong>X3DOM</strong> is the latest W3C standard for 3D content.
+						You can see examples here:
+						<a href="https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts">Animated Crosswalk (X3DOM)</a>
+						and
+					<a href="https://stackblitz.com/edit/typescript-oncuqe?file=index.ts">Animation Options (X3DOM)</a>.</p>
+					<p>Entities are shown while in animated queues (see the <a href="entity.html#enterqueue">Entity.enterQueue</a> method)
+					and while in transit between animated queues (see the <a href="entity.html#delay">Entity.delay</a> method).</p>
+					<p><a href="queue.html">Queue</a> positions are defined by elements in the animation host element,
+					as specified when you set the <a href="animation.html#queues">queues</a> property.</p>
+					<p><a href="entity.html">Entity</a> objects are represented by elements whose appearance is specified by
 					the <a href="animation.html#getentityhtml">getEntityHtml</a> function.</p>
 				</div>
 			</section>
@@ -149,7 +151,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L96">animation.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L98">animation.ts:98</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -196,7 +198,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L192">animation.ts:192</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L214">animation.ts:214</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -212,7 +214,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L195">animation.ts:195</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L217">animation.ts:217</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -244,7 +246,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L166">animation.ts:166</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L188">animation.ts:188</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -252,13 +254,27 @@
 									<p>Gets or sets a function that returns the HTML to be used
 									to create elements that represent the animated entity.</p>
 								</div>
+								<p>The function should return the element&#39;s innerHTML.
+								The <a href="animation.html">Animation</a> class creates the outer HTML.</p>
+								<p>The innerHTML string format depends on the animation&#39;s
+								host element.</p>
+								<p>For regular <strong>div</strong> hosts, the function will usually
+								return a <strong>div</strong> or an <strong>img</strong> element.</p>
+								<p>For <strong>SVG</strong> hosts, the function will usually return
+									a <strong>g</strong> element, which represents an <strong>SVG</strong> group,
+								or an <strong>SVG</strong> primitive such as <strong>polygon</strong> or <strong>circle</strong>.</p>
+								<p>For <strong>A-Frame</strong> hosts, the function will usually return
+								an <strong>a-entity</strong> element.</p>
+								<p>For <strong>X3D</strong> hosts, the function will usually return a
+									<strong>transform</strong> element containing one of more <strong>shape</strong>
+								elements.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Function</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L169">animation.ts:169</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L191">animation.ts:191</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -266,6 +282,20 @@
 									<p>Gets or sets a function that returns the HTML to be used
 									to create elements that represent the animated entity.</p>
 								</div>
+								<p>The function should return the element&#39;s innerHTML.
+								The <a href="animation.html">Animation</a> class creates the outer HTML.</p>
+								<p>The innerHTML string format depends on the animation&#39;s
+								host element.</p>
+								<p>For regular <strong>div</strong> hosts, the function will usually
+								return a <strong>div</strong> or an <strong>img</strong> element.</p>
+								<p>For <strong>SVG</strong> hosts, the function will usually return
+									a <strong>g</strong> element, which represents an <strong>SVG</strong> group,
+								or an <strong>SVG</strong> primitive such as <strong>polygon</strong> or <strong>circle</strong>.</p>
+								<p>For <strong>A-Frame</strong> hosts, the function will usually return
+								an <strong>a-entity</strong> element.</p>
+								<p>For <strong>X3D</strong> hosts, the function will usually return a
+									<strong>transform</strong> element containing one of more <strong>shape</strong>
+								elements.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -287,7 +317,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L136">animation.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L138">animation.ts:138</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -309,12 +339,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L142">animation.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L144">animation.ts:144</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets the host element&#39;s tagName.</p>
+									<p>Gets the tag name of the element&#39;s host element.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -331,7 +361,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L148">animation.ts:148</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L150">animation.ts:150</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -354,28 +384,52 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L203">animation.ts:203</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L240">animation.ts:240</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Gets or sets an array with queue animation information.</p>
 								</div>
-								<p>The items in the array should implement the <a href="../interfaces/ianimatedqueue.html">IAnimatedQueue</a> interface,</p>
+								<p>The items in the array should implement the <a href="../interfaces/ianimatedqueue.html">IAnimatedQueue</a> interface.</p>
+								<p>For example:</p>
+								<pre><code class="language-typescript"><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Animation</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">, </span><span style="color: #001080">animationHost</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #795E26">getEntityHtml</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {...},</span>
+<span style="color: #000000">    </span><span style="color: #001080">queues:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedArr</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-arr&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedXing</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-xing&#039;</span><span style="color: #000000">, </span><span style="color: #001080">angle:</span><span style="color: #000000"> -</span><span style="color: #098658">45</span><span style="color: #000000">, </span><span style="color: #001080">max:</span><span style="color: #000000"> </span><span style="color: #098658">8</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedXed</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-xed&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedLeave</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-leave&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        ...</span>
+<span style="color: #000000">    ]</span>
+<span style="color: #000000">});</span>
+</code></pre>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ianimatedqueue.html" class="tsd-signature-type" data-tsd-kind="Interface">IAnimatedQueue</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L206">animation.ts:206</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L243">animation.ts:243</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Gets or sets an array with queue animation information.</p>
 								</div>
-								<p>The items in the array should implement the <a href="../interfaces/ianimatedqueue.html">IAnimatedQueue</a> interface,</p>
+								<p>The items in the array should implement the <a href="../interfaces/ianimatedqueue.html">IAnimatedQueue</a> interface.</p>
+								<p>For example:</p>
+								<pre><code class="language-typescript"><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Animation</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">, </span><span style="color: #001080">animationHost</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #795E26">getEntityHtml</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {...},</span>
+<span style="color: #000000">    </span><span style="color: #001080">queues:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedArr</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-arr&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedXing</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-xing&#039;</span><span style="color: #000000">, </span><span style="color: #001080">angle:</span><span style="color: #000000"> -</span><span style="color: #098658">45</span><span style="color: #000000">, </span><span style="color: #001080">max:</span><span style="color: #000000"> </span><span style="color: #098658">8</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedXed</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-xed&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qPedLeave</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;.ss-queue.ped-leave&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">        ...</span>
+<span style="color: #000000">    ]</span>
+<span style="color: #000000">});</span>
+</code></pre>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -398,7 +452,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L179">animation.ts:179</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L201">animation.ts:201</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -414,7 +468,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L182">animation.ts:182</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L204">animation.ts:204</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -445,7 +499,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L159">animation.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L161">animation.ts:161</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -453,8 +507,8 @@
 									<p>Gets a reference to the scene element.</p>
 								</div>
 								<p>In most cases, the scene element is the host element.
-									If the host is an X3D element, the scene element is
-								the host&#39;s SCENE child element.</p>
+									If the host is an X3D element, the scene element is the host&#39;s SCENE
+								child element.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Element</span></h4>
 						</li>
@@ -473,7 +527,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/7c04b18/simscript/animation.ts#L230">animation.ts:230</a></li>
+									<li>Defined in <a href="https://github.com/Bernardo-Castilho/SimScript/blob/133bbbb/simscript/animation.ts#L257">animation.ts:257</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -481,6 +535,8 @@
 									<p>Updates the animation display by showing all entities in
 									animated queues or in transit between animated queues.</p>
 								</div>
+								<p>This method is called by the <a href="animation.html">Animation</a> class
+								automatically when the simulation time advances.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>

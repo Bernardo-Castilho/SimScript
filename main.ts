@@ -17,6 +17,7 @@ import { AnimationOptions, RoamEntity } from './simulations/animation-options';
 
 //----------------------------------------------------------
 // SimpleTest
+if (false)
 showSimulation(
     new SimpleTest({
         stateChanged: (sim) => {
@@ -348,10 +349,12 @@ showSimulation(
             getEntityHtml: e => {
 
                 // use explicit image sizes to measuring errors while loading images
+                const url = 'https://github.com/Bernardo-Castilho/SimScript/blob/main/resources';
                 return e instanceof Pedestrian
-                    ? `<img class='ped' src='resources/blueped.png' width='15' height='19'>`
-                    : `<img class='car' src='resources/redcar.png' width='55' height='19'>`;
-                
+                    ? `<img class='ped' src='${url}/blueped.png?raw=true' width='15' height='19'>`
+                    : `<img class='car' src='${url}/redcar.png?raw=true' width='55' height='19'>`;
+                    //? `<img class='ped' src='resources/blueped.png' width='15' height='19'>`
+                    //: `<img class='car' src='resources/redcar.png' width='55' height='19'>`;
             },
             queues: [
                 { queue: sim.qPedArr, element: '.ss-queue.ped-arr' },
