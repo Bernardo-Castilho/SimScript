@@ -105,7 +105,7 @@ export class Entity {
      * }
      * ```
      * 
-     * Note that calls to the async methods {@link enterQueue}, {@link waitSignal},
+     * Note that calls to async methods such as {@link enterQueue}, {@link waitSignal},
      * and {@link delay} should be preceded by the **await** keyword.
      * 
      * @param delay Number of simulated time units to wait for.
@@ -145,7 +145,7 @@ export class Entity {
      * }
      * ```
      * 
-     * Note that calls to the async methods {@link enterQueue}, {@link waitSignal},
+     * Note that calls to async methods such as {@link enterQueue}, {@link waitSignal},
      * and {@link delay} should be preceded by the **await** keyword.
      * 
      * @param queue {@link Queue} that the {@link Entity} will enter.

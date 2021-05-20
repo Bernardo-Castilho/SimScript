@@ -18,7 +18,7 @@ import { MultiServer } from './simulations/multiserver';
 
 //----------------------------------------------------------
 // SimpleTest
-if (false)
+if (true)
 showSimulation(
     new SimpleTest({
         stateChanged: (sim) => {
@@ -29,7 +29,11 @@ showSimulation(
     }),
     'SimpleTest Simulation',
     `<p>
-        This is a simple test.
+        This is a simple test with some asserts.
+    </p>
+    <p>
+        Run the simulation and look at the console.
+        There should be no errors.
     </p>`,
     (sim: SimpleTest, log: HTMLElement) => {
         //log.innerHTML = sim.getStatsTable(true);
@@ -65,6 +69,9 @@ showSimulation(
             <h3>
                 Single Multi-Server Resource
             </h3>
+            <p>
+                One queue (resource) with multiple servers.
+            </p>
             <ul>
                 <li>Count: ${format(sim.qMultiWait.totalCount, 0)}</li>
                 <li>Utilization: ${format(sim.qMulti.utilization * 100)}%</li>
@@ -75,6 +82,14 @@ showSimulation(
             <h3>
                 Multiple Single-Server Resources (Available Server, single-line)
             </h3>
+            <p>
+                Multiple queues (resources) with a single server each.
+            </p>
+            <p>
+                Customers look for available servers as they arrive.
+                The results are the same as those for a single queue
+                with multiple servers.
+            </p>
             <ul>
                 <li>Count: ${format(sim.qSingleWait.totalCount, 0)}</li>
                 <li>Utilization: ${format(utzQSingle)}%</li>
@@ -85,6 +100,15 @@ showSimulation(
             <h3>
                 Multiple Single-Server Resources (Random Server, multi-line)
             </h3>
+            <p>
+                Multiple queues (resources) with a single server each.
+            </p>
+            <p>
+                Customers choose a server randomly when they arrive.
+                Even though the number of servers and service times
+                are the same, the load is not evenly distributed among
+                the servers, so queues and waits are longer.
+            </p>
             <ul>
                 <li>Count: ${format(sim.qSingleWaitNC.grossDwell.cnt, 0)}</li>
                 <li>Utilization: ${format(utzQSingleNC)}%</li>

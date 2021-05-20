@@ -70,8 +70,9 @@ export class SingleServerResources extends Entity {
         while (serviceQueue == null) {
             for (let i = 0; i < sim.qSingle.length; i++) {
                 let q = sim.qSingle[i];
-                if (q.canEnter(1)) {
+                if (q.canEnter()) {
                     serviceQueue = q;
+                    this.enterQueueImmediately(serviceQueue);
                     break;
                 }
             }
@@ -79,9 +80,6 @@ export class SingleServerResources extends Entity {
                 await this.waitSignal(SingleServerResources);
             }
         }
-
-        // enter
-        await this.enterQueue(serviceQueue);
 
         // wait
         await this.delay(sim.service.sample());
@@ -102,9 +100,6 @@ export class SingleServerResourcesNoChoice extends Entity {
         // select a random service queue
         let i = Math.floor(Math.random() * _NUMSERVERS);
         let serviceQueue = sim.qSingleNC[i];
-        if (serviceQueue.pop > 0) {
-            debugger;
-        }
 
         // enter
         await this.enterQueue(serviceQueue);

@@ -11,23 +11,27 @@ export class SimpleTest extends Simulation {
     onStarting() {
         super.onStarting();
         this.activate(new SimpleEntity());
-        this.generateEntities(BetterEntity, new Uniform(5, 10), 1000);
+        this.generateEntities(SimplerEntity, new Uniform(5, 10), 1000);
     }
 }
 
 class SimpleEntity extends Entity {
     async script() {
-        let sim = this.simulation as SimpleTest;
+        const sim = this.simulation as SimpleTest;
 
+        // call a separate async method
         console.log('started at', sim.timeNow);
         await this.doSomeOtherStuff();
         console.log('done some other stuff at', sim.timeNow);
 
+        // now perform some simple tests
         let time = sim.timeNow;
         await this.enterQueue(sim.qWait);
-        await this.delay(0);
-        this.leaveQueue(sim.qWait);
         assert(time == sim.timeNow, 'no limit, no wait');
+        await this.delay(0);
+        assert(time == sim.timeNow, 'no delay, no wait');
+        this.leaveQueue(sim.qWait);
+        assert(time == sim.timeNow, 'no await, no wait');
         console.log('left wait at', sim.timeNow);
         let noWait = sim.qService.pop == 0;
         time = sim.timeNow;
@@ -47,16 +51,20 @@ class SimpleEntity extends Entity {
         console.log('done at', sim.timeNow);
     }
     async doSomeOtherStuff() {
-        await this.delay(10);
-        await this.delay(10);
-        await this.delay(10);
-        await this.delay(10);
-        console.log('done 4 delays in 40 tus');
+        const sim = this.simulation as SimpleTest;
+        const cnt = 10;
+        const delay = 10;
+        const t = this.simulation.timeNow;
+        for (let i = 0; i < cnt; i++) {
+            await this.delay(delay);
+        }
+        assert(this.simulation.timeNow == t + cnt * delay, 'should have waited (cnt * delay) tus');
+        console.log('done with delays');
     }
 
 }
 
-class BetterEntity extends Entity {
+class SimplerEntity extends Entity {
     service = new Uniform(10, 100);
     async script() {
         let sim = this.simulation as SimpleTest;
