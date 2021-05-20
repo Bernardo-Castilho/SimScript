@@ -335,8 +335,8 @@ export class Entity {
 }
 
 /**
- * Entity generator class used internally by the 
- * {@link Simulation.generateEntities} method.
+ * Class used internally by the {@link Simulation.generateEntities} 
+ * method to create and activate entities according to a schedule.
  */
 export class EntityGenerator extends Entity {
     private _type: any;

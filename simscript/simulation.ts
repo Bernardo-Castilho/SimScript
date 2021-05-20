@@ -228,6 +228,13 @@ export class Simulation {
     }
     /**
      * Stops the {@link Simulation}.
+     * 
+     * This method acts ansynchronously.
+     * Calling it causes the {@link SimulationState} to change from
+     * **Running** to **Paused**.
+     * 
+     * Use the the {@link start} method to resume or re-start the 
+     * simulation when it is paused.
      */
     stop() {
         if (this.state == SimulationState.Running) {
@@ -235,9 +242,7 @@ export class Simulation {
         }
     }
     /**
-     * Activates an {@link Entity}.
-     * 
-     * Activating an {@link Entity} causes it to enter the simulation
+     * Activates an {@link Entity}, causing it to enter the simulation
      * and start executing its {@link Entity.script} method.
      * 
      * @param e {@link Entity} to activate.
@@ -258,7 +263,32 @@ export class Simulation {
         e._sim = null;
     }
     /**
-     * Generates {@link Entity} objects and activates them.
+     * Generates and activates {@link Entity} objects of a given type
+     * according to a schedule.
+     * 
+     * For example, the code below shows a {@link Simulation} that
+     * overrides the {@link onStarting} method to generate entities
+     * of type **Customer** with inter-arrival times of 18+/-6 minutes:
+     * 
+     * ```typescript
+     * export class BarberShop extends Simulation {
+     *     qJoe = new Queue('Joe', 1);
+     *     qWait = new Queue('Wait Area');
+     * 
+     *     // generate Customer entities with inter-arrival times of 18+/-6 min
+     *     // for 8 hours * 7 days
+     *     onStarting() {
+     *         super.onStarting();
+     *         this.timeEnd = 60 * 8 * 7; // 8 hours * 7 days
+     *         this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6));
+     *     }
+     * }
+     * class Customer extends Entity {
+     *     async script() {
+     *         // do what the customers do...
+     *     }
+     * }
+     * ```
      * 
      * @param type Type of {@link Entity} to generate.
      * @param interArrival {@link RandomVar} that returns the inter-arrival time, 

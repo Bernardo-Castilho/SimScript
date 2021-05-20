@@ -4,6 +4,7 @@ import './simscript/simscript.css';
 import { Simulation, SimulationState } from './simscript/simulation';
 import { Animation } from './simscript/animation';
 import { Entity } from './simscript/entity';
+import { Queue } from './simscript/queue';
 import { Exponential } from './simscript/random';
 import { format, bind } from './simscript/util';
 
@@ -13,7 +14,7 @@ import { MMC } from './simulations/mmc';
 import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { SimpleTest } from './simulations/simpletest';
 import { AnimationOptions, RoamEntity } from './simulations/animation-options';
-
+import { MultiServer } from './simulations/multiserver';
 
 //----------------------------------------------------------
 // SimpleTest
@@ -32,6 +33,70 @@ showSimulation(
     </p>`,
     (sim: SimpleTest, log: HTMLElement) => {
         //log.innerHTML = sim.getStatsTable(true);
+    }
+);
+
+//----------------------------------------------------------
+// MultiServer
+showSimulation(
+    new MultiServer({
+        timeEnd: 10e6
+    }),
+    'MultiServer Simulation',
+    `<p>
+        Test single resource with multiple servers vs
+        multiple resources with a single server.
+    </p>`,
+    (sim: MultiServer, log: HTMLElement) => {
+
+        let utzQSingle = 0;
+        sim.qSingle.forEach((q: Queue) => {
+            utzQSingle += q.grossPop.avg / q.capacity * 100;
+        });
+        utzQSingle /= sim.qSingle.length;
+
+        let utzQSingleNC = 0;
+        sim.qSingleNC.forEach((q: Queue) => {
+            utzQSingleNC += q.grossPop.avg / q.capacity * 100;
+        });
+        utzQSingleNC /= sim.qSingleNC.length;
+
+        log.innerHTML = `
+            <h3>
+                Single Multi-Server Resource
+            </h3>
+            <ul>
+                <li>Count: ${format(sim.qMultiWait.totalCount, 0)}</li>
+                <li>Utilization: ${format(sim.qMulti.utilization * 100)}%</li>
+                <li>Average Wait: ${format(sim.qMultiWait.averageDwell)}</li>
+                <li>Average Queue: ${format(sim.qMultiWait.averageLength)}</li>
+                <li>Longest Queue: ${format(sim.qMultiWait.maxLength)}</li>
+            </ul>
+            <h3>
+                Multiple Single-Server Resources (Available Server, single-line)
+            </h3>
+            <ul>
+                <li>Count: ${format(sim.qSingleWait.totalCount, 0)}</li>
+                <li>Utilization: ${format(utzQSingle)}%</li>
+                <li>Average Wait: ${format(sim.qSingleWait.averageDwell)}</li>
+                <li>Average Queue: ${format(sim.qSingleWait.averageLength)}</li>
+                <li>Longest Queue: ${format(sim.qSingleWait.maxLength)}</li>
+            </ul>
+            <h3>
+                Multiple Single-Server Resources (Random Server, multi-line)
+            </h3>
+            <ul>
+                <li>Count: ${format(sim.qSingleWaitNC.grossDwell.cnt, 0)}</li>
+                <li>Utilization: ${format(utzQSingleNC)}%</li>
+                <li>Average Wait: ${format(sim.qSingleWaitNC.averageDwell)}</li>
+                <li>Average Queue: ${format(sim.qSingleWaitNC.averageLength)}</li>
+                <li>Longest Queue: ${format(sim.qSingleWaitNC.maxLength)}</li>
+            </ul>
+            <h3>
+                Stats
+            </h3>
+            ${sim.getStatsTable(true)}
+        `;
     }
 );
 

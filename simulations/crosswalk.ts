@@ -17,13 +17,14 @@ export class Crosswalk extends Simulation {
     qPedXed = new Queue('Pedestrian Crossed');
     qPedLeave = new Queue('Pedestrian Leaving');
 
-    walkToXing = new Uniform(60, 120);
-    walkAway = new Uniform(120, 180);
-
     qCarArr = new Queue('Car Arrival');
     qCarXing = new Queue('Car Crossing');
     qCarXed = new Queue('Car Crossed');
     
+    walkToXing = new Uniform(60, 120);
+    walkAcross = new Uniform(10, 20);
+    walkAway = new Uniform(120, 180);
+
     driveToXing = new Uniform(5, 6);
     driveAway = new Uniform(10, 12);
 
@@ -78,9 +79,12 @@ export class Pedestrian extends Entity {
         // leave crossing
         this.leaveQueue(sim.qPedXing);
 
-        // walk away
+        // walk across and away
+        await this.delay(sim.walkAcross.sample(), {
+            queues: [sim.qPedXing, sim.qPedXed]
+        });
         await this.delay(sim.walkAway.sample(), {
-            queues: [sim.qPedXing, sim.qPedXed, sim.qPedLeave]
+            queues: [sim.qPedXed, sim.qPedLeave]
         });
     }
 }

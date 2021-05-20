@@ -109,20 +109,20 @@ The links below show some samples of **SimScript** simulations:
 - [Crosswalk](https://stackblitz.com/edit/typescript-nq3vvd?file=index.ts)\
     Uses the **waitSignal** and **sendSignal** methods to simulate a crosswalk.
 
-- [Animated Crosswalk (SVG)](https://stackblitz.com/edit/typescript-395kik?file=index.ts)\
+- [Animated Crosswalk (SVG animation)](https://stackblitz.com/edit/typescript-395kik?file=index.ts)\
     Uses the **Animation** class to show an SVG-based animated version of the **Crosswalk** simulation.
 
-- [Animated Crosswalk (X3DOM)](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)\
+- [Animated Crosswalk (X3DOM animation)](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)\
     Uses the **Animation** class to show an X3DOM-based animated version of the **Crosswalk** simulation.
 
-- [Animation Options (SVG)](https://stackblitz.com/edit/typescript-3zcuw1?file=animation-options.ts)\
+- [Animation Options (SVG animation)](https://stackblitz.com/edit/typescript-3zcuw1?file=animation-options.ts)\
     Uses an SVG-based 2D animation to show the effect of some
     **Animation** and **Simulation** properties.
 
-- [Animation Options (A-Frame)](https://stackblitz.com/edit/typescript-pmkehn?file=animation-options.ts)\
+- [Animation Options (A-Frame animation)](https://stackblitz.com/edit/typescript-pmkehn?file=animation-options.ts)\
     Uses an [A-Frame](https://aframe.io)-based 3D animation to show the effect of some
     **Animation** and **Simulation** properties.
 
-- [Animation Options (X3DOM)](https://stackblitz.com/edit/typescript-oncuqe?file=animation-options.ts)\
+- [Animation Options (X3DOM animation)](https://stackblitz.com/edit/typescript-oncuqe?file=animation-options.ts)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show the effect of some
     **Animation** and **Simulation** properties.

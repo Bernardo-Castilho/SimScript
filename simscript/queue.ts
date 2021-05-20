@@ -13,8 +13,9 @@ import { assert, setOptions } from './util';
  * they spent there.
  * 
  * For example, the script below causes entities to enter a waiting
- * queue, seize one unit of a server queue, leave the waiting queue,
- * undergo a delay that represents the service, then leave the server:
+ * queue, seize one capacity unit of a server queue, leave the waiting 
+ * queue, undergo a delay that represents the service, then leave the
+ * server:
  * 
  * ```typescript
  * class Customer extends Entity {
@@ -189,6 +190,46 @@ export class Queue {
      */
     get netDwell(): Tally {
         return this._netDwell;
+    }
+    /**
+     * Gets the queue utilization. 
+     * 
+     * This value is calculated based on the queue's {@link capacity} and
+     * {@link grossPop} tally.
+     */
+    get utilization(): number {
+        return this.capacity ? this.grossPop.avg / this.capacity : 0;
+    }
+    /**
+     * Gets the total number of entities/units that were seized and
+     * released during the simulation.
+     */
+    get totalCount(): number {
+        return this.grossDwell.cnt;
+    }
+    /**
+     * Gets the average queue length in entities/units.
+     */
+     get averageLength(): number {
+        return this.grossPop.avg;
+    }
+    /**
+     * Gets the maximum queue length in entities/units.
+     */
+     get maxLength(): number {
+        return this.grossPop.max;
+    }
+    /**
+     * Gets the average dwell time for entities/units in this queue.
+     */
+     get averageDwell(): number {
+        return this.grossPop.avg;
+    }
+    /**
+     * Gets the maximum dwell time for entities/units in this queue.
+     */
+     get maxDwell(): number {
+        return this.grossPop.max;
     }
     /**
      * Checks whether the {@link Queue} has enough capacity to accept a new entry.
