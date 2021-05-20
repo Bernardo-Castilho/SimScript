@@ -255,6 +255,7 @@ export class Queue {
         if (sim == null) {
             sim = this._sim = e.simulation;
             sim.queues.push(this);
+            sim.queues.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? +1 : 0);
             this._tmLastChange = 0;
         } else if (sim != e.simulation) {
             assert(false, 'Queue already in use by another simulation');

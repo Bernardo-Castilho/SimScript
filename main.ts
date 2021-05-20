@@ -16,6 +16,18 @@ import { SimpleTest } from './simulations/simpletest';
 import { AnimationOptions, RoamEntity } from './simulations/animation-options';
 import { MultiServer } from './simulations/multiserver';
 
+import { SimplestSimulation } from './simulations/simpletest';
+//----------------------------------------------------------
+// SimplestSimulation
+if (true)
+showSimulation(
+    new SimplestSimulation(),
+    'SimplestSimulation',
+    `<p>
+        This is a simple test with some asserts.
+    </p>`
+);
+
 //----------------------------------------------------------
 // SimpleTest
 if (true)
@@ -55,15 +67,28 @@ showSimulation(
 
         let utzQSingle = 0;
         sim.qSingle.forEach((q: Queue) => {
-            utzQSingle += q.grossPop.avg / q.capacity * 100;
+            utzQSingle += q.grossPop.avg / q.capacity;
         });
         utzQSingle /= sim.qSingle.length;
 
         let utzQSingleNC = 0;
         sim.qSingleNC.forEach((q: Queue) => {
-            utzQSingleNC += q.grossPop.avg / q.capacity * 100;
+            utzQSingleNC += q.grossPop.avg / q.capacity;
         });
         utzQSingleNC /= sim.qSingleNC.length;
+
+        const report = (utz: number, q: Queue) => {
+            return `
+                <ul>
+                    <li>Utilization: ${format(utz * 100)}%</li>
+                    <li>Count: ${format(q.totalCount, 0)}</li>
+                    <li>Average Wait: ${format(q.averageDwell)}</li>
+                    <li>Average Queue: ${format(q.averageLength)}</li>
+                    <li>Longest Queue (95%): ${format(q.grossPop.avg + q.grossPop.stdev * 2)}</li>
+                    <li>Longest Queue: ${format(q.maxLength)}</li>
+                </ul>
+            `;
+        }
 
         log.innerHTML = `
             <h3>
@@ -72,13 +97,7 @@ showSimulation(
             <p>
                 One queue (resource) with multiple servers.
             </p>
-            <ul>
-                <li>Count: ${format(sim.qMultiWait.totalCount, 0)}</li>
-                <li>Utilization: ${format(sim.qMulti.utilization * 100)}%</li>
-                <li>Average Wait: ${format(sim.qMultiWait.averageDwell)}</li>
-                <li>Average Queue: ${format(sim.qMultiWait.averageLength)}</li>
-                <li>Longest Queue: ${format(sim.qMultiWait.maxLength)}</li>
-            </ul>
+            ${report(sim.qMulti.utilization, sim.qMultiWait)}
             <h3>
                 Multiple Single-Server Resources (Available Server, single-line)
             </h3>
@@ -90,13 +109,7 @@ showSimulation(
                 The results are the same as those for a single queue
                 with multiple servers.
             </p>
-            <ul>
-                <li>Count: ${format(sim.qSingleWait.totalCount, 0)}</li>
-                <li>Utilization: ${format(utzQSingle)}%</li>
-                <li>Average Wait: ${format(sim.qSingleWait.averageDwell)}</li>
-                <li>Average Queue: ${format(sim.qSingleWait.averageLength)}</li>
-                <li>Longest Queue: ${format(sim.qSingleWait.maxLength)}</li>
-            </ul>
+            ${report(utzQSingle, sim.qSingleWait)}
             <h3>
                 Multiple Single-Server Resources (Random Server, multi-line)
             </h3>
@@ -109,13 +122,7 @@ showSimulation(
                 are the same, the load is not evenly distributed among
                 the servers, so queues and waits are longer.
             </p>
-            <ul>
-                <li>Count: ${format(sim.qSingleWaitNC.grossDwell.cnt, 0)}</li>
-                <li>Utilization: ${format(utzQSingleNC)}%</li>
-                <li>Average Wait: ${format(sim.qSingleWaitNC.averageDwell)}</li>
-                <li>Average Queue: ${format(sim.qSingleWaitNC.averageLength)}</li>
-                <li>Longest Queue: ${format(sim.qSingleWaitNC.maxLength)}</li>
-            </ul>
+            ${report(utzQSingleNC, sim.qSingleWaitNC)}
             <h3>
                 Stats
             </h3>
@@ -1063,7 +1070,7 @@ function createX3Queue(name: string, x: number, y: number, z = 0): string {
         <transform class='ss-queue ${name}' translation='${x} ${y} ${z}'>
             <shape>
                 <appearance>
-                    <material transparency='0.9' diffuseColor='1 1 0'/>
+                    <material transparency='0.95' diffuseColor='1 1 0'/>
                 </appearance>
                 <sphere radius='4'></sphere>
             </shape>

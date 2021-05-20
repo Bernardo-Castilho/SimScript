@@ -464,6 +464,7 @@ export class Simulation {
 
     // perform actions due now, wait and repeat
     private async _step() {
+        ////console.log('called _step at', this.timeNow, 'fec has', this._fec.length, 'items');
 
         // scan the fec to find out the next step
         let nextTime = await this._scanFec();
@@ -615,6 +616,8 @@ export interface IFecItemOptions {
     units?: number,
     /** Signal that the entity is waiting for. */
     signal?: any,
+    /** Whether the entity is ready to resume execution. */
+    ready?: boolean,
 }
 
 /**
@@ -654,8 +657,13 @@ export class FecItem {
             this._tmDue = sim.timeNow + options.delay;
         }
 
+        // remember whether we're ready
+        if (options.ready != null) {
+            this._ready = options.ready;
+        }
+
         // create a promise and save the resolver to return later
-        this._promise = new Promise((resolve, reject) => {
+        this._promise = new Promise(resolve => {
             this._resolve = resolve;
         });
     }
@@ -723,7 +731,7 @@ export class FecItem {
             const units = options.units;
             q.add(this._e, units != null ? units : 1);
         }
-        return this._resolve ? await this._resolve() : null;
+        return await this._resolve();
     }
     /**
      * Gets the **Promise** represented by this item.

@@ -1,4 +1,4 @@
-import { Simulation } from '../simscript/simulation';
+import { Simulation, FecItem } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Uniform } from '../simscript/random';
@@ -74,4 +74,56 @@ class SimplerEntity extends Entity {
         await this.delay(this.service.sample());
         this.leaveQueue(sim.qService);
     }
+}
+
+
+
+export class SimplestSimulation extends Simulation {
+    q = new Queue('simple');
+    onStarting() {
+        super.onStarting();
+        this.activate(new SimplestReally());
+    }
+}
+
+class SimplestReally extends Entity {
+    async script() {
+        const sim = this.simulation as SimplestSimulation;
+
+        console.log('calling enterLeave', sim.timeNow, 'fec', sim._fec.length);
+        await this.enterLeave();
+        console.log('returned from enterLeave', sim.timeNow);
+
+        console.log('before delay 0', sim.timeNow);
+        await this.delay(0);
+        console.log('after delay 0', sim.timeNow);
+
+        console.log('calling enterLeave', sim.timeNow, 'fec', sim._fec.length);
+        await this.enterLeave();
+        console.log('returned from enterLeave', sim.timeNow);
+
+        await this.enterQueue(sim.q);
+        console.log('entered queue at', sim.timeNow);
+        this.leaveQueue(sim.q);
+        console.log('left queue at', sim.timeNow);
+        await this.delay(10);
+        console.log('after delay 10', sim.timeNow);
+        await this.delay(0);
+        console.log('after another delay 0', sim.timeNow);
+        console.log('** all done **');
+    }
+
+    async enterLeave() {
+        const sim = this.simulation as SimplestSimulation;
+        for (let i = 0; i < 10; i++) {
+            await this.enterQueue(sim.q);
+            await this.delay(0);
+            this.leaveQueue(sim.q);
+            console.log('loop', i, sim.timeNow);
+        }
+
+        // this is needed in case the async function doesn't 
+        // cause any simulated delays
+        new FecItem(this, { ready: true });
+    }    
 }

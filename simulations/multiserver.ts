@@ -3,7 +3,7 @@ import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Exponential, Uniform, LogNormal } from '../simscript/random';
 
-const _NUMSERVERS = 20;
+const _NUMSERVERS = 10;
 const _INTERARR = 10;
 const _SERVICE = _INTERARR * _NUMSERVERS * .8;
 
@@ -72,7 +72,6 @@ export class SingleServerResources extends Entity {
                 let q = sim.qSingle[i];
                 if (q.canEnter()) {
                     serviceQueue = q;
-                    this.enterQueueImmediately(serviceQueue);
                     break;
                 }
             }
@@ -80,6 +79,9 @@ export class SingleServerResources extends Entity {
                 await this.waitSignal(SingleServerResources);
             }
         }
+
+        // enter the queue immediately (no await needed here)
+        this.enterQueueImmediately(serviceQueue);
 
         // wait
         await this.delay(sim.service.sample());

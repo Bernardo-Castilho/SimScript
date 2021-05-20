@@ -1,4 +1,6 @@
 # Todo
 - more docs/examples
-- more tests
+    - race track
+    - robot/warehouse
+- more tests (zero delay, enter no wait)
 - network module

@@ -152,6 +152,16 @@ export class Entity {
      * @param units Number of {@link Queue} capacity units to seize.
      */
     async enterQueue(queue: Queue, units = 1) {
+
+        // enter immediately if possible
+        if (queue.canEnter(units)) {
+            queue.add(this, units);
+            return new FecItem(this, {
+                ready: true
+            }).promise;
+        }
+
+        // wait until the queue has enough capacity
         return new FecItem(this, {
             queue: queue,
             units: units
