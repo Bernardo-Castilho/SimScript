@@ -1147,6 +1147,120 @@ function createX3Person(name: string) {
     </transform>`;
 }
 
+//----------------------------------------------------------
+// NetworkIntro (SVG)
+showSimulation(
+    new NetworkIntro({
+        maxTimeStep: 0.25,
+        //frameDelay: 1
+    }),
+    'Network Intro (SVG)',
+    `   <p>
+            This sample uses a network to simulate an area with random service
+            requests and a fixed number of service vehicles.
+        </p>
+        <ul>
+            <li>
+                Red circles show service requests that happen at random locations
+                on the network.
+            </li>        
+            <li>
+                Green circles show service vehicles that looking for or traveling
+                to requests.
+            </li>        
+            <li>
+                Yellow circles show service vehicles servicing a request.
+            </li>
+        </ul>
+        <label>
+            Slow
+            <input id='network-avg-slow' type='checkbox'>
+        </label>
+        <label>
+            Number of Service Vehicles: <b><span id='network-svg-nsvc'>0</span></b>
+        </label>
+        <label>
+            Server Utilization: <b><span id='network-svg-utz'>0</span>%</b>
+        </label>
+        <label>
+            Average Response Time: <b><span id='network-svg-wait'>0</span></b> seconds
+        </label>
+        <label>
+            Missed Requests: <b><span id='network-svg-misses'>0</span></b>
+        </label>
+        <p></p>
+        <svg class='ss-anim anim-host'
+            viewbox='0 0 800 400'
+            fill='orange'
+            stroke='black'
+            stroke-width='1'
+            font-size='10'
+            text-anchor='middle'
+            dominant-baseline='middle'>
+        </svg>
+    `,
+    (sim: NetworkIntro, animationHost: HTMLElement) => {
+        renderNetwork(sim.network, animationHost, true, true);
+
+        const queues: IAnimatedQueue[] = [];
+        sim.network.nodes.forEach(nd => {
+            queues.push({
+                queue: nd.queue, element: 'svg .ss-node.id' + nd.id, stackEntities: true
+            })
+        });
+
+        new Animation(sim, animationHost, {
+            animateToQueueEnd: false,
+            rotateEntities: true,
+            queues: queues,
+            getEntityHtml: e => {
+                if (e instanceof ServiceVehicle) {
+                    return `<g opacity='0.5'>
+                        <circle
+                            r='20'
+                            cx='20'
+                            cy='20'
+                            stroke='black'
+                            fill=${e.busy ? 'yellow' : 'green'}>
+                        </circle>
+                        <polygon
+                            stroke='none'
+                            fill=${e.busy ? 'none' : 'black'}
+                            points='40 20, 7 2, 7 37'>
+                        </polygon>
+                    </g>`;
+                } else {
+                    return `<g opacity='0.5'>
+                        <circle
+                            r='30'
+                            cx='30'
+                            cy='30'
+                            fill='red'>
+                        </circle>
+                    </g>`;
+                }
+            }
+        });
+
+        // toggle slow mode
+        bind('network-avg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.25 : 0);
+
+        // show number of service vehicles
+        const nsvc = document.getElementById('network-svg-nsvc');
+        nsvc.textContent = format(sim.serviceVehicles, 0);
+        
+        // update wait times and server utilization when time changes
+        const utz = document.getElementById('network-svg-utz');
+        const wait = document.getElementById('network-svg-wait');
+        const misses = document.getElementById('network-svg-misses');
+        sim.timeNowChanged.addEventListener(() => {
+            utz.textContent = format(sim.qBusy.utilization * 100, 0);
+            wait.textContent = format(sim.qWait.averageDwell, 0);
+            misses.textContent = format(sim.missedRequests, 0);
+        });
+    }
+);
+
 
 //----------------------------------------------------------
 // my little framework
