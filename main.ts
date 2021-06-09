@@ -2,24 +2,36 @@ import './style.css';
 import './simscript/simscript.css';
 
 import { Simulation, SimulationState } from './simscript/simulation';
-import { Animation } from './simscript/animation';
+import { Animation, IAnimatedQueue } from './simscript/animation';
 import { Entity } from './simscript/entity';
 import { Queue } from './simscript/queue';
 import { Exponential } from './simscript/random';
 import { format, bind } from './simscript/util';
 
+import { SimpleTest } from './simulations/simpletest';
+import { SimplestSimulation } from './simulations/simpletest';
+import { Generator } from './simulations/simpletest';
 import { RandomVarTest } from './simulations/randomvartest';
 import { BarberShop } from './simulations/barbershop';
 import { MMC } from './simulations/mmc';
 import { Crosswalk, Pedestrian } from './simulations/crosswalk';
-import { SimpleTest } from './simulations/simpletest';
 import { AnimationOptions, RoamEntity } from './simulations/animation-options';
 import { MultiServer } from './simulations/multiserver';
+import { NetworkIntro, ServiceVehicle, renderNetworkSVG, renderNetworkX3D } from './simulations/network-intro';
 
-import { SimplestSimulation } from './simulations/simpletest';
+
+//----------------------------------------------------------
+// Generator
+showSimulation(
+    new Generator(),
+    'Generator',
+    `<p>
+        This is a simple test for the Simulation.generateEntities method.
+    </p>`
+);
+
 //----------------------------------------------------------
 // SimplestSimulation
-if (true)
 showSimulation(
     new SimplestSimulation(),
     'SimplestSimulation',
@@ -30,7 +42,6 @@ showSimulation(
 
 //----------------------------------------------------------
 // SimpleTest
-if (true)
 showSimulation(
     new SimpleTest({
         stateChanged: (sim) => {
@@ -48,86 +59,7 @@ showSimulation(
         There should be no errors.
     </p>`,
     (sim: SimpleTest, log: HTMLElement) => {
-        //log.innerHTML = sim.getStatsTable(true);
-    }
-);
-
-//----------------------------------------------------------
-// MultiServer
-showSimulation(
-    new MultiServer({
-        timeEnd: 10e6
-    }),
-    'MultiServer Simulation',
-    `<p>
-        Test single resource with multiple servers vs
-        multiple resources with a single server.
-    </p>`,
-    (sim: MultiServer, log: HTMLElement) => {
-
-        let utzQSingle = 0;
-        sim.qSingle.forEach((q: Queue) => {
-            utzQSingle += q.grossPop.avg / q.capacity;
-        });
-        utzQSingle /= sim.qSingle.length;
-
-        let utzQSingleNC = 0;
-        sim.qSingleNC.forEach((q: Queue) => {
-            utzQSingleNC += q.grossPop.avg / q.capacity;
-        });
-        utzQSingleNC /= sim.qSingleNC.length;
-
-        const report = (utz: number, q: Queue) => {
-            return `
-                <ul>
-                    <li>Utilization: ${format(utz * 100)}%</li>
-                    <li>Count: ${format(q.totalCount, 0)}</li>
-                    <li>Average Wait: ${format(q.averageDwell)}</li>
-                    <li>Average Queue: ${format(q.averageLength)}</li>
-                    <li>Longest Queue (95%): ${format(q.grossPop.avg + q.grossPop.stdev * 2)}</li>
-                    <li>Longest Queue: ${format(q.maxLength)}</li>
-                </ul>
-            `;
-        }
-
-        log.innerHTML = `
-            <h3>
-                Single Multi-Server Resource
-            </h3>
-            <p>
-                One queue (resource) with multiple servers.
-            </p>
-            ${report(sim.qMulti.utilization, sim.qMultiWait)}
-            <h3>
-                Multiple Single-Server Resources (Available Server, single-line)
-            </h3>
-            <p>
-                Multiple queues (resources) with a single server each.
-            </p>
-            <p>
-                Customers look for available servers as they arrive.
-                The results are the same as those for a single queue
-                with multiple servers.
-            </p>
-            ${report(utzQSingle, sim.qSingleWait)}
-            <h3>
-                Multiple Single-Server Resources (Random Server, multi-line)
-            </h3>
-            <p>
-                Multiple queues (resources) with a single server each.
-            </p>
-            <p>
-                Customers choose a server randomly when they arrive.
-                Even though the number of servers and service times
-                are the same, the load is not evenly distributed among
-                the servers, so queues and waits are longer.
-            </p>
-            ${report(utzQSingleNC, sim.qSingleWaitNC)}
-            <h3>
-                Stats
-            </h3>
-            ${sim.getStatsTable(true)}
-        `;
+        log.innerHTML = sim.getStatsTable(true);
     }
 );
 
@@ -174,12 +106,24 @@ showSimulation(
             <input id='rand-seeded' type='checkbox'>
         </label>
         <ul>
-            <li>Count: <b>${format(sim.tally.cnt, 0)}</b></li>
-            <li>Average: <b>${format(sim.tally.avg)}</b></li>
-            <li>Standard Deviation: <b>${format(sim.tally.stdev)}</b></li>
-            <li>Variance: <b>${format(sim.tally.var)}</b></li>
-            <li>Min: <b>${format(sim.tally.min)}</b></li>
-            <li>Max: <b>${format(sim.tally.max)}</b></li>
+            <li>Count:
+                <b>${format(sim.tally.cnt, 0)}</b>
+            </li>
+            <li>Average:
+                <b>${format(sim.tally.avg)}</b>
+            </li>
+            <li>Standard Deviation:
+                <b>${format(sim.tally.stdev)}</b>
+            </li>
+            <li>Variance:
+                <b>${format(sim.tally.var)}</b>
+            </li>
+            <li>Min:
+                <b>${format(sim.tally.min)}</b>
+            </li>
+            <li>Max:
+                <b>${format(sim.tally.max)}</b>
+            </li>
         </ul>` +
             sim.tally.getHistogramChart(sim.randomVar.name);
         
@@ -190,6 +134,99 @@ showSimulation(
     }
 );
 
+//----------------------------------------------------------
+// MultiServer
+showSimulation(
+    new MultiServer({
+        timeEnd: 1e5
+    }),
+    'MultiServer Simulation',
+    `<p>
+        Test single resource with multiple servers vs
+        multiple resources with a single server.
+    </p>`,
+    (sim: MultiServer, log: HTMLElement) => {
+
+        let utzQSingle = 0;
+        sim.qSingle.forEach((q: Queue) => {
+            utzQSingle += q.grossPop.avg / q.capacity;
+        });
+        utzQSingle /= sim.qSingle.length;
+
+        let utzQSingleNC = 0;
+        sim.qSingleNC.forEach((q: Queue) => {
+            utzQSingleNC += q.grossPop.avg / q.capacity;
+        });
+        utzQSingleNC /= sim.qSingleNC.length;
+
+        const report = (utz: number, q: Queue) => {
+            return `
+                <ul>
+                    <li>Utilization:
+                        <b>${format(utz * 100)}%</b>
+                    </li>
+                    <li>Count:
+                        <b>${format(q.totalCount, 0)}</b> customers
+                    </li>
+                    <li>Average Wait:
+                        <b>${format(q.averageDwell)}</b> minutes
+                    </li>
+                    <li>Longest Wait:
+                        <b>${format(q.maxDwell)}</b> minutes
+                    </li>
+                    <li>Average Queue:
+                        <b>${format(q.averageLength)}</b> customers
+                    </li>
+                    <li>Longest Queue (95%):
+                        <b>${format(q.grossPop.avg + q.grossPop.stdev * 2)}</b> customers
+                    </li>
+                    <li>Longest Queue:
+                        <b>${format(q.maxLength)}</b> customers
+                    </li>
+                </ul>
+            `;
+        }
+
+        log.innerHTML = `
+            <h3>
+                Single Multi-Server Resource
+            </h3>
+            <p>
+                One queue (resource) with multiple servers.
+            </p>
+            ${report(sim.qMulti.utilization, sim.qMultiWait)}
+            <h3>
+                Multiple Single-Server Resources (Available Server, single-line)
+            </h3>
+            <p>
+                Multiple queues (resources) with a single server each.
+            </p>
+            <p>
+                Customers look for available servers as they arrive.
+                The results are the same as those for a single queue
+                with multiple servers.
+            </p>
+            ${report(utzQSingle, sim.qSingleWait)}
+            <h3>
+                Multiple Single-Server Resources (Random Server, multi-line)
+            </h3>
+            <p>
+                Multiple queues (resources) with a single server each.
+            </p>
+            <p>
+                Customers choose a server randomly when they arrive.
+                Even though the number of servers and service times
+                are the same, the load is not evenly distributed among
+                the servers, so queues and waits are longer.
+            </p>
+            ${report(utzQSingleNC, sim.qSingleWaitNC)}
+            <h3>
+                Stats
+            </h3>
+            ${sim.getStatsTable(true)}
+        `;
+    }
+);
 
 //----------------------------------------------------------
 // BarberShop
@@ -222,7 +259,6 @@ showSimulation(
         sim.qWait.grossDwell.getHistogramChart('Waiting Times (min)');
     }
 );
-
 
 //----------------------------------------------------------
 // MMC
@@ -266,11 +302,21 @@ showSimulation(
                 <input id='mmc-service' type='range' min='10' max='200'>
             </label>
             <ul>
-                <li>Simulated time: <b>${format(sim.timeNow / 60, 0)}</b> hours</li>
-                <li>Elapsed time: <b>${format(sim.timeElapsed / 1000, 2)}</b> seconds</li>
-                <li>Number of Servers: <b>${format(sim.qService.capacity, 0)}</b></li>
-                <li>Mean Inter-Arrival Time: <b>${format(sim.interArrival.mean, 0)}</b> minutes</li>
-                <li>Mean Service Time: <b>${format(sim.service.mean, 0)}</b> minutes</li>
+                <li>Simulated time:
+                    <b>${format(sim.timeNow / 60, 0)}</b> hours
+                </li>
+                <li>Elapsed time:
+                    <b>${format(sim.timeElapsed / 1000, 2)}</b> seconds
+                </li>
+                <li>Number of Servers:
+                    <b>${format(sim.qService.capacity, 0)}</b>
+                </li>
+                <li>Mean Inter-Arrival Time:
+                    <b>${format(sim.interArrival.mean, 0)}</b> minutes
+                </li>
+                <li>Mean Service Time:
+                    <b>${format(sim.service.mean, 0)}</b> minutes
+                </li>
                 <li>Server Utilization:
                     <b>${format(sim.qService.grossPop.avg / sim.qService.capacity * 100)}%</b>
                     (<i>${format(rho * 100)}%</i>)
@@ -289,7 +335,9 @@ showSimulation(
                 <li>Longest Queue:
                     <b>${format(sim.qWait.grossPop.max, 0)}</b> customers
                 </li>
-                <li>Customers Served: <b>${format(sim.qService.grossDwell.cnt, 0)}</b></li>
+                <li>
+                    Customers Served: <b>${format(sim.qService.grossDwell.cnt, 0)}</b>
+                </li>
             </ul>`;
         
         if (rho > 1) {
@@ -300,7 +348,7 @@ showSimulation(
 
         log.innerHTML += `
             ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
-            ${sim.qWait.grossDwell.getHistogramChart('Wait times (seconds)')}`;
+            ${sim.qWait.grossDwell.getHistogramChart('Wait times (minutes)')}`;
 
         // parameters
         bind('mmc-capy', sim.qService.capacity, v => sim.qService.capacity = v);
@@ -322,7 +370,6 @@ showSimulation(
         }
     }
 );
-
 
 //----------------------------------------------------------
 // Crosswalk
@@ -393,7 +440,6 @@ showSimulation(
     }
 );
 
-
 //----------------------------------------------------------
 // Animated Crosswalk (div)
 showSimulation(
@@ -445,12 +491,9 @@ showSimulation(
             getEntityHtml: e => {
 
                 // use explicit image sizes to measuring errors while loading images
-                const url = 'https://github.com/Bernardo-Castilho/SimScript/blob/main/resources';
                 return e instanceof Pedestrian
-                    ? `<img class='ped' src='${url}/blueped.png?raw=true' width='15' height='19'>`
-                    : `<img class='car' src='${url}/redcar.png?raw=true' width='55' height='19'>`;
-                    //? `<img class='ped' src='resources/blueped.png' width='15' height='19'>`
-                    //: `<img class='car' src='resources/redcar.png' width='55' height='19'>`;
+                    ? `<img class='ped' src='resources/blueped.png' width='15' height='19'>`
+                    : `<img class='car' src='resources/redcar.png' width='55' height='19'>`;
             },
             queues: [
                 { queue: sim.qPedArr, element: '.ss-queue.ped-arr' },
@@ -937,7 +980,6 @@ showSimulation(
     }
 );
 
-
 //----------------------------------------------------------
 // AnimationOptions (X3DOM)
 showSimulation(new AnimationOptions({
@@ -1064,13 +1106,12 @@ showSimulation(new AnimationOptions({
         bind('x3-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
     }
 );
-
 function createX3Queue(name: string, x: number, y: number, z = 0): string {
     return `
         <transform class='ss-queue ${name}' translation='${x} ${y} ${z}'>
             <shape>
                 <appearance>
-                    <material transparency='0.95' diffuseColor='1 1 0'/>
+                    <material diffuseColor='1 1 0' transparency='0.6'></material>
                 </appearance>
                 <sphere radius='4'></sphere>
             </shape>
@@ -1174,7 +1215,7 @@ showSimulation(
         </ul>
         <label>
             Slow
-            <input id='network-avg-slow' type='checkbox'>
+            <input id='network-svg-slow' type='checkbox'>
         </label>
         <label>
             Number of Service Vehicles: <b><span id='network-svg-nsvc'>0</span></b>
@@ -1186,7 +1227,10 @@ showSimulation(
             Average Response Time: <b><span id='network-svg-wait'>0</span></b> seconds
         </label>
         <label>
-            Missed Requests: <b><span id='network-svg-misses'>0</span></b>
+            Requests Served: <b><span id='network-svg-served'>0</span></b>
+        </label>
+        <label>
+            Requests Missed: <b><span id='network-svg-missed'>0</span></b>
         </label>
         <p></p>
         <svg class='ss-anim anim-host'
@@ -1200,7 +1244,7 @@ showSimulation(
         </svg>
     `,
     (sim: NetworkIntro, animationHost: HTMLElement) => {
-        renderNetwork(sim.network, animationHost, true, true);
+        renderNetworkSVG(sim.network, animationHost, true, true);
 
         const queues: IAnimatedQueue[] = [];
         sim.network.nodes.forEach(nd => {
@@ -1243,7 +1287,7 @@ showSimulation(
         });
 
         // toggle slow mode
-        bind('network-avg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.25 : 0);
+        bind('network-svg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.25 : 0);
 
         // show number of service vehicles
         const nsvc = document.getElementById('network-svg-nsvc');
@@ -1252,11 +1296,128 @@ showSimulation(
         // update wait times and server utilization when time changes
         const utz = document.getElementById('network-svg-utz');
         const wait = document.getElementById('network-svg-wait');
-        const misses = document.getElementById('network-svg-misses');
+        const served = document.getElementById('network-svg-served');
+        const missed = document.getElementById('network-svg-missed');
         sim.timeNowChanged.addEventListener(() => {
             utz.textContent = format(sim.qBusy.utilization * 100, 0);
             wait.textContent = format(sim.qWait.averageDwell, 0);
-            misses.textContent = format(sim.missedRequests, 0);
+            served.textContent = format(sim.requestsServed, 0);
+            missed.textContent = format(sim.requestsMissed, 0);
+        });
+    }
+);
+
+//----------------------------------------------------------
+// NetworkIntro (X3DOM)
+showSimulation(
+    new NetworkIntro({
+        maxTimeStep: 0.25,
+        //frameDelay: 1
+    }),
+    'Network Intro (X3DOM)',
+    `   <p>
+            This sample uses a network to simulate an area with random service
+            requests and a fixed number of service vehicles.
+        </p>
+        <ul>
+            <li>
+                Red spheres show service requests that happen at random locations
+                on the network.
+            </li>        
+            <li>
+                Green service vehicles are looking for or traveling to requests.
+            </li>        
+            <li>
+                Yellow service vehicles are servicing a request.
+            </li>
+        </ul>
+        <label>
+            Slow
+            <input id='network-x3d-slow' type='checkbox'>
+        </label>
+        <label>
+            Number of Service Vehicles: <b><span id='network-x3d-nsvc'>0</span></b>
+        </label>
+        <label>
+            Server Utilization: <b><span id='network-x3d-utz'>0</span>%</b>
+        </label>
+        <label>
+            Average Response Time: <b><span id='network-x3d-wait'>0</span></b> seconds
+        </label>
+        <label>
+            Requests Served: <b><span id='network-x3d-served'>0</span></b>
+        </label>
+        <label>
+            Requests Missed: <b><span id='network-x3d-missed'>0</span></b>
+        </label>
+        <p></p>
+        <x3d class='ss-anim anim-host network'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='400 -120 800'
+                    orientation='1 0 0 0.36771'
+                    centerOfRotation='450 250 0'>
+                </viewpoint>
+
+                <!-- background -->
+                <transform translation='400 200 0'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0 .5 .5'></material>
+                        </appearance>
+                        <box size='900 500 .1'></box>
+                    </shape>
+                </transform>
+            </transform>                
+            </scene>
+        </x3d>
+    `,
+    (sim: NetworkIntro, animationHost: HTMLElement) => {
+        renderNetworkX3D(sim.network, animationHost);
+
+        const queues: IAnimatedQueue[] = [];
+        sim.network.nodes.forEach(nd => {
+            queues.push({
+                queue: nd.queue, element: 'x3d.network .ss-queue.q' + nd.id, stackEntities: true
+            })
+        });
+
+        new Animation(sim, animationHost, {
+            queues: queues,
+            rotateEntities: true,
+            getEntityHtml: e => {
+                if (e instanceof ServiceVehicle) { // green/yellow sphere
+                    return createX3Car('service', 40, 20, 10, e.busy ? 1 : 0, 0.5, 0);
+                } else { // red sphere
+                    return `<shape>
+                        <appearance>
+                            <material transparency='0.2' diffuseColor='1 0 0'/>
+                        </appearance>
+                        <sphere radius='20'></sphere>
+                    </shape>`;
+                }
+            }
+        });
+
+        // toggle slow mode
+        bind('network-x3d-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.25 : 0);
+
+        // show number of service vehicles
+        const nsvc = document.getElementById('network-x3d-nsvc');
+        nsvc.textContent = format(sim.serviceVehicles, 0);
+        
+        // update wait times and server utilization when time changes
+        const utz = document.getElementById('network-x3d-utz');
+        const wait = document.getElementById('network-x3d-wait');
+        const served = document.getElementById('network-x3d-served');
+        const missed = document.getElementById('network-x3d-missed');
+        sim.timeNowChanged.addEventListener(() => {
+            utz.textContent = format(sim.qBusy.utilization * 100, 0);
+            wait.textContent = format(sim.qWait.averageDwell, 0);
+            served.textContent = format(sim.requestsServed, 0);
+            missed.textContent = format(sim.requestsMissed, 0);
         });
     }
 );

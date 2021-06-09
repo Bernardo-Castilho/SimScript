@@ -1,7 +1,7 @@
 import { Simulation } from './simulation';
 import { Queue } from './queue';
 import { Entity } from './entity';
-import { assert, setOptions, getElement } from './util';
+import { assert, setOptions, getElement, IPoint, Point } from './util';
 
 const _DEFAULT_ENTITY_ICON = '&#9899;'; // black circle
 const _DEFAULT_SPLINE_TENSION = 0.1;
@@ -18,18 +18,23 @@ export interface IAnimatedQueue {
      */
     queue: Queue,
     /**
-     * Element that represents the {@see Queue} in the document.
+     * HTML element that defines the {@see Queue} location.
      */
     element: string | Element,
     /**
      * The {@link Queue} angle, in degrees, measured in clockwise 
-     * direction from the nine o'clock position.
+     * direction from the nine o'clock position (defaults to **zero**).
      */
     angle?: number,
     /**
+     * Whether all entities should be shown stacked over each other 
+     * rather than distributed along the given **angle**.
+     */
+     stackEntities?: boolean,
+     /**
      * The maximum number of entities to display in the {@link Queue}.
      */
-    max?: number
+    max?: number,
 }
 
 /**
@@ -38,7 +43,7 @@ export interface IAnimatedQueue {
  */
 interface ISplinePosition {
     /** Point along the spline. */
-    point: Point,
+    point: IPoint,
     /** Tangent of the spline at the point. */
     angle: number
 }
@@ -290,7 +295,7 @@ export class Animation {
                 // calculate path
                 const path = item.options.path;
                 const tension = path.tension != null ? path.tension : _DEFAULT_SPLINE_TENSION;
-                const points: Point[] = [];
+                const points: IPoint[] = [];
                 path.queues.forEach((q, index) => {
                     const aq = this._queues.get(q);
                     assert(aq != null, 'Queue missing animation info');
@@ -299,12 +304,17 @@ export class Animation {
                         : aq._getStart());
                 });
 
+                // update entity icon
+                ae._element.innerHTML = ae._getEntityHtml();
+
                 // update entity position
                 let start = item.timeStart,
                     finish = item.timeDue,
                     pct = 1 - (finish - this._sim.timeNow) / (finish - start),
                     pos = getSplinePosition(points, tension, pct),
                     angle = pos.angle;
+                
+                // draw entity
                 ae._drawAt(pos.point, this.rotateEntities ? angle : 0);
             }
         });
@@ -343,9 +353,10 @@ export class Animation {
 class AnimatedQueue {
     private _anim: Animation;
     private _element: Element;
-    /** internal */ _q: Queue;
     private _max: number;
     private _angle = 0;
+    private _stackEntities = false;
+    /** internal */ _q: Queue;
     /** internal */ _ptStart: Point;
     /** internal */ _ptEnd: Point;
 
@@ -356,6 +367,7 @@ class AnimatedQueue {
         this._element = getElement(options.element);
         this._max = options.max;
         this._angle = (options.angle || 0);
+        this._stackEntities = options.stackEntities;
         assert(this._q instanceof Queue, 'q parameter should be a Queue');
     }
 
@@ -429,8 +441,15 @@ class AnimatedQueue {
     
             // get/create AnimatedEntity for this entity
             const ae = anim._getAnimatedEntity(e);
-            const hWid = ae._width * cos / 2;
-            const hHei = (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
+            const hWid = this._stackEntities
+                ? 0
+                : ae._width * cos / 2;
+            const hHei = this._stackEntities ?
+                0
+                : (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
+
+            // update entity icon
+            ae._element.innerHTML = ae._getEntityHtml();
 
             // update entity position and insertion point position
             pt.x += hWid;
@@ -531,9 +550,9 @@ class AnimatedEntity {
     }
 
     // sets the position of this animated entity.
-    _drawAt(pt: Point, angle?: number) {
+    _drawAt(pt: IPoint, angle?: number) {
         const anim = this._anim;
-        const e = this._element;
+        const e = this._element as HTMLElement;
 
         // update the entity element
         switch (anim.hostTag) {
@@ -559,7 +578,7 @@ class AnimatedEntity {
                 }
 
                 // and apply it
-                const s = (e as any).style;
+                const s = e.style;
                 s.transform = transform;
                 s.opacity = '';
                 break;
@@ -567,39 +586,6 @@ class AnimatedEntity {
 
         // remember we're in use
         this._inUse = true;
-    }
-}
-
-/**
- * Represents a point with x, y, and z coordinates.
- */
-class Point {
-    x: number;
-    y: number;
-    z: number;
-
-    constructor(x = 0, y = 0, z = 0) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    clone() {
-        return new Point(this.x, this.y, this.z);
-    }
-
-    static distance(p1: Point, p2: Point): number {
-        const dx = p1.x - p2.x;
-        const dy = p1.y - p2.y;
-        const dz = p1.z - p2.z;
-        return Math.sqrt(dx * dx + dy * dy + dz * dz)
-    }
-    static interpolate(p1: Point, p2: Point, pct: number): Point {
-        return new Point(
-            p1.x + (p2.x - p1.x) * pct,
-            p1.y + (p2.y - p1.y) * pct,
-            p1.z + (p2.z - p1.z) * pct
-        )
     }
 }
 
@@ -612,13 +598,13 @@ class Point {
  * 
  * @returns The point along the spline at the given percentage.
  */
-function getSplinePosition(pts: Point[], tension: number, pct: number): ISplinePosition {
+function getSplinePosition(pts: IPoint[], tension: number, pct: number): ISplinePosition {
 
     // just two points? use linear interpolation 
     if (pts.length == 2) {
         return {
             point: Point.interpolate(pts[0], pts[1], pct),
-            angle: getAngle(pts[0], pts[1])
+            angle: Point.angle(pts[0], pts[1])
         }
     }
 
@@ -661,7 +647,7 @@ function getSplinePosition(pts: Point[], tension: number, pct: number): ISplineP
 
 // See 
 // Petzold, "Programming Microsoft Windows with C#", pages 645-646 or
-function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, tension: number, pct: number): ISplinePosition {
+function _getSplinePosition(p0: IPoint, p1: IPoint, p2: IPoint, p3: IPoint, tension: number, pct: number): ISplinePosition {
     const sx1 = tension * (p2.x - p0.x);
     const sy1 = tension * (p2.y - p0.y);
     const sz1 = tension * (p2.z - p0.z);
@@ -704,14 +690,8 @@ function _getSplinePosition(p0: Point, p1: Point, p2: Point, p3: Point, tension:
     // return the point and the angle
     return {
         point: pt,
-        angle: getAngle(pt, pt2)
+        angle: Point.angle(pt, pt2)
     };
-}
-
-// gets the angle for a path segment
-function getAngle(pt1: Point, pt2: Point): number {
-    const angle = Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x);
-    return Math.round(angle * 180 / Math.PI);
 }
 
 

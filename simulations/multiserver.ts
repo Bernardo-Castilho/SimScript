@@ -33,7 +33,7 @@ export class MultiServer extends Simulation {
         // one multi-server resource
         this.generateEntities(MultiServerResource, this.interArrival);
 
-        // n single-server resources
+        // n single-server resources, choice of least-busy server
         this.generateEntities(SingleServerResources, this.interArrival);
 
         // n single-server resources, random server

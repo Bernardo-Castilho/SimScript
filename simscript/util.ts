@@ -127,3 +127,49 @@ export function clamp(value: number, min: number | null, max: number | null): nu
         : (max != null && value > max) ? max
         : value;
 }
+
+/**
+ * Defines the properties of point objects.
+ */
+ export interface IPoint {
+    x: number;
+    y: number;
+    z?: number;
+}
+
+/**
+ * Represents a point with x, y, and z coordinates.
+ */
+export class Point implements IPoint {
+    x: number;
+    y: number;
+    z: number;
+
+    constructor(x = 0, y = 0, z = 0) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    clone() {
+        return new Point(this.x, this.y, this.z);
+    }
+
+    static distance(p1: IPoint, p2: IPoint): number {
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const dz = p1.z || 0 - p2.z || 0;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+    static interpolate(p1: IPoint, p2: IPoint, pct: number): IPoint {
+        return new Point(
+            p1.x + (p2.x - p1.x) * pct,
+            p1.y + (p2.y - p1.y) * pct,
+            p1.z + (p2.z - p1.z) * pct
+        );
+    }
+    static angle(p1: IPoint, p2: IPoint, radians?: boolean): number {
+        const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+        return radians? angle : Math.round(angle * 180 / Math.PI);
+    }
+}

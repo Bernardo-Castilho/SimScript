@@ -361,3 +361,35 @@ export class LogNormal extends RandomVar {
         return this._mean == 0 ? 0 : Math.pow(Math.E, this._normal.sample());
     }
 }
+
+/**
+ * Represents a random variable that returns integer values
+ * between 0 and a given maximum value.
+ */
+ export class RandomInt extends RandomVar {
+    protected _max: number;
+
+    /**
+     * Initializes a new instance of the {@link RandomInt} class.
+     * 
+     * @param max Maximum value.
+     * @param seed Optional value used to initialize the random sequence.
+     */
+    constructor(max: number, seed?: number) {
+        super(seed);
+        this._max = max;
+    }
+    /**
+     * Gets the maximum value of the generated values.
+     */
+    get max(): number {
+        return this._max;
+    }
+    /**
+     * Gets a random value that follows a lognormal distribution with
+     * a given {@link mean} and standard deviation ({@link std}).
+     */
+    sample(): number {
+        return Math.floor(super.sample() * (this._max + 1));
+    }
+}

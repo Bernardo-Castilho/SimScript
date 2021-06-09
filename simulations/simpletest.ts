@@ -10,7 +10,11 @@ export class SimpleTest extends Simulation {
     qService = new Queue('Service', 1);
     onStarting() {
         super.onStarting();
+
+        console.log('activating SimpleEntity');
         this.activate(new SimpleEntity());
+
+        console.log('generating 1000 SimplerEntity');
         this.generateEntities(SimplerEntity, new Uniform(5, 10), 1000);
     }
 }
@@ -47,8 +51,6 @@ class SimpleEntity extends Entity {
         await this.delay(10);
         this.leaveQueue(sim.qService);
         assert(sim.timeNow == time + 10, 'waited for 10 tu');
-
-        console.log('done at', sim.timeNow);
     }
     async doSomeOtherStuff() {
         const sim = this.simulation as SimpleTest;
@@ -59,13 +61,13 @@ class SimpleEntity extends Entity {
             await this.delay(delay);
         }
         assert(this.simulation.timeNow == t + cnt * delay, 'should have waited (cnt * delay) tus');
-        console.log('done with delays');
+        console.log('other stuff done');
     }
 
 }
 
 class SimplerEntity extends Entity {
-    service = new Uniform(10, 100);
+    service = new Uniform(5, 10);
     async script() {
         let sim = this.simulation as SimpleTest;
         await this.enterQueue(sim.qWait);
@@ -94,6 +96,10 @@ class SimplestReally extends Entity {
         await this.enterLeave();
         console.log('returned from enterLeave', sim.timeNow);
 
+        console.log('before delay 10', sim.timeNow);
+        await this.delay(10);
+        console.log('after delay 10', sim.timeNow);
+
         console.log('before delay 0', sim.timeNow);
         await this.delay(0);
         console.log('after delay 0', sim.timeNow);
@@ -103,14 +109,12 @@ class SimplestReally extends Entity {
         console.log('returned from enterLeave', sim.timeNow);
 
         await this.enterQueue(sim.q);
-        console.log('entered queue at', sim.timeNow);
         this.leaveQueue(sim.q);
-        console.log('left queue at', sim.timeNow);
+        await this.enterQueue(sim.q);
         await this.delay(10);
-        console.log('after delay 10', sim.timeNow);
         await this.delay(0);
-        console.log('after another delay 0', sim.timeNow);
-        console.log('** all done **');
+        this.leaveQueue(sim.q);
+        console.log('** SimplestReally done at', sim.timeNow);
     }
 
     async enterLeave() {
@@ -122,8 +126,30 @@ class SimplestReally extends Entity {
             console.log('loop', i, sim.timeNow);
         }
 
+        // ** REVIEW **
         // this is needed in case the async function doesn't 
         // cause any simulated delays
         new FecItem(this, { ready: true });
     }    
+}
+
+
+export class Generator extends Simulation {
+    cnt = 0;
+    onStarting() {
+        super.onStarting();
+        this.generateEntities(GeneratorEntity, new Uniform(10, 10), 100);
+    }
+    onFinished() {
+        super.onFinished();
+        console.log('cnt is', this.cnt);
+        console.log('elapsed', this.timeElapsed);
+    }
+}
+class GeneratorEntity extends Entity {
+    async script() {
+        const sim = this.simulation as Generator;
+        sim.cnt++;
+        console.log(' at', sim.timeNow);
+    }
 }

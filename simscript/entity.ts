@@ -361,21 +361,25 @@ export class EntityGenerator extends Entity {
      * @param entityType Type of {@link Entity} to generate.
      * @param interval {@link RandomVar} that defines the entity inter-arrival times, or
      * **null** to generate a single entity.
-     * @param max Maximum number of entities to generate.
-     * @param startTime Simulated time when entity generation should start.
-     * @param endTime Simulated time when entity generation should stop.
+     * @param max Maximum number of entities to generate, or **null** to generate
+     * an unlimited number of entities.
+     * @param timeStart Simulated time when entity generation should start, or
+     * **null** to start generating entities immediately.
+     * @param timeEnd Simulated time when entity generation should stop, or
+     * **null** to keep generating entities until the simulation reaches
+     * its {@link timeEnd} value.
      */
-    constructor(entityType: any, interval: RandomVar | null, max?: number, startTime?: number, endTime?: number) {
+    constructor(entityType: any, interval?: RandomVar, max?: number, timeStart?: number, timeEnd?: number) {
         super();
         this._type = entityType;
         this._interval = interval;
         this._max = max;
-        this._tmStart = startTime;
-        this._tmEnd = endTime;
+        this._tmStart = timeStart;
+        this._tmEnd = timeEnd;
     }
 
     /**
-     * Generates entities according to a schedule.
+     * Generates entities of a given type according to a schedule.
      */
     async script() {
         const sim = this.simulation;

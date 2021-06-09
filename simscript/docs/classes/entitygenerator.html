@@ -127,14 +127,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Entity<wbr>Generator<span class="tsd-signature-symbol">(</span>entityType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, interval<span class="tsd-signature-symbol">: </span><a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a>, max<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, startTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, endTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entitygenerator.html" class="tsd-signature-type" data-tsd-kind="Class">EntityGenerator</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Entity<wbr>Generator<span class="tsd-signature-symbol">(</span>entityType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, interval<span class="tsd-signature-symbol">?: </span><a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a>, max<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, timeStart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, timeEnd<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entitygenerator.html" class="tsd-signature-type" data-tsd-kind="Class">EntityGenerator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="entity.html">Entity</a>.<a href="entity.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in entity.ts:346</li>
+									<li>Defined in entity.ts:356</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -151,7 +151,7 @@
 									</div>
 								</li>
 								<li>
-									<h5>interval: <a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> interval: <a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p><a href="randomvar.html">RandomVar</a> that defines the entity inter-arrival times, or
 										<strong>null</strong> to generate a single entity.</p>
@@ -160,19 +160,23 @@
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> max: <span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Maximum number of entities to generate.</p>
+										<p>Maximum number of entities to generate, or <strong>null</strong> to generate
+										an unlimited number of entities.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> startTime: <span class="tsd-signature-type">number</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> timeStart: <span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Simulated time when entity generation should start.</p>
+										<p>Simulated time when entity generation should start, or
+										<strong>null</strong> to start generating entities immediately.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> endTime: <span class="tsd-signature-type">number</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> timeEnd: <span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Simulated time when entity generation should stop.</p>
+										<p>Simulated time when entity generation should stop, or
+											<strong>null</strong> to keep generating entities until the simulation reaches
+										its <a href="simulation.html#timeend">timeEnd</a> value.</p>
 									</div>
 								</li>
 							</ul>
@@ -316,7 +320,7 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-								<p>Note that calls to the async methods <a href="entitygenerator.html#enterqueue">enterQueue</a>, <a href="entitygenerator.html#waitsignal">waitSignal</a>,
+								<p>Note that calls to async methods such as <a href="entitygenerator.html#enterqueue">enterQueue</a>, <a href="entitygenerator.html#waitsignal">waitSignal</a>,
 								and <a href="entitygenerator.html#delay">delay</a> should be preceded by the <strong>await</strong> keyword.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -350,7 +354,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#dispose">dispose</a></p>
 								<ul>
-									<li>Defined in entity.ts:289</li>
+									<li>Defined in entity.ts:299</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -400,7 +404,7 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-								<p>Note that calls to the async methods <a href="entitygenerator.html#enterqueue">enterQueue</a>, <a href="entitygenerator.html#waitsignal">waitSignal</a>,
+								<p>Note that calls to async methods such as <a href="entitygenerator.html#enterqueue">enterQueue</a>, <a href="entitygenerator.html#waitsignal">waitSignal</a>,
 								and <a href="entitygenerator.html#delay">delay</a> should be preceded by the <strong>await</strong> keyword.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -433,7 +437,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#enterqueueimmediately">enterQueueImmediately</a></p>
 								<ul>
-									<li>Defined in entity.ts:197</li>
+									<li>Defined in entity.ts:207</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -497,7 +501,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#leavequeue">leaveQueue</a></p>
 								<ul>
-									<li>Defined in entity.ts:206</li>
+									<li>Defined in entity.ts:216</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -530,12 +534,12 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="entity.html">Entity</a>.<a href="entity.html#script">script</a></p>
 								<ul>
-									<li>Defined in entity.ts:370</li>
+									<li>Defined in entity.ts:384</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Generates entities according to a schedule.</p>
+									<p>Generates entities of a given type according to a schedule.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -553,7 +557,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#sendsignal">sendSignal</a></p>
 								<ul>
-									<li>Defined in entity.ts:270</li>
+									<li>Defined in entity.ts:280</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -594,7 +598,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#tostring">toString</a></p>
 								<ul>
-									<li>Defined in entity.ts:303</li>
+									<li>Defined in entity.ts:313</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -619,7 +623,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#waitsignal">waitSignal</a></p>
 								<ul>
-									<li>Defined in entity.ts:256</li>
+									<li>Defined in entity.ts:266</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -767,10 +771,19 @@
 						<a href="lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="network.html" class="tsd-kind-icon">Network</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="normal.html" class="tsd-kind-icon">Normal</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="point.html" class="tsd-kind-icon">Point</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="queue.html" class="tsd-kind-icon">Queue</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="randomint.html" class="tsd-kind-icon">Random<wbr>Int</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="randomvar.html" class="tsd-kind-icon">Random<wbr>Var</a>
@@ -800,7 +813,16 @@
 						<a href="../interfaces/ihistogramentry.html" class="tsd-kind-icon">IHistogram<wbr>Entry</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ilink.html" class="tsd-kind-icon">ILink</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="../interfaces/imovepath.html" class="tsd-kind-icon">IMove<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/inode.html" class="tsd-kind-icon">INode</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ipoint.html" class="tsd-kind-icon">IPoint</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#assert" class="tsd-kind-icon">assert</a>
@@ -840,10 +862,11 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 		</div>
 	</div>

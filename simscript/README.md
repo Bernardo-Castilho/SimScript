@@ -49,6 +49,13 @@ in 3D/VR.
 
 Animations are useful for presentations and also for debugging simulations.
 
+## Network Class
+
+Networks are defined by sets of nodes and links.
+
+The **Network** class provides a **shortestPath** method that returns a
+list of links so entities may travel along the network.
+
 ## Styles
 
 **SimScript** includes a CSS file with some simple formatting for the
@@ -126,3 +133,10 @@ The links below show some samples of **SimScript** simulations:
 - [Animation Options (X3DOM animation)](https://stackblitz.com/edit/typescript-oncuqe?file=animation-options.ts)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show the effect of some
     **Animation** and **Simulation** properties.
+
+- [Network Intro (SVG animation)](https://stackblitz.com/edit/typescript-zfm9hz?file=index.ts)\
+    Uses an SVG-based 2D animation to show how to use SimScript's **Network** class.
+
+- [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya?file=index.ts)\
+    Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show how to use SimScript's
+    **Network** class.

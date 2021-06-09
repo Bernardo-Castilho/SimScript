@@ -92,10 +92,9 @@ export class Simulation {
     private _tmStart = 0;
     private _tmElapsed = 0;
     private _state = SimulationState.Paused;
-    private _stopRequested = false;
     private _queues: Queue[] = [];
     private _lastUpdate = 0;
-    private _yieldInterval = 100;
+    private _yieldInterval = 200;
 
     /**
      * Initializes a new instance of the {@link Simulation} class.
@@ -166,9 +165,9 @@ export class Simulation {
      * Gets the actual simulation time in milliseconds.
      */
     get timeElapsed(): number {
-        return this._state == SimulationState.Paused
-            ? this._tmElapsed
-            : Date.now() - this._tmStart;
+        return this._state == SimulationState.Running
+            ? Date.now() - this._tmStart
+            : this._tmElapsed;
     }
     /**
      * Gets the current simulated time in simulation time units.
@@ -203,9 +202,6 @@ export class Simulation {
             return;
         };
 
-        // cancel stop request
-        this._stopRequested = false;
-
         // always reset if we're done
         reset = reset || this._fec.length == 0;
 
@@ -229,16 +225,16 @@ export class Simulation {
     /**
      * Stops the {@link Simulation}.
      * 
-     * This method acts ansynchronously.
-     * Calling it causes the {@link SimulationState} to change from
-     * **Running** to **Paused**.
+     * Calling this method causes the {@link SimulationState} to change 
+     * from **Running** to **Paused**.
      * 
      * Use the the {@link start} method to resume or re-start the 
      * simulation when it is paused.
      */
     stop() {
         if (this.state == SimulationState.Running) {
-            this._stopRequested = true;
+            this._tmElapsed = Date.now() - this._tmStart;
+            this._setState(SimulationState.Paused);
         }
     }
     /**
@@ -297,7 +293,7 @@ export class Simulation {
      * @param startTime Time to start generating entities.
      * @param endTime Time to stop generating entities.
      */
-    generateEntities(type, interArrival: RandomVar | null, max?: number, startTime?: number, endTime?: number) {
+    generateEntities(type, interArrival?: RandomVar, max?: number, startTime?: number, endTime?: number) {
         const gen = new EntityGenerator(type, interArrival, max, startTime, endTime);
         this.activate(gen);
     }
@@ -466,15 +462,15 @@ export class Simulation {
     private async _step() {
         ////console.log('called _step at', this.timeNow, 'fec has', this._fec.length, 'items');
 
+        // make sure we are running
+        if (this._state != SimulationState.Running) {
+            return;
+        }
+
         // scan the fec to find out the next step
         let nextTime = await this._scanFec();
 
         // check if we should stop
-        if (this._stopRequested) { // stop method called
-            this._tmElapsed = Date.now() - this._tmStart;
-            this._setState(SimulationState.Paused);
-            return;
-        }
         if ((this._tmEnd != null && this._tmNow >= this._tmEnd) || // end of simulation time
             (nextTime < 0)) { // out of things to do
             this._fec = [];
@@ -751,9 +747,10 @@ export interface IMovePath {
      */
     queues: Queue[],
     /** 
-     * Value that defines the tension of the spline used to interpolate between
-     * the queues. Zero creates a path with straight line segments, 0.5 generates
-     * a smooth curve.
+     * Value that defines the tension of the spline used to interpolate 
+     * between the queues. 
+     * Zero creates a path with straight line segments, 0.5 generates
+     * smooth curves.
      */
     tension?: number;
 }

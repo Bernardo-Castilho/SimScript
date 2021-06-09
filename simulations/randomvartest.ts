@@ -1,7 +1,9 @@
 import { Simulation } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Tally } from '../simscript/tally';
-import { RandomVar, Uniform, Triangular, Empirical, Exponential, Normal, LogNormal } from '../simscript/random';
+import {
+    RandomVar, Uniform, Triangular, Empirical, Exponential, Normal, LogNormal, RandomInt
+} from '../simscript/random';
 
 //
 interface IRandomVar {
@@ -61,6 +63,7 @@ export class RandomVarTest extends Simulation {
             { var: new Exponential(10, seed), name: 'Exponential(10)', binSize: 20 },
             { var: new Normal(10, 2, true, seed), name: 'Normal(10, 2)', binSize: 2 },
             { var: new LogNormal(10, 2, seed), name: 'LogNormal(10, 2)', binSize: 2 },
+            { var: new RandomInt(10, seed), name: 'RandomInt(10)', binSize: 1 },
             { var: new EightEighty(seed), name: 'EightEighty()', binSize: 10 },
         ];
     }

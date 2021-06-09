@@ -5,4 +5,5 @@ export * from './tally';
 export * from './random';
 export * from './event';
 export * from './animation';
+export * from './network';
 export * from './util';

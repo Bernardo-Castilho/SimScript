@@ -5,7 +5,7 @@ import { Exponential, LogNormal, RandomVar } from '../simscript/random';
 import { Tally } from '../simscript/tally';
 
 // MMC simulation
-// time units: hours
+// time units: minutes
 export class MMC extends Simulation {
     qWait = new Queue('Wait');
     qService = new Queue('Service', 2);
@@ -27,7 +27,7 @@ export class MMC extends Simulation {
         this.qWait.grossDwell.setHistogramParameters(60, 0, 500 - 0.1);
 
         // start simulation
-        this.generateEntities(Customer, this.interArrival, 1e6); // limit the # of customers
+        this.generateEntities(Customer, this.interArrival, 10000); // limit the # of customers
     }
 }
 

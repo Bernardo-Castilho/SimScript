@@ -90,6 +90,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#delay" class="tsd-kind-icon">delay</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#path" class="tsd-kind-icon">path</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#queue" class="tsd-kind-icon">queue</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#ready" class="tsd-kind-icon">ready</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#signal" class="tsd-kind-icon">signal</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#units" class="tsd-kind-icon">units</a></li>
 							</ul>
@@ -105,7 +106,7 @@
 					<div class="tsd-signature tsd-kind-icon">delay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:609</li>
+							<li>Defined in simulation.ts:606</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -120,7 +121,7 @@
 					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <a href="imovepath.html" class="tsd-signature-type" data-tsd-kind="Interface">IMovePath</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:611</li>
+							<li>Defined in simulation.ts:608</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -135,7 +136,7 @@
 					<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <a href="../classes/queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:613</li>
+							<li>Defined in simulation.ts:610</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -145,12 +146,27 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="ready" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ready</h3>
+					<div class="tsd-signature tsd-kind-icon">ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in simulation.ts:616</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether the entity is ready to resume execution.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="signal" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> signal</h3>
 					<div class="tsd-signature tsd-kind-icon">signal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:617</li>
+							<li>Defined in simulation.ts:614</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -165,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">units<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:615</li>
+							<li>Defined in simulation.ts:612</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -217,10 +233,19 @@
 						<a href="../classes/lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="../classes/network.html" class="tsd-kind-icon">Network</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="../classes/normal.html" class="tsd-kind-icon">Normal</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="../classes/point.html" class="tsd-kind-icon">Point</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="../classes/queue.html" class="tsd-kind-icon">Queue</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="../classes/randomint.html" class="tsd-kind-icon">Random<wbr>Int</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="../classes/randomvar.html" class="tsd-kind-icon">Random<wbr>Var</a>
@@ -258,6 +283,9 @@
 								<a href="ifecitemoptions.html#queue" class="tsd-kind-icon">queue</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="ifecitemoptions.html#ready" class="tsd-kind-icon">ready</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="ifecitemoptions.html#signal" class="tsd-kind-icon">signal</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -271,7 +299,16 @@
 						<a href="ihistogramentry.html" class="tsd-kind-icon">IHistogram<wbr>Entry</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="ilink.html" class="tsd-kind-icon">ILink</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="imovepath.html" class="tsd-kind-icon">IMove<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="inode.html" class="tsd-kind-icon">INode</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="ipoint.html" class="tsd-kind-icon">IPoint</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#assert" class="tsd-kind-icon">assert</a>
@@ -311,10 +348,11 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 		</div>
 	</div>

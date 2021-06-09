@@ -125,8 +125,9 @@ export class Tally {
         if (this._histo) {
 
             // get sorted list of bins
-            const bins = this._histo;
-            const keys = Array.from(bins.keys());
+            const
+                bins = this._histo,
+                keys = Array.from(bins.keys());
             keys.sort((a, b) => a - b); // sort bins in ascending order
 
             // add missing keys
@@ -148,7 +149,8 @@ export class Tally {
 
             // honor min/max histogram parameters
             if (h.length) {
-                const parms = this._histoParms,
+                const
+                    parms = this._histoParms,
                     min = parms.min,
                     max = parms.max;
                 if (min != null && h[0].from > this.min) {
@@ -185,16 +187,18 @@ export class Tally {
         // get parameters
         let maxCnt = 0;
         histo.forEach(e => maxCnt = Math.max(maxCnt, e.count));
-        const barWidth = Math.round(1 / histo.length * 100);
-        const dec = this._histoParms.size < 1 ? 1 : 0;
+        const
+            barWidth = Math.round(1 / histo.length * 100),
+            dec = this._histoParms.size < 1 ? 1 : 0;
 
         // build bars
         let bars = '';
         histo.forEach((e, index) => {
-            const cls = this.avg >= e.from && this.avg <= e.to ? ' class="avg"' : '';
-            const hei = Math.round(e.count / maxCnt * 100);
-            const x = index * barWidth;
-            const gap = 5;
+            const
+                cls = this.avg >= e.from && this.avg <= e.to ? ' class="avg"' : '',
+                hei = Math.round(e.count / maxCnt * 100),
+                x = index * barWidth,
+                gap = 5;
             bars += `<g${cls}>
                 <title>${e.count}</title>
                 <rect
