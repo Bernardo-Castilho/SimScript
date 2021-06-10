@@ -183,7 +183,9 @@ export class ServiceVehicle extends Entity {
     }
 
     // gets the closest request to this server
-    getClosestRequest(): ServiceRequest {
+    // this method is simple and fast, but it does not take into account
+    // the position of other idle service vehicles.
+    getClosestRequestQuick(): ServiceRequest {
         const sim = this.simulation as NetworkIntro;
         assert(!this.busy, 'should not be looking for service while busy');
         let request: ServiceRequest = null;
@@ -198,6 +200,64 @@ export class ServiceVehicle extends Entity {
             }
         });
         return request;
+    }
+
+    // gets the closest request to this server
+    // taking into account the position of other idle service vehicles.
+    getClosestRequest(): ServiceRequest {
+        const sim = this.simulation as NetworkIntro;
+        assert(!this.busy, 'should not be looking for service while busy');
+
+        // get vehicles and requests
+        const servers = sim.servers.filter(server => server.busy == false);
+        const requests = (sim.qWait.entities as ServiceRequest[]).filter(request => request.assigned == null);
+
+        // build distance matrix
+        const distances = [];
+        servers.forEach(server => {
+            let serverDist = [];
+            distances.push(serverDist);
+            requests.forEach(request => {
+                const d = Point.distance(server.node.position, request.node.position);
+                serverDist.push(d);
+            });
+        });
+
+        // assign servers to requests
+        const serverMap = new Map<any, any>();
+        const requestMap = new Map<any, any>();
+        while (serverMap.size < servers.length && requestMap.size < requests.length) {
+            const min = {
+                vehicle: null,
+                destination: null,
+                distance: null,
+            };
+        
+            // scan unassigned vehicles
+            for (let v = 0; v < distances.length; v++) {
+                if (!serverMap.has(servers[v])) {
+        
+                    // scan unassigned destinations
+                    for (let d = 0; d < distances[v].length; d++) {
+                        if (!requestMap.has(requests[d])) {
+        
+                            // keep shortest unassigned value
+                            let distance = distances[v][d];
+                            if (min.distance == null || distance < min.distance) {
+                                min.vehicle = servers[v];
+                                min.destination = requests[d];
+                                min.distance = distance;
+                            }
+                        }
+                    }
+                }
+            }
+            serverMap.set(min.vehicle, min.destination);
+            requestMap.set(min.destination, min.vehicle);
+        }
+
+        // done
+        return serverMap.get(this);
     }
 }
 
@@ -348,7 +408,7 @@ export function renderNetworkX3D(network: Network, x3d: HTMLElement) {
                     <appearance>
                         <material transparency='0.5' diffuseColor='1 1 0'/>
                     </appearance>
-                    <box size='10 10 10'></box>
+                    <box size='5 5 2'></box>
                 </shape>
             </transform>`;
     });
@@ -362,9 +422,9 @@ export function renderNetworkX3D(network: Network, x3d: HTMLElement) {
                 <transform translation='${len / 2} 0 0'>
                     <shape>
                         <appearance>
-                            <material transparency='0' diffuseColor='1 1 0'/>
+                            <material transparency='0' diffuseColor='.1 .1 .1'/>
                         </appearance>
-                        <box size='${len} 4 4'></box>
+                        <box size='${len + 30} 40 1'></box>
                     </shape>
                 </transform>
             </transform>`;

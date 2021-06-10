@@ -1,5 +1,5 @@
-import './style.css';
 import './simscript/simscript.css';
+import './style.css';
 
 import { Simulation, SimulationState } from './simscript/simulation';
 import { Animation, IAnimatedQueue } from './simscript/animation';
@@ -507,15 +507,17 @@ showSimulation(
             ]
         });
 
-        // update semaphore and timeNow display when the time changes
+        // update display when the time or state change
         const lights = animationHost.querySelectorAll('.light div');
         const timeNow = animationHost.querySelector('.time-now span');
-        sim.timeNowChanged.addEventListener(() => {
+        const updateStats = () => {
             timeNow.textContent = format(sim.timeNow / 3600);
             for (let i = 0; i < lights.length; i++) {
                 (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
             }
-        });
+        }
+        sim.timeNowChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(updateStats);
     }
 );
 
@@ -586,15 +588,17 @@ showSimulation(
             ]
         });
 
-        // update semaphore and timeNow display when the time changes
+        // update display when the time or state change
         const lights = animationHost.querySelectorAll('.light circle');
         const timeNow = document.querySelector('.svg.ss-time-now span');
-        sim.timeNowChanged.addEventListener(() => {
+        const updateStats = () => {
             timeNow.textContent = format(sim.timeNow / 3600);
             for (let i = 0; i < lights.length; i++) {
                 (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
             }
-        });
+        }
+        sim.timeNowChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(updateStats);
     }
 );
 
@@ -736,18 +740,19 @@ showSimulation(
             ]
         });
 
-        // update semaphore and timeNow display when the time changes
+        // update display when the time or state change
         const lights = animationHost.querySelectorAll('material.light');
         const timeNow = document.querySelector('.x3d.ss-time-now span');
-        sim.timeNowChanged.addEventListener(() => {
+        const updateStats = () => {
             timeNow.textContent = format(sim.timeNow / 3600);
             for (let i = 0; i < lights.length; i++) {
                 const e = lights[i] as HTMLElement;
                 e.setAttribute('transparency', i == sim.light ? '0' : '0.7');
                 e.closest('transform').setAttribute('scale', i == sim.light ? '1.1 1.1 1.1' : '.9 .9 .9');
             }
-        });
-
+        }
+        sim.timeNowChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(updateStats);
     }
 );
 
@@ -1214,7 +1219,7 @@ showSimulation(
             </li>
         </ul>
         <label>
-            Slow
+            Slow Mode
             <input id='network-svg-slow' type='checkbox'>
         </label>
         <label>
@@ -1227,7 +1232,10 @@ showSimulation(
             Average Response Time: <b><span id='network-svg-wait'>0</span></b> seconds
         </label>
         <label>
-            Requests Served: <b><span id='network-svg-served'>0</span></b>
+            Requests Served:
+            <b><span id='network-svg-served'>0</span></b>
+            /
+            <span id='network-svg-nreq'>0</span>
         </label>
         <label>
             Requests Missed: <b><span id='network-svg-missed'>0</span></b>
@@ -1292,18 +1300,22 @@ showSimulation(
         // show number of service vehicles
         const nsvc = document.getElementById('network-svg-nsvc');
         nsvc.textContent = format(sim.serviceVehicles, 0);
+        const nreq = document.getElementById('network-svg-nreq');
+        nreq.textContent = format(sim.requests, 0);
         
-        // update wait times and server utilization when time changes
+        // update stats when time or state change
         const utz = document.getElementById('network-svg-utz');
         const wait = document.getElementById('network-svg-wait');
         const served = document.getElementById('network-svg-served');
         const missed = document.getElementById('network-svg-missed');
-        sim.timeNowChanged.addEventListener(() => {
+        const updateStats = () => {
             utz.textContent = format(sim.qBusy.utilization * 100, 0);
             wait.textContent = format(sim.qWait.averageDwell, 0);
             served.textContent = format(sim.requestsServed, 0);
             missed.textContent = format(sim.requestsMissed, 0);
-        });
+        }
+        sim.timeNowChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(updateStats);
     }
 );
 
@@ -1332,7 +1344,7 @@ showSimulation(
             </li>
         </ul>
         <label>
-            Slow
+            Slow Mode
             <input id='network-x3d-slow' type='checkbox'>
         </label>
         <label>
@@ -1345,7 +1357,10 @@ showSimulation(
             Average Response Time: <b><span id='network-x3d-wait'>0</span></b> seconds
         </label>
         <label>
-            Requests Served: <b><span id='network-x3d-served'>0</span></b>
+            Requests Served:
+            <b><span id='network-x3d-served'>0</span></b>
+            /
+            <span id='network-x3d-nreq'>0</span>
         </label>
         <label>
             Requests Missed: <b><span id='network-x3d-missed'>0</span></b>
@@ -1367,7 +1382,7 @@ showSimulation(
                         <appearance> 
                             <material diffuseColor='0 .5 .5'></material>
                         </appearance>
-                        <box size='900 500 .1'></box>
+                        <box size='1200 800 .1'></box>
                     </shape>
                 </transform>
             </transform>                
@@ -1389,13 +1404,13 @@ showSimulation(
             rotateEntities: true,
             getEntityHtml: e => {
                 if (e instanceof ServiceVehicle) { // green/yellow sphere
-                    return createX3Car('service', 40, 20, 10, e.busy ? 1 : 0, 0.5, 0);
+                    return createX3Car('service', 40, 15, 10, e.busy ? 1 : 0, 0.5, 0);
                 } else { // red sphere
                     return `<shape>
                         <appearance>
-                            <material transparency='0.2' diffuseColor='1 0 0'/>
+                            <material transparency='0.5' diffuseColor='1 0 0'/>
                         </appearance>
-                        <sphere radius='20'></sphere>
+                        <sphere radius='40'></sphere>
                     </shape>`;
                 }
             }
@@ -1407,18 +1422,22 @@ showSimulation(
         // show number of service vehicles
         const nsvc = document.getElementById('network-x3d-nsvc');
         nsvc.textContent = format(sim.serviceVehicles, 0);
+        const nreq = document.getElementById('network-x3d-nreq');
+        nreq.textContent = format(sim.requests, 0);
         
-        // update wait times and server utilization when time changes
+        // update stats when time or state change
         const utz = document.getElementById('network-x3d-utz');
         const wait = document.getElementById('network-x3d-wait');
         const served = document.getElementById('network-x3d-served');
         const missed = document.getElementById('network-x3d-missed');
-        sim.timeNowChanged.addEventListener(() => {
+        const updateStats = () => {
             utz.textContent = format(sim.qBusy.utilization * 100, 0);
             wait.textContent = format(sim.qWait.averageDwell, 0);
             served.textContent = format(sim.requestsServed, 0);
             missed.textContent = format(sim.requestsMissed, 0);
-        });
+        }
+        sim.timeNowChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(updateStats);
     }
 );
 

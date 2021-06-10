@@ -122,7 +122,8 @@ export class Animation {
 
         // simulation
         this._sim = sim;
-        this._sim.timeNowChanged.addEventListener(this.updateDisplay, this);
+        sim.timeNowChanged.addEventListener(this.updateDisplay, this);
+        sim.stateChanged.addEventListener(this.updateDisplay, this);
 
         // slow down the simulation to keep the animation smooth
         sim.yieldInterval = 15; // about 60 fps

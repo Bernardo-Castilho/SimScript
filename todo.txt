@@ -1,26 +1,9 @@
 # Todo
+- strips (link + offset%)
+    - rail (one lane, one direction)
+    - road (multi-lane, one direction)
+    - river?
 - more docs/examples
     - race track
     - robot/warehouse
 - more tests (zero delay, enter no wait)
-- network module
-    - commit/publish
-    - update blitz
-    - strips (link + offset%)
-    - rail/road/river?
-
-- network sample result:
-Servers	Utz (%)	Wait (s)	Misses
-1	100	6381	580
-2	95	2876	192
-3	91	630	0   
-4	78	314	0
-5	63	176	0
-6	48	107	0
-7	40	91	0
-8	38	74	0
-9	29	64	0
-10	28	59	0
-11	23	50	0
-12	21	49	0
-20	13	38	0
