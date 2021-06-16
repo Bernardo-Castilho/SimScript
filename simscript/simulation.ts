@@ -747,10 +747,15 @@ export interface IMovePath {
      */
     queues: Queue[],
     /** 
-     * Value that defines the tension of the spline used to interpolate 
+     * Value that defines the tension of the splines used to interpolate 
      * between the queues. 
-     * Zero creates a path with straight line segments, 0.5 generates
-     * smooth curves.
+     * 
+     * Zero (0) creates a path with straight line segments, one (1)
+     * generates smooth curves.
+     * 
+     * Note that if you use tension values greater than zero, entities
+     * will move **close** to intermediate nodes rather than directly
+     * **over** them.
      */
     tension?: number;
 }

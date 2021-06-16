@@ -118,6 +118,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="network.html#_getpathpart" class="tsd-kind-icon">_get<wbr>Path<wbr>Part</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="network.html#getlinkdistance" class="tsd-kind-icon">get<wbr>Link<wbr>Distance</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="network.html#getnode" class="tsd-kind-icon">get<wbr>Node</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="network.html#mergepath" class="tsd-kind-icon">merge<wbr>Path</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="network.html#shortestpath" class="tsd-kind-icon">shortest<wbr>Path</a></li>
 							</ul>
 						</section>
@@ -280,7 +281,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:246</li>
+									<li>Defined in network.ts:309</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -303,7 +304,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:249</li>
+									<li>Defined in network.ts:312</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -329,7 +330,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:218</li>
+									<li>Defined in network.ts:239</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,6 +392,59 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mergepath" class="tsd-anchor"></a>
+					<h3>merge<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">merge<wbr>Path<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><a href="../interfaces/ilink.html" class="tsd-signature-type" data-tsd-kind="Interface">ILink</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in network.ts:294</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Merges a path defined by an array of <a href="../interfaces/ilink.html">ILink</a> objects into an
+									array of <a href="queue.html">Queue</a> objects.</p>
+								</div>
+								<p>This makes it possible for entities to traverse the whole path
+								with a single delay. For example:</p>
+								<pre><code class="language-typescript"><span style="color: #008000">// select from/to nodes</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">from</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #001080">nodes</span><span style="color: #000000">[</span><span style="color: #098658">0</span><span style="color: #000000">];</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">to</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #001080">nodes</span><span style="color: #000000">[</span><span style="color: #098658">10</span><span style="color: #000000">];</span>
+
+<span style="color: #008000">// get shortest path</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">path</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #795E26">shortestPath</span><span style="color: #000000">(</span><span style="color: #001080">from</span><span style="color: #000000">, </span><span style="color: #001080">to</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// merge the path into a list of queues</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> [</span><span style="color: #0070C1">queues</span><span style="color: #000000">, </span><span style="color: #0070C1">distance</span><span style="color: #000000">] = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #795E26">mergePath</span><span style="color: #000000">(</span><span style="color: #001080">path</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// traverse the whole path with a single delay</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #001080">distance</span><span style="color: #000000"> / </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">speed</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">(), {</span>
+<span style="color: #000000">    </span><span style="color: #001080">queues:</span><span style="color: #000000"> </span><span style="color: #001080">queues</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">tension:</span><span style="color: #000000"> </span><span style="color: #098658">0.5</span>
+<span style="color: #000000">});</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <a href="../interfaces/ilink.html" class="tsd-signature-type" data-tsd-kind="Interface">ILink</a><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Array of <a href="../interfaces/ilink.html">ILink</a> objects that defines the path.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></h4>
+							<p>An array where the first element is an array of
+								<a href="queue.html">Queue</a> objects to be visited and the second is the total
+							path distance.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="shortestpath" class="tsd-anchor"></a>
 					<h3>shortest<wbr>Path</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -400,7 +454,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:143</li>
+									<li>Defined in network.ts:164</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -412,7 +466,7 @@
 								<a href="../interfaces/ilink.html">ILink</a> objects.</p>
 								<p>If a path between the nodes cannot be found, the method returns
 								an empty array.</p>
-								<p>The example below shows how you would move an <a href="entity.html">Entity</a>
+								<p>The example below shows how you to move an <a href="entity.html">Entity</a>
 								between to nodes on a <a href="network.html">Network</a>:</p>
 								<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Vehicle</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
@@ -424,9 +478,11 @@
 <span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">from</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #001080">nodes</span><span style="color: #000000">[</span><span style="color: #098658">0</span><span style="color: #000000">];</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">to</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #001080">nodes</span><span style="color: #000000">[</span><span style="color: #098658">10</span><span style="color: #000000">];</span>
 
-<span style="color: #000000">        </span><span style="color: #008000">// travel along the network</span>
+<span style="color: #000000">        </span><span style="color: #008000">// calculate the shortest path</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">path</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #795E26">shortestPath</span><span style="color: #000000">(</span><span style="color: #001080">from</span><span style="color: #000000">, </span><span style="color: #001080">to</span><span style="color: #000000">);</span>
 <span style="color: #000000">        </span><span style="color: #795E26">assert</span><span style="color: #000000">(</span><span style="color: #001080">path</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000"> &gt; </span><span style="color: #098658">0</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;cannot reach destination&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">        </span><span style="color: #008000">// move along the path one link at a time</span>
 <span style="color: #000000">        </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">i</span><span style="color: #000000"> = </span><span style="color: #098658">0</span><span style="color: #000000">; </span><span style="color: #001080">i</span><span style="color: #000000"> &lt; </span><span style="color: #001080">path</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000">; </span><span style="color: #001080">i</span><span style="color: #000000">++) {</span>
 <span style="color: #000000">            </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">link</span><span style="color: #000000"> = </span><span style="color: #001080">path</span><span style="color: #000000">[</span><span style="color: #001080">i</span><span style="color: #000000">];</span>
 <span style="color: #000000">            </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">distance</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #795E26">getLinkDistance</span><span style="color: #000000">(</span><span style="color: #001080">link</span><span style="color: #000000">, </span><span style="color: #001080">i</span><span style="color: #000000"> &gt; </span><span style="color: #098658">0</span><span style="color: #000000"> ? </span><span style="color: #001080">path</span><span style="color: #000000">[</span><span style="color: #001080">i</span><span style="color: #000000"> - </span><span style="color: #098658">1</span><span style="color: #000000">] : </span><span style="color: #0000FF">null</span><span style="color: #000000">);</span>
@@ -437,6 +493,22 @@
 <span style="color: #000000">        }</span>
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
+</code></pre>
+								<p>You can also use the <a href="network.html#mergepath">mergePath</a> method to get a list of queues
+									that make up the path and the total path distance, and use those
+								elements to travel the entire path with a single delay:</p>
+								<pre><code class="language-typescript"><span style="color: #008000">// calculate the shortest path</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">path</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #795E26">shortestPath</span><span style="color: #000000">(</span><span style="color: #001080">from</span><span style="color: #000000">, </span><span style="color: #001080">to</span><span style="color: #000000">);</span>
+<span style="color: #795E26">assert</span><span style="color: #000000">(</span><span style="color: #001080">path</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000"> &gt; </span><span style="color: #098658">0</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;cannot reach destination&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// merge the path into a list of queues</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> [</span><span style="color: #0070C1">queues</span><span style="color: #000000">, </span><span style="color: #0070C1">distance</span><span style="color: #000000">] = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">network</span><span style="color: #000000">.</span><span style="color: #795E26">mergePath</span><span style="color: #000000">(</span><span style="color: #001080">path</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// traverse the whole path with a single delay</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #001080">distance</span><span style="color: #000000"> / </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">speed</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">(), {</span>
+<span style="color: #000000">    </span><span style="color: #001080">queues:</span><span style="color: #000000"> </span><span style="color: #001080">queues</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">tension:</span><span style="color: #000000"> </span><span style="color: #098658">0.5</span>
+<span style="color: #000000">});</span>
 </code></pre>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -536,6 +608,9 @@
 								<a href="network.html#getnode" class="tsd-kind-icon">get<wbr>Node</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="network.html#mergepath" class="tsd-kind-icon">merge<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="network.html#shortestpath" class="tsd-kind-icon">shortest<wbr>Path</a>
 							</li>
 						</ul>
@@ -607,6 +682,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#interpolatepath" class="tsd-kind-icon">interpolate<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>

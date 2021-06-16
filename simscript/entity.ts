@@ -382,9 +382,10 @@ export class EntityGenerator extends Entity {
      * Generates entities of a given type according to a schedule.
      */
     async script() {
-        const sim = this.simulation;
-        const now = sim.timeNow;
-        const interval = this._interval;
+        const
+            sim = this.simulation,
+            now = sim.timeNow,
+            interval = this._interval;
 
         // start delay
         if (this._tmStart != null && now < this._tmStart) {
@@ -410,7 +411,7 @@ export class EntityGenerator extends Entity {
             }
 
             // create and activate an entity
-            var e = new this._type;
+            const e = new this._type;
             this.simulation.activate(e);
 
             // wait for the given interval or break if no interval

@@ -105,7 +105,7 @@ export class Network {
      * If a path between the nodes cannot be found, the method returns
      * an empty array.
      * 
-     * The example below shows how you would move an {@link Entity}
+     * The example below shows how you to move an {@link Entity}
      * between to nodes on a {@link Network}:
      * 
      * ```typescript
@@ -119,9 +119,11 @@ export class Network {
      *         const from = sim.network.nodes[0];
      *         const to = sim.network.nodes[10];
      * 
-     *         // travel along the network
+     *         // calculate the shortest path
      *         const path = sim.network.shortestPath(from, to);
      *         assert(path.length > 0, 'cannot reach destination');
+     * 
+     *         // move along the path one link at a time
      *         for (let i = 0; i < path.length; i++) {
      *             const link = path[i];
      *             const distance = sim.network.getLinkDistance(link, i > 0 ? path[i - 1] : null);
@@ -132,6 +134,25 @@ export class Network {
      *         }
      *     }
      * }
+     * ```
+     * 
+     * You can also use the {@link mergePath} method to get a list of queues 
+     * that make up the path and the total path distance, and use those 
+     * elements to travel the entire path with a single delay:
+     * 
+     * ```typescript
+     * // calculate the shortest path
+     * const path = sim.network.shortestPath(from, to);
+     * assert(path.length > 0, 'cannot reach destination');
+     * 
+     * // merge the path into a list of queues
+     * const [queues, distance] = sim.network.mergePath(path);
+     * 
+     * // traverse the whole path with a single delay
+     * await this.delay(distance / sim.speed.sample(), {
+     *     queues: queues,
+     *     tension: 0.5
+     * });
      * ```
      * 
      * @param start Start {@link INode}.
@@ -239,6 +260,48 @@ export class Network {
 
         // done
         return distance;
+    }
+    /**
+     * Merges a path defined by an array of {@link ILink} objects into an
+     * array of {@link Queue} objects.
+     * 
+     * This makes it possible for entities to traverse the whole path
+     * with a single delay. For example:
+     * 
+     * ```typescript
+     * // select from/to nodes
+     * const from = sim.network.nodes[0];
+     * const to = sim.network.nodes[10];
+     * 
+     * // get shortest path
+     * const path = sim.network.shortestPath(from, to);
+     * 
+     * // merge the path into a list of queues
+     * const [queues, distance] = sim.network.mergePath(path);
+     * 
+     * // traverse the whole path with a single delay
+     * await this.delay(distance / sim.speed.sample(), {
+     *     queues: queues,
+     *     tension: 0.5
+     * });
+     * ```
+     * 
+     * @param path Array of {@link ILink} objects that defines the path.
+     * @returns An array where the first element is an array of 
+     * {@link Queue} objects to be visited and the second is the total
+     * path distance.
+     */
+    mergePath(path: ILink[]): [Queue[], number] {
+        const queues = [];
+        let dist = 0;
+        path.forEach((link: ILink, i: number) => {
+            dist += this.getLinkDistance(link, i > 0 ? path[i - 1] : null);
+            if (i == 0) {
+                queues.push(link.from.queue);
+            }
+            queues.push(link.to.queue);
+        });
+        return [queues, dist];
     }
 
     // ** implementation

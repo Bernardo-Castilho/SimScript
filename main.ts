@@ -18,7 +18,20 @@ import { Crosswalk, Pedestrian } from './simulations/crosswalk';
 import { AnimationOptions, RoamEntity } from './simulations/animation-options';
 import { MultiServer } from './simulations/multiserver';
 import { NetworkIntro, ServiceVehicle, renderNetworkSVG, renderNetworkX3D } from './simulations/network-intro';
+import { CarFollow } from './simulations/car-follow';
 
+
+/*
+//----------------------------------------------------------
+// CarFollow
+showSimulation(
+    new CarFollow(),
+    'Car Following',
+    `<p>
+        Simple car-following demo.
+    </p>`
+);
+*/
 
 //----------------------------------------------------------
 // Generator
@@ -26,7 +39,7 @@ showSimulation(
     new Generator(),
     'Generator',
     `<p>
-        This is a simple test for the Simulation.generateEntities method.
+        Simple test for the Simulation.generateEntities method.
     </p>`
 );
 
@@ -36,7 +49,7 @@ showSimulation(
     new SimplestSimulation(),
     'SimplestSimulation',
     `<p>
-        This is a simple test with some asserts.
+        Simple test with some asserts.
     </p>`
 );
 
@@ -52,7 +65,7 @@ showSimulation(
     }),
     'SimpleTest Simulation',
     `<p>
-        This is a simple test with some asserts.
+        Simple test with some asserts.
     </p>
     <p>
         Run the simulation and look at the console.
@@ -69,7 +82,7 @@ showSimulation(
     new RandomVarTest(),
     'RandomVarTest Simulation',
     `<p>
-        This demo shows how to create and use
+        Shows how to create and use
         <a href='https://en.wikipedia.org/wiki/Random_variable'>random variable</a>
         objects.
     </p>
@@ -142,7 +155,7 @@ showSimulation(
     }),
     'MultiServer Simulation',
     `<p>
-        Test single resource with multiple servers vs
+        Single resource with multiple servers versus
         multiple resources with a single server.
     </p>`,
     (sim: MultiServer, log: HTMLElement) => {
@@ -234,10 +247,10 @@ showSimulation(
     new BarberShop(),
     'BarberShop Simulation',
     `<p>
-        This is a
+        This is a classic
         <a
             href='https://try-mts.com/gpss-introduction-and-barber-shop-simulation/'
-        >classic GPSS simulation example</a>:
+        >GPSS simulation example</a>:
         customers arrive at a barbershop,
         wait until the barber is available, get serviced, and leave.
     </p>`,
@@ -266,13 +279,13 @@ showSimulation(
     new MMC(),
     'M/M/C Simulation',
     `<p>
-        This is a classical
+        This is a classic
         <a href='https://en.wikipedia.org/wiki/M/M/c_queue'>M/M/C queueing system</a>.
         Entities arrive, are served by one of C servers, and leave.
     </p>
     <p>
         This system is simple enough that there are formulas to calculate the
-        average queue length and waits (the calculated values are shown in italics).
+        average queue length and waits (calculated values are shown in italics).
     </p>`,
     (sim: MMC, log: HTMLElement) => {
         const
@@ -774,7 +787,7 @@ showSimulation(
         </label>
         <label>
             Spline Tension
-            <input id='tension' type='range' min='0' max='2' step='.1'>
+            <input id='tension' type='range' min='0' max='1' step='.1'>
         </label>
         <label>
             Max Time Step
@@ -880,7 +893,7 @@ showSimulation(
         </label>
         <label>
             Spline Tension
-            <input id='af-tension' type='range' min='0' max='2' step='.1'>
+            <input id='af-tension' type='range' min='0' max='1' step='.1'>
         </label>
         <label>
             Max Time Step
@@ -1012,7 +1025,7 @@ showSimulation(new AnimationOptions({
         </label>
         <label>
             Spline Tension
-            <input id='x3-tension' type='range' min='0' max='2' step='.1'>
+            <input id='x3-tension' type='range' min='0' max='1' step='.1'>
         </label>
         <label>
             Max Time Step
@@ -1323,7 +1336,7 @@ showSimulation(
 // NetworkIntro (X3DOM)
 showSimulation(
     new NetworkIntro({
-        maxTimeStep: 0.25,
+        maxTimeStep: 1,
         //frameDelay: 1
     }),
     'Network Intro (X3DOM)',
@@ -1417,7 +1430,7 @@ showSimulation(
         });
 
         // toggle slow mode
-        bind('network-x3d-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.25 : 0);
+        bind('network-x3d-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 1 : 0);
 
         // show number of service vehicles
         const nsvc = document.getElementById('network-x3d-nsvc');

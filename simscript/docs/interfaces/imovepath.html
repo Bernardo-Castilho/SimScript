@@ -118,16 +118,19 @@
 					<div class="tsd-signature tsd-kind-icon">tension<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:755</li>
+							<li>Defined in simulation.ts:760</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Value that defines the tension of the spline used to interpolate
-								between the queues.
-								Zero creates a path with straight line segments, 0.5 generates
-							smooth curves.</p>
+							<p>Value that defines the tension of the splines used to interpolate
+							between the queues.</p>
 						</div>
+						<p>Zero (0) creates a path with straight line segments, one (1)
+						generates smooth curves.</p>
+						<p>Note that if you use tension values greater than zero, entities
+							will move <strong>close</strong> to intermediate nodes rather than directly
+						<strong>over</strong> them.</p>
 					</div>
 				</section>
 			</section>
@@ -252,6 +255,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#interpolatepath" class="tsd-kind-icon">interpolate<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>

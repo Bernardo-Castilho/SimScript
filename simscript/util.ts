@@ -145,30 +145,68 @@ export class Point implements IPoint {
     y: number;
     z: number;
 
+    /**
+     * Instantiates a new instance of a {@link Point} object.
+     * @param x X coordinate of the point.
+     * @param y Y coordinate of the point.
+     * @param z Z coordinate of the point.
+     */
     constructor(x = 0, y = 0, z = 0) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
-
-    clone() {
-        return new Point(this.x, this.y, this.z);
+    /**
+     * Creates a clone of a given {@link IPoint} object.
+     * @param p {@link IPoint} object to clone.
+     * @returns A copy of the given {@link IPoint} object.
+     */
+    static clone(p: IPoint): IPoint {
+        return {
+            x: p.x,
+            y: p.y,
+            z: p.z
+        }
     }
-
+    /**
+     * Calculates the distance between two {@link IPoint} objects.
+     * @param p1 First point.
+     * @param p2 Second point.
+     * @returns The distance between the two points.
+     */
     static distance(p1: IPoint, p2: IPoint): number {
         const dx = p1.x - p2.x;
         const dy = p1.y - p2.y;
         const dz = p1.z || 0 - p2.z || 0;
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
-    static interpolate(p1: IPoint, p2: IPoint, pct: number): IPoint {
-        return new Point(
-            p1.x + (p2.x - p1.x) * pct,
-            p1.y + (p2.y - p1.y) * pct,
-            p1.z + (p2.z - p1.z) * pct
-        );
+    /**
+     * Calculates an {@link IPoint} by performing a linear interpolation 
+     * between two {@link IPoint} objects.
+     * @param p1 First point.
+     * @param p2 Second point.
+     * @param t Coefficient that corresponds to the relative distance of
+     * the result to the first point. Zero corresponds to the first point,
+     * one to the second point.
+     * @returns A point between the two given points.
+     */
+    static interpolate(p1: IPoint, p2: IPoint, t: number): IPoint {
+        return {
+            x: p1.x + (p2.x - p1.x) * t,
+            y: p1.y + (p2.y - p1.y) * t,
+            z: p1.z + (p2.z || 0 - p1.z || 0) * t
+        };
     }
-    static angle(p1: IPoint, p2: IPoint, radians?: boolean): number {
+    /**
+     * Calculates the angle (in degrees or radians) of the line that
+     * connects two points.
+     * @param p1 First point.
+     * @param p2 Second point.
+     * @param radians Whether to return the result in radians.
+     * @returns The angle (in degrees or radians) of the line that
+     * connects the two points.
+     */
+    static angle(p1: IPoint, p2: IPoint, radians = false): number {
         const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
         return radians? angle : Math.round(angle * 180 / Math.PI);
     }

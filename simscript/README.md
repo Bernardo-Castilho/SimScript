@@ -41,13 +41,16 @@ entities through the simulation.
 
 ## Animation Class
 
-Animations use HTML or SVG elements to render entities waiting in queues 
-or in transit between queues.
+The **Animation** class connects a **Simulation** object to a host
+element that shows the simulation graphically, rendering entities 
+waiting in queues or in transit between queues.
 
-Animations may also use [A-Frame](https://aframe.io) to render entities
-in 3D/VR.
+Animations may be 2D (hosted in regular HTML DIV or SVG elements)
+or they may be 3D (hosted in [X3DOM](https://www.x3dom.org/) or
+[A-Frame](https://aframe.io) elements).
 
-Animations are useful for presentations and also for debugging simulations.
+Animations are useful for presentations and also for checking and
+debugging simulations.
 
 ## Network Class
 

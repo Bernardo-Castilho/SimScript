@@ -58,11 +58,12 @@ export class Event<S = any, T = EventArgs> {
      * listener function.
      */
     removeEventListener(listener: IEventListener<S, T>, self?: any) {
-        for (let i = 0; i < this._listeners.length; i++) {
-            let l = this._listeners[i];
+        const listeners = this._listeners;
+        for (let i = 0; i < listeners.length; i++) {
+            const l = listeners[i];
             if (l.listener == listener || listener == null) {
                 if (l.self == self || self == null) {
-                    this._listeners.splice(i, 1);
+                    listeners.splice(i, 1);
                     if (self) {
                         break;
                     }
@@ -78,9 +79,8 @@ export class Event<S = any, T = EventArgs> {
      * @param args {@link EventArgs} object that contains the event parameters.
      */
     raise(sender: S, args: T) {
-        for (let i = 0; i < this._listeners.length; i++) {
-            let l = this._listeners[i];
+        this._listeners.forEach(l => {
             l.listener.call(l.self, sender, args);
-        }
+        });
     }
 }

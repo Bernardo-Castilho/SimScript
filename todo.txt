@@ -1,9 +1,15 @@
 # Todo
-- strips (link + offset%)
-    - rail (one lane, one direction)
-    - road (multi-lane, one direction)
-    - river?
 - more docs/examples
+    - car-following
+    - asteroids
+    - elevators
     - race track
     - robot/warehouse
-- more tests (zero delay, enter no wait)
+- more tests
+- strips
+    - length, max speed, vehicle list (with positions: extends queue)
+    - multi-segment
+    - multi-lane
+    - rail (one lane, one direction)
+    - road (multi-lane, one direction)
+    - canals?

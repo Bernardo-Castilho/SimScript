@@ -1,10 +1,11 @@
 import { Simulation } from './simulation';
 import { Queue } from './queue';
 import { Entity } from './entity';
-import { assert, setOptions, getElement, IPoint, Point } from './util';
+import { assert, setOptions, getElement, clamp, IPoint, Point } from './util';
 
-const _DEFAULT_ENTITY_ICON = '&#9899;'; // black circle
-const _DEFAULT_SPLINE_TENSION = 0.1;
+const
+    _DEFAULT_ENTITY_ICON = '&#9899;', // black circle
+    _DEFAULT_SPLINE_TENSION = 1;
 
 // included by a-frame
 declare var THREE: any;
@@ -35,17 +36,6 @@ export interface IAnimatedQueue {
      * The maximum number of entities to display in the {@link Queue}.
      */
     max?: number,
-}
-
-/**
- * Defines the elements that describe a specific position along a spline.
- * @internal
- */
-interface ISplinePosition {
-    /** Point along the spline. */
-    point: IPoint,
-    /** Tangent of the spline at the point. */
-    angle: number
 }
 
 /**
@@ -263,9 +253,10 @@ export class Animation {
      updateDisplay() {
 
         // reset queue start positions
-        const host = this._host;
-        const sim = this._sim;
-        const rc = host.getBoundingClientRect();
+         const
+             host = this._host,
+             sim = this._sim,
+             rc = host.getBoundingClientRect();
         if (rc.height != this._height || rc.width != this._width) {
             this._height = rc.height;
             this._width = rc.width;
@@ -294,9 +285,10 @@ export class Animation {
                 const ae = this._getAnimatedEntity(item.e);
 
                 // calculate path
-                const path = item.options.path;
-                const tension = path.tension != null ? path.tension : _DEFAULT_SPLINE_TENSION;
-                const points: IPoint[] = [];
+                const
+                    path = item.options.path,
+                    tension = path.tension != null ? path.tension : _DEFAULT_SPLINE_TENSION,
+                    points: IPoint[] = [];
                 path.queues.forEach((q, index) => {
                     const aq = this._queues.get(q);
                     assert(aq != null, 'Queue missing animation info');
@@ -309,14 +301,14 @@ export class Animation {
                 ae._element.innerHTML = ae._getEntityHtml();
 
                 // update entity position
-                let start = item.timeStart,
+                const
+                    start = item.timeStart,
                     finish = item.timeDue,
                     pct = 1 - (finish - this._sim.timeNow) / (finish - start),
-                    pos = getSplinePosition(points, tension, pct),
-                    angle = pos.angle;
+                    [pos, angle] = interpolatePath(points, tension, pct);
                 
                 // draw entity
-                ae._drawAt(pos.point, this.rotateEntities ? angle : 0);
+                ae._drawAt(pos, this.rotateEntities ? angle : 0);
             }
         });
 
@@ -329,7 +321,7 @@ export class Animation {
                 this._entities.delete(key);
                 let e = ae._element;
                 if (e && e.parentElement) {
-                    e.parentElement.removeChild(e);
+                    e.remove();
                 }
             }
         });
@@ -358,8 +350,8 @@ class AnimatedQueue {
     private _angle = 0;
     private _stackEntities = false;
     /** internal */ _q: Queue;
-    /** internal */ _ptStart: Point;
-    /** internal */ _ptEnd: Point;
+    /** internal */ _ptStart: IPoint;
+    /** internal */ _ptEnd: IPoint;
 
     // ctor
     constructor(anim: Animation, options: IAnimatedQueue) {
@@ -373,10 +365,11 @@ class AnimatedQueue {
     }
 
     // gets the position of the queue start in DOM coordinates.
-    _getStart(): Point {
+    _getStart(): IPoint {
         if (!this._ptStart) {
-            const e = this._element;
-            const anim = this._anim;
+            const
+                e = this._element,
+                anim = this._anim;
             switch (anim.hostTag) {
                 case 'X3D':
                     this._ptStart = new BoundingBox(e).center;
@@ -390,8 +383,9 @@ class AnimatedQueue {
                     this._ptStart = new Point(rcSvg.x + rcSvg.width / 2, rcSvg.y + rcSvg.height / 2, 0 );
                     break;
                 default:
-                    const rcHost = anim.hostElement.getBoundingClientRect();
-                    const rcEl = e.getBoundingClientRect();
+                    const
+                        rcHost = anim.hostElement.getBoundingClientRect(),
+                        rcEl = e.getBoundingClientRect();
                     this._ptStart = new Point(
                         rcEl.left - rcHost.left + rcEl.width / 2,
                         rcEl.top - rcHost.top + rcEl.height / 2,
@@ -419,7 +413,7 @@ class AnimatedQueue {
         }
 
         // initialize insert position
-        let pt = this._getStart().clone();
+        let pt = Point.clone(this._getStart());
         this._ptEnd = null;
 
         // loop through entities in the queue
@@ -435,19 +429,18 @@ class AnimatedQueue {
             const e = item.entity;
 
             // get queue angle
-            const angle = this._angle * (anim.isThreeD ? -1 : +1)
-            const rad = -angle / 180 * Math.PI;
-            const sin = Math.sin(rad);
-            const cos = -Math.cos(rad);
+            const
+                angle = this._angle * (anim.isThreeD ? -1 : +1),
+                rad = -angle / 180 * Math.PI,
+                sin = Math.sin(rad),
+                cos = -Math.cos(rad);
     
             // get/create AnimatedEntity for this entity
-            const ae = anim._getAnimatedEntity(e);
-            const hWid = this._stackEntities
-                ? 0
-                : ae._width * cos / 2;
-            const hHei = this._stackEntities ?
-                0
-                : (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
+            const
+                ae = anim._getAnimatedEntity(e),
+                stack = this._stackEntities,
+                hWid = stack ? 0 : ae._width * cos / 2,
+                hHei = stack ? 0 : (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
 
             // update entity icon
             ae._element.innerHTML = ae._getEntityHtml();
@@ -522,8 +515,9 @@ class AnimatedEntity {
                 break;
             case 'A-SCENE':
                 requestAnimationFrame(() => {
-                    const model = (e as any).object3D;
-                    const box = new THREE.Box3().setFromObject(model);
+                    const
+                        model = (e as any).object3D,
+                        box = new THREE.Box3().setFromObject(model);
                     this._width = box.max.x - box.min.x;
                     this._height = box.max.y - box.min.y;
                     this._depth = box.max.z - box.min.z;
@@ -552,8 +546,9 @@ class AnimatedEntity {
 
     // sets the position of this animated entity.
     _drawAt(pt: IPoint, angle?: number) {
-        const anim = this._anim;
-        const e = this._element as HTMLElement;
+        const
+            anim = this._anim,
+            e = this._element as HTMLElement;
 
         // update the entity element
         switch (anim.hostTag) {
@@ -591,110 +586,127 @@ class AnimatedEntity {
 }
 
 /**
- * Gets a position along a spline defined by a vector of control points and a tension.
+ * Gets a position and an angle along a path defined by a vector of control
+ * points and a tension.
  * 
  * @param pts Vector of points that define the spline.
- * @param tension Spline tension (zero means each segment is a straight line, 0.5 creates wide curves).
- * @param pct Position within the spline as a percentage (zero means first point, one means last point).
+ * @param tension Spline tension (zero means each segment is a straight line, 
+ * one creates smooth curves).
+ * @param pct Relative position within the spline (zero means first point,
+ * one means last point).
  * 
- * @returns The point along the spline at the given percentage.
+ * @returns An array containing the the point along the spline and the angle
+ * at the given percentage.
  */
-function getSplinePosition(pts: IPoint[], tension: number, pct: number): ISplinePosition {
+export function interpolatePath(pts: IPoint[], tension: number, pct: number): [IPoint, number] {
+    const
+        ptDist = Point.distance,
+        ptAng = Point.angle,
+        ptInter = Point.interpolate,
+        getPoint = (pts: IPoint[], index: number) => pts[clamp(index, 0, pts.length - 1)];
 
-    // just two points? use linear interpolation 
-    if (pts.length == 2) {
-        return {
-            point: Point.interpolate(pts[0], pts[1], pct),
-            angle: Point.angle(pts[0], pts[1])
-        }
+    // check range and tension
+    pct = clamp(pct, 0, 1);
+    tension = clamp(tension, 0, 1);
+
+    // handle trivial cases
+    if (pts.length < 3) {
+        return pts.length == 2
+            ? [ptInter(pts[0], pts[1], pct), Point.angle(pts[0], pts[1])]
+            : [pts[0], 0];
     }
-
-    // calculate total distance
-    let totalDistance = 0;
+ 
+    // compute total length, current position
+    let len = 0;
     for (let i = 0; i < pts.length - 1; i++) {
-        totalDistance += Point.distance(pts[i], pts[i + 1]);
+        len += ptDist(pts[i], pts[i + 1]);
     }
+    const pos = pct * len;
 
-    // calculate position within the spline
-    let position = totalDistance * pct;
-
-    // calculate index of spline segment
-    let index = 0;
-    let distance = 0;
-    let length = 0;
+    // find current segment, percentage within the segment
+    let idx = -1;
+    let pctSeg = -1;
+    len = 0;
     for (let i = 0; i < pts.length - 1; i++) {
-        length = Point.distance(pts[i], pts[i + 1]);
-        if (distance + length >= position) {
-            index = i;
+        const segLen = ptDist(pts[i], pts[i + 1]);
+        if (len + segLen >= pos) {
+            idx = i;
+            pctSeg = (pos - len) / segLen;
             break;
         }
-        distance += length;
+        len += segLen;
+    }
+    
+    // compute linear interpolation
+    let p0 = pts[idx];
+    let p1 = getPoint(pts, idx + 1);
+    const
+        ptLin = ptInter(p0, p1, pctSeg),
+        angLin = ptAng(p0, p1);
+    if (tension == 0) {
+        return [ptLin, angLin];
     }
 
-    // calculate percentage traveled within the current segment
-    position -= distance;
-    pct = position / (length || 0.01);
-    assert(pct >= 0 && pct <= 1.0000001, 'position percentage out of range');
-
-    // interpolate position
-    if (index == 0) { // first segment
-        return _getSplinePosition(pts[0], pts[0], pts[1], pts[2], tension, pct);
-    } else if (index == pts.length - 2) { // last segment
-        return _getSplinePosition(pts[index - 1], pts[index], pts[index + 1], pts[index + 1], tension, pct);
-    } else { // intermediate segment
-        return _getSplinePosition(pts[index - 1], pts[index], pts[index + 1], pts[index + 2], tension, pct);
+    // compute spline interpolation
+    let p2: IPoint;
+    if (pctSeg >= .5) {
+        p1 = getPoint(pts, idx + 1);
+        p0 = ptInter(pts[idx], p1, .5);
+        p2 = ptInter(p1, getPoint(pts, idx + 2), .5);
+    } else {
+        p1 = pts[idx];
+        p0 = ptInter(getPoint(pts, idx - 1), p1, .5);
+        p2 = ptInter(pts[idx], getPoint(pts, idx + 1), .5);
     }
+
+    // handle end points (fall back on linear)
+    if ((idx == 0 && !ptDist(p0, p1)) || (idx == pts.length - 2 && !ptDist(p1, p2))) {
+        return [ptLin, angLin];
+    }
+
+    // get the percentage within the spline
+    const
+        d1 = ptDist(p0, p1),
+        d2 = ptDist(p1, p2),
+        posSpl = (pos - len) + d1 * (pctSeg >= .5 ? -1 : +1),
+        pctSpl = posSpl / (d1 + d2);
+
+    // calculate spline point and angle
+    const [ptSpl, angSpl] = interpolateSpline(p0, p1, p2, pctSpl);
+
+    // return the result
+    return [
+        ptInter(ptLin, ptSpl, tension),
+        tension > 0.1 ? angSpl : angLin
+    ];
 }
 
-// See 
-// Petzold, "Programming Microsoft Windows with C#", pages 645-646 or
-function _getSplinePosition(p0: IPoint, p1: IPoint, p2: IPoint, p3: IPoint, tension: number, pct: number): ISplinePosition {
-    const sx1 = tension * (p2.x - p0.x);
-    const sy1 = tension * (p2.y - p0.y);
-    const sz1 = tension * (p2.z - p0.z);
+// calculate spline point and angle: https://javascript.info/bezier-curve
+function interpolateSpline(p0: IPoint, p1: IPoint, p2: IPoint, t: number): [IPoint, number] {
+    
+    // spline point: P = (1−t)2 P1 + 2t(1−t) P2 + t2 P3
+    const
+        c0 = (1 - t) * (1 - t),
+        c1 = 2 * (1 - t) * t,
+        c2 = t * t,
+        pt = {
+            x: c0 * p0.x + c1 * p1.x + c2 * p2.x,
+            y: c0 * p0.y + c1 * p1.y + c2 * p2.y,
+            z: c0 * p0.z + c1 * p1.z + c2 * p2.z
+        };
 
-    const sx2 = tension * (p3.x - p1.x);
-    const sy2 = tension * (p3.y - p1.y);
-    const sz2 = tension * (p3.z - p1.z);
+    // spline angle (in degrees): P' = 2(t-1) P1 + 2(1-2t) P2 + 2t P3
+    const
+        a0 = 2 * (t - 1),
+        a1 = 2 * (1 - 2 * t),
+        a2 = 2 * t,
+        dx = a0 * p0.x + a1 * p1.x + a2 * p2.x,
+        dy = a0 * p0.y + a1 * p1.y + a2 * p2.y,
+        ang = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    const ax = sx1 + sx2 + 2 * p1.x - 2 * p2.x;
-    const ay = sy1 + sy2 + 2 * p1.y - 2 * p2.y;
-    const az = sz1 + sz2 + 2 * p1.z - 2 * p2.z;
-
-    const bx = -2 * sx1 - sx2 - 3 * p1.x + 3 * p2.x;
-    const by = -2 * sy1 - sy2 - 3 * p1.y + 3 * p2.y;
-    const bz = -2 * sz1 - sz2 - 3 * p1.z + 3 * p2.z;
-
-    const cx = sx1;
-    const cy = sy1;
-    const cz = sz1;
-
-    const dx = p1.x;
-    const dy = p1.y;
-    const dz = p1.z;
-
-    // calculate the point
-    const pt = new Point(
-        ax * pct * pct * pct + bx * pct * pct + cx * pct + dx,
-        ay * pct * pct * pct + by * pct * pct + cy * pct + dy,
-        az * pct * pct * pct + bz * pct * pct + cz * pct + dz,
-    )
-
-    // calculate a close-by point to get the angle
-    const pct2 = pct == 1 ? pct - 0.02 : pct + 0.02;
-    const pt2 = new Point(
-        ax * pct2 * pct2 * pct2 + bx * pct2 * pct2 + cx * pct2 + dx,
-        ay * pct2 * pct2 * pct2 + by * pct2 * pct2 + cy * pct2 + dy,
-        az * pct2 * pct2 * pct2 + bz * pct2 * pct2 + cz * pct2 + dz,
-    )
-
-    // return the point and the angle
-    return {
-        point: pt,
-        angle: Point.angle(pt, pt2)
-    };
+    // return point and angle
+    return [pt, ang];
 }
-
 
 /**
  * Represents a bounding box for an X3D element.
@@ -747,7 +759,7 @@ class BoundingBox {
                 sz.x = sz.y = sz.z = 2 * getAttribute(e, 'radius', 1);
                 break;
             default:
-                console.log('skipping unknown geometry', e.tagName);
+                console.error('skipping unknown geometry', e.tagName);
                 break;
         }
     }
@@ -796,6 +808,8 @@ class BoundingBox {
         sz.z = max.y - min.y;
     }
 }
+
+// utilities
 function getAttributes(e: Element, attName: string): number[] {
     const att = e.getAttribute(attName);
     const atts = att ? att.split(/\s*,\s*|\s+/) : null;

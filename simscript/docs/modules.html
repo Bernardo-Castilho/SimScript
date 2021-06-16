@@ -112,6 +112,7 @@
 								<li class="tsd-kind-function"><a href="modules.html#clamp" class="tsd-kind-icon">clamp</a></li>
 								<li class="tsd-kind-function"><a href="modules.html#format" class="tsd-kind-icon">format</a></li>
 								<li class="tsd-kind-function"><a href="modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a></li>
+								<li class="tsd-kind-function"><a href="modules.html#interpolatepath" class="tsd-kind-icon">interpolate<wbr>Path</a></li>
 								<li class="tsd-kind-function"><a href="modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a></li>
 							</ul>
 						</section>
@@ -320,6 +321,54 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="interpolatepath" class="tsd-anchor"></a>
+					<h3>interpolate<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">interpolate<wbr>Path<span class="tsd-signature-symbol">(</span>pts<span class="tsd-signature-symbol">: </span><a href="interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a><span class="tsd-signature-symbol">[]</span>, tension<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, pct<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><a href="interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in animation.ts:601</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets a position and an angle along a path defined by a vector of control
+									points and a tension.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pts: <a href="interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Vector of points that define the spline.</p>
+									</div>
+								</li>
+								<li>
+									<h5>tension: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Spline tension (zero means each segment is a straight line,
+										one creates smooth curves).</p>
+									</div>
+								</li>
+								<li>
+									<h5>pct: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Relative position within the spline (zero means first point,
+										one means last point).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><a href="interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></h4>
+							<p>An array containing the the point along the spline and the angle
+							at the given percentage.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="setoptions" class="tsd-anchor"></a>
 					<h3>set<wbr>Options</h3>
 					<ul class="tsd-signatures tsd-kind-function">
@@ -466,6 +515,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#interpolatepath" class="tsd-kind-icon">interpolate<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>

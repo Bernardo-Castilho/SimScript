@@ -149,14 +149,21 @@ export class ServiceVehicle extends Entity {
             this.leaveQueue(this.node.queue);
             const path = sim.network.shortestPath(this.node, this.request.node);
             assert(path.length > 0, 'cannot reach destination');
-            for (let i = 0; i < path.length; i++) {
-                const link = path[i];
-                const distance = sim.network.getLinkDistance(link, i > 0 ? path[i - 1] : null);
-                await this.delay(
-                    distance / sim.serviceVehicleSpeed.sample(), {
-                       queues: [link.from.queue, link.to.queue]
-                    }
-                );
+
+            if (true) { // single delay for the whole path
+                const [queues, distance] = sim.network.mergePath(path);
+                await this.delay(distance / sim.serviceVehicleSpeed.sample(), {
+                    queues: queues,
+                    tension: 0.75
+                });
+            } else { // one delay per link
+                for (let i = 0; i < path.length; i++) {
+                    const link = path[i];
+                    const distance = sim.network.getLinkDistance(link, i > 0 ? path[i - 1] : null);
+                    await this.delay(distance / sim.serviceVehicleSpeed.sample(), {
+                        queues: [link.from.queue, link.to.queue]
+                    });
+                }
             }
 
             // arrive service node

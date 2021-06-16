@@ -191,9 +191,10 @@ export class Empirical extends RandomVar {
      * a CDF function defined by the {@link xVals} and {@link yVals} arrays.
      */
     sample(): number {
-        const y = super.sample();
-        const xVals = this._xVals;
-        const yVals = this._yVals;
+        const
+            y = super.sample(),
+            xVals = this._xVals,
+            yVals = this._yVals;
         let i = 0;
         while (y > yVals[i] && i < yVals.length) {
             i++;
@@ -206,8 +207,8 @@ export class Empirical extends RandomVar {
 }
 
 /**
- * Represents a random variable with an exponential distribution with
- * a given mean value.
+ * Represents a random variable with an exponential distribution 
+ * with a given mean value.
  * 
  * For more information on exponential distributions see 
  * [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution).

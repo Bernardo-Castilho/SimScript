@@ -312,7 +312,8 @@ export class Queue {
     // ** implementation
 
     protected _updatePopTallies() {
-        const value = this._inUse,
+        const
+            value = this._inUse,
             timeNow = this._sim.timeNow,
             timeDelta = timeNow - this._tmLastChange;
         assert(timeDelta >= 0, 'Time delta cannot be negative');
