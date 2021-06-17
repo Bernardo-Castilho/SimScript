@@ -28,9 +28,9 @@ export class AnimationOptions extends Simulation {
     onStarting() {
         super.onStarting();
 
-        // create 6 entities to enter and leave the center queue
+        // create some entities to enter the rotating queue
         for (let i = 0; i < 6; i++) {
-            this.activate(new EnterLeaveEntity());
+            this.activate(new RotatingEntity());
         }
 
         // create some entities to roam around
@@ -38,14 +38,11 @@ export class AnimationOptions extends Simulation {
     }
 }
 
-export class EnterLeaveEntity extends Entity {
+export class RotatingEntity extends Entity {
     async script() {
         let sim = this.simulation as AnimationOptions;
-        for (; ;) {
-            await this.enterQueue(sim.qRotate);
-            await this.delay(1);
-            this.leaveQueue(sim.qRotate);
-        }
+        this.enterQueueImmediately(sim.qRotate);
+        await this.waitSignal(null); // wait forever
     }
 }
 

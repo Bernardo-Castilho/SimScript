@@ -8,7 +8,7 @@
         "/dist"
     ],
     "keywords": [
-        "Discrete Event Simulation", "Simulation", "Animation", "X3DOM Animation", "A-Frame Animation", "Network"
+        "Discrete Event Simulation", "Simulation", "Animation", "X3DOM", "A-Frame", "Network"
     ],
     "author": "Bernardo Castilho",
     "license": "ISC",

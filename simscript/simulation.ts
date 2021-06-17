@@ -753,9 +753,20 @@ export interface IMovePath {
      * Zero (0) creates a path with straight line segments, one (1)
      * generates smooth curves.
      * 
-     * Note that if you use tension values greater than zero, entities
-     * will move **close** to intermediate nodes rather than directly
-     * **over** them.
+     * Tension values greater than zero cause entities to move **close**
+     * to intermediate nodes rather than directly **over** them.
+     * 
+     * Tension values have no effect on entity travel times.
      */
     tension?: number;
+    /**
+     * Value that defines a turning radius for entities.
+     * 
+     * Setting this option to a value greater than zero causes the
+     * {@link Animation} to add extra points to multi-queue paths
+     * to constrain entities when turning.
+     * 
+     * Radius values have no effect on entity travel times.
+     */
+    radius?: number;
 }

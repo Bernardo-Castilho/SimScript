@@ -154,13 +154,16 @@ export class ServiceVehicle extends Entity {
                 const [queues, distance] = sim.network.mergePath(path);
                 await this.delay(distance / sim.serviceVehicleSpeed.sample(), {
                     queues: queues,
-                    tension: 0.75
+                    tension: .8, // default is 1
+                    //radius: 20, // default is zero
                 });
             } else { // one delay per link
                 for (let i = 0; i < path.length; i++) {
-                    const link = path[i];
-                    const distance = sim.network.getLinkDistance(link, i > 0 ? path[i - 1] : null);
-                    await this.delay(distance / sim.serviceVehicleSpeed.sample(), {
+                    const
+                        link = path[i],
+                        distance = sim.network.getLinkDistance(link, i > 0 ? path[i - 1] : null),
+                        speed = sim.serviceVehicleSpeed.sample();
+                    await this.delay(distance / speed, {
                         queues: [link.from.queue, link.to.queue]
                     });
                 }

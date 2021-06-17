@@ -237,11 +237,21 @@ export class Animation {
         return this._queueArray;
     }
     set queues(value: IAnimatedQueue[]) {
+
+        // save the new value
         this._queueArray = value;
+
+        // create the animation queues
         value.forEach(item => {
             let aq = new AnimatedQueue(this, item);
             this._queues.set(aq._q, aq);
         });
+
+        // update the display
+        if (this._lastUpdate) {
+            this._lastUpdate = -1;
+            this.updateDisplay();
+        }
     }
     /**
      * Updates the animation display by showing all entities in 
@@ -250,7 +260,7 @@ export class Animation {
      * This method is called by the {@link Animation} class 
      * automatically when the simulation time advances.
      */
-     updateDisplay() {
+    updateDisplay() {
 
         // reset queue start positions
          const
@@ -288,6 +298,7 @@ export class Animation {
                 const
                     path = item.options.path,
                     tension = path.tension != null ? path.tension : _DEFAULT_SPLINE_TENSION,
+                    radius = path.radius,
                     points: IPoint[] = [];
                 path.queues.forEach((q, index) => {
                     const aq = this._queues.get(q);
@@ -296,6 +307,11 @@ export class Animation {
                         ? aq._ptEnd || aq._getStart()
                         : aq._getStart());
                 });
+
+                // add extra points to honor turning radius option
+                if (radius) {
+                    applyRadius(points, radius);
+                }
 
                 // update entity icon
                 ae._element.innerHTML = ae._getEntityHtml();
@@ -401,10 +417,10 @@ class AnimatedQueue {
     _draw() {
 
         // skip this if we're up-to-date
-        let anim = this._anim;
-        if (this._q.lastChange < anim._lastUpdate) {
+        const anim = this._anim;
+        if (this._q.lastChange < anim._lastUpdate && anim.hostTag != 'A-SCENE') {
             for (let item of this._q.items.values()) {
-                let ae = anim._entities.get(item.entity);
+                const ae = anim._entities.get(item.entity);
                 if (ae) {
                     ae._inUse = true;
                 }
@@ -538,7 +554,7 @@ class AnimatedEntity {
 
     // gets the inner HTML for this entity's element
     _getEntityHtml() {
-        let getEntity = this._anim.getEntityHtml;
+        const getEntity = this._anim.getEntityHtml;
         return getEntity
             ? getEntity(this._entity)
             : _DEFAULT_ENTITY_ICON;
@@ -586,33 +602,33 @@ class AnimatedEntity {
 }
 
 /**
- * Gets a position and an angle along a path defined by a vector of control
- * points and a tension.
+ * Gets a position and an angle along a path defined by a vector of 
+ * control points and a tension.
  * 
  * @param pts Vector of points that define the spline.
  * @param tension Spline tension (zero means each segment is a straight line, 
  * one creates smooth curves).
- * @param pct Relative position within the spline (zero means first point,
+ * @param t Relative position within the spline (zero means first point,
  * one means last point).
  * 
  * @returns An array containing the the point along the spline and the angle
  * at the given percentage.
  */
-export function interpolatePath(pts: IPoint[], tension: number, pct: number): [IPoint, number] {
+function interpolatePath(pts: IPoint[], tension: number, t: number): [IPoint, number] {
     const
         ptDist = Point.distance,
         ptAng = Point.angle,
         ptInter = Point.interpolate,
         getPoint = (pts: IPoint[], index: number) => pts[clamp(index, 0, pts.length - 1)];
 
-    // check range and tension
-    pct = clamp(pct, 0, 1);
+    // clamp range and tension
+    t = clamp(t, 0, 1);
     tension = clamp(tension, 0, 1);
 
     // handle trivial cases
     if (pts.length < 3) {
         return pts.length == 2
-            ? [ptInter(pts[0], pts[1], pct), Point.angle(pts[0], pts[1])]
+            ? [ptInter(pts[0], pts[1], t), Point.angle(pts[0], pts[1])]
             : [pts[0], 0];
     }
  
@@ -621,7 +637,7 @@ export function interpolatePath(pts: IPoint[], tension: number, pct: number): [I
     for (let i = 0; i < pts.length - 1; i++) {
         len += ptDist(pts[i], pts[i + 1]);
     }
-    const pos = pct * len;
+    const pos = t * len;
 
     // find current segment, percentage within the segment
     let idx = -1;
@@ -681,7 +697,8 @@ export function interpolatePath(pts: IPoint[], tension: number, pct: number): [I
     ];
 }
 
-// calculate spline point and angle: https://javascript.info/bezier-curve
+// calculates the point and angle at a given position along a spline
+// https://javascript.info/bezier-curve
 function interpolateSpline(p0: IPoint, p1: IPoint, p2: IPoint, t: number): [IPoint, number] {
     
     // spline point: P = (1−t)2 P1 + 2t(1−t) P2 + t2 P3
@@ -782,10 +799,11 @@ class BoundingBox {
         }
     }
     private merge(box: BoundingBox) {
-        const c = this.center;
-        const sz = this.size;
-        const bc = box.center;
-        const bsz = box.size;
+        const
+            c = this.center,
+            sz = this.size,
+            bc = box.center,
+            bsz = box.size;
 
         // compute min/max points
         const min = new Point(
@@ -811,11 +829,39 @@ class BoundingBox {
 
 // utilities
 function getAttributes(e: Element, attName: string): number[] {
-    const att = e.getAttribute(attName);
-    const atts = att ? att.split(/\s*,\s*|\s+/) : null;
+    const
+        att = e.getAttribute(attName),
+        atts = att ? att.split(/\s*,\s*|\s+/) : null;
     return atts ? atts.map(item => parseFloat(item)) : null;
 }
 function getAttribute(e: Element, attName: string, defVal: number): number {
     const att = e.getAttribute(attName);
     return att ? parseFloat(att) : defVal;
+}
+
+// applies a turning radius to a path by adding extra points
+function applyRadius(pts: IPoint[], radius: number) {
+    if (radius > 0 && pts.length > 2) {
+        for (let i = pts.length - 2; i >= 0; i--) {
+            const
+                start = pts[i],
+                end = pts[i + 1],
+                len = Point.distance(start, end);
+            if (len > 2 * radius) {
+                
+                // new point at segment start
+                let idx = i + 1;
+                if (i > 0) {
+                    const pt = Point.interpolate(start, end, radius / len);
+                    pts.splice(idx++, 0, pt);
+                }
+
+                // new point at segment end
+                if (i < pts.length - 2) {
+                    const pt = Point.interpolate(start, end, 1 - (len - radius) / len);
+                    pts.splice(idx, 0, pt);
+                }
+            }
+        }
+    }
 }
