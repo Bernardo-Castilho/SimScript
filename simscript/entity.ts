@@ -1,7 +1,22 @@
 import { Simulation, FecItem, IMovePath } from './simulation';
 import { Queue } from './queue';
 import { RandomVar } from './random';
-import { assert, setOptions } from './util';
+import { assert, setOptions, IPoint } from './util';
+
+/**
+ * Defines parameters for animating entities in queues.
+ */
+export interface IAnimationPosition {
+    /** 
+     * Entity position in the {@link Animation}. 
+     */
+    position: IPoint,
+    /**
+     * Entity rotation angle, in degrees, measured clockwise
+     * from the nine o'clock position.
+     */
+    angle: number
+}
 
 /**
  * Abstract base class for {@link Entity} objects.
@@ -291,6 +306,50 @@ export class Entity {
             }
         }
         return cnt;
+    }
+    /**
+     * Gets an {@link IAnimationPosition} value used by the {@link Animation} 
+     * class to position entities in animated queues.
+     * 
+     * By default, the {@link Animation} class animates entities in queues
+     * based on the queue location and angle, and on the entity's icon.
+     * This method allows you to override the default queue layout and
+     * provide custom positions for the entities in the queues.
+     * 
+     * For example, the code below
+     * 
+     * ```typescript
+     * export class Car extends Entity implements ICarFollow {
+     *     speed = 0; // starting speed
+     *     accel = 10; // acceleration/deceleration
+     *     position = 0; // current position
+     *     maxSpeed = 0; // random value from simulation
+     * 
+     * async script() {
+     *     // script updates 'position'
+     *     // ...
+     * }
+     * 
+     * // gets the car's animation position
+     * getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
+     *     const
+     *         sim = this.simulation as CarFollow,
+     *         pt = Point.interpolate(start, end, this.position / sim.stripLength);
+     *     return {
+     *         position: pt,
+     *         angle: Point.angle(start, end, false)
+     *     }
+     * }
+     * ```
+     * 
+     * @param q Queue being animated.
+     * @param start Position of the queue's start.
+     * @param end Position of the queue's end.
+     * @returns An {@link IAnimationPosition} value used to position the
+     * entity in the animation.
+     */
+    getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
+        return null;
     }
     /**
      * Method invoked when an {@link Entity} finishes executing

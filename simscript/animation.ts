@@ -19,12 +19,16 @@ export interface IAnimatedQueue {
      */
     queue: Queue,
     /**
-     * HTML element that defines the {@see Queue} location.
+     * HTML element that defines the {@see Queue} start location.
      */
     element: string | Element,
     /**
-     * The {@link Queue} angle, in degrees, measured in clockwise 
-     * direction from the nine o'clock position (defaults to **zero**).
+     * HTML element that defines the {@see Queue} end location.
+     */
+    endElement?: string | Element,
+    /**
+     * The {@link Queue} angle, in degrees, measured clockwise 
+     * from the nine o'clock position (defaults to **zero**).
      */
     angle?: number,
     /**
@@ -362,9 +366,11 @@ export class Animation {
 class AnimatedQueue {
     private _anim: Animation;
     private _element: Element;
+    private _elementEnd: Element;
     private _max: number;
     private _angle = 0;
-    private _stackEntities = false;
+    private _stackEntities: boolean;
+    private _customPositions: boolean;
     /** internal */ _q: Queue;
     /** internal */ _ptStart: IPoint;
     /** internal */ _ptEnd: IPoint;
@@ -373,8 +379,9 @@ class AnimatedQueue {
     constructor(anim: Animation, options: IAnimatedQueue) {
         this._anim = anim;
         this._q = options.queue;
-        this._element = getElement(options.element);
         this._max = options.max;
+        this._element = getElement(options.element);
+        this._elementEnd = options.endElement ? getElement(options.endElement) : null;
         this._angle = (options.angle || 0);
         this._stackEntities = options.stackEntities;
         assert(this._q instanceof Queue, 'q parameter should be a Queue');
@@ -383,34 +390,40 @@ class AnimatedQueue {
     // gets the position of the queue start in DOM coordinates.
     _getStart(): IPoint {
         if (!this._ptStart) {
-            const
-                e = this._element,
-                anim = this._anim;
-            switch (anim.hostTag) {
-                case 'X3D':
-                    this._ptStart = new BoundingBox(e).center;
-                    break;
-                case 'A-SCENE':
-                    const pt = (e as any).object3D.position;
-                    this._ptStart = new Point(pt.x, pt.y, pt.z);
-                    break;
-                case 'SVG':
-                    const rcSvg = (e as any).getBBox();
-                    this._ptStart = new Point(rcSvg.x + rcSvg.width / 2, rcSvg.y + rcSvg.height / 2, 0 );
-                    break;
-                default:
-                    const
-                        rcHost = anim.hostElement.getBoundingClientRect(),
-                        rcEl = e.getBoundingClientRect();
-                    this._ptStart = new Point(
-                        rcEl.left - rcHost.left + rcEl.width / 2,
-                        rcEl.top - rcHost.top + rcEl.height / 2,
-                        0
-                    );
-                    break;
-            }
+            this._ptStart = this._getElementPosition(this._element);
         }
         return this._ptStart;
+    }
+
+    // gets the position of the queue end in DOM coordinates.
+    _getEnd(): IPoint {
+        if (!this._ptEnd) {
+            this._ptEnd = this._getElementPosition(this._elementEnd || this._element);
+        }
+        return this._ptEnd;
+    }
+
+    // gets the position of an element in DOM coordinates.
+    _getElementPosition(e: Element): IPoint {
+        const anim = this._anim;
+        switch (anim.hostTag) {
+            case 'X3D':
+                return new BoundingBox(e).center;
+            case 'A-SCENE':
+                return Point.clone((e as any).object3D.position);
+            case 'SVG':
+                const rcSvg = (e as any).getBBox();
+                return new Point(rcSvg.x + rcSvg.width / 2, rcSvg.y + rcSvg.height / 2, 0);
+            default:
+                const
+                    rcHost = anim.hostElement.getBoundingClientRect(),
+                    rcEl = e.getBoundingClientRect();
+                return new Point(
+                    rcEl.left - rcHost.left + rcEl.width / 2,
+                    rcEl.top - rcHost.top + rcEl.height / 2,
+                    0
+                );
+        }
     }
 
     // draws the entities in this animation queue.
@@ -418,7 +431,7 @@ class AnimatedQueue {
 
         // skip this if we're up-to-date
         const anim = this._anim;
-        if (this._q.lastChange < anim._lastUpdate && anim.hostTag != 'A-SCENE') {
+        if (!this._customPositions && this._q.lastChange < anim._lastUpdate && anim.hostTag != 'A-SCENE') {
             for (let item of this._q.items.values()) {
                 const ae = anim._entities.get(item.entity);
                 if (ae) {
@@ -441,8 +454,25 @@ class AnimatedQueue {
                 break;
             }
 
-            // get entity
-            const e = item.entity;
+            // get entity and AnimatedEntity
+            const
+                e = item.entity,
+                ae = anim._getAnimatedEntity(e);
+            
+            // update entity icon
+            ae._element.innerHTML = ae._getEntityHtml();
+
+            // use custom entity position
+            const getPos = e.getAnimationPosition;
+            if (getPos != Entity.prototype.getAnimationPosition) { // overridden
+                this._customPositions = true;
+                const
+                    start = Point.clone(this._getStart()),
+                    end = Point.clone(this._getEnd()),
+                    pos = getPos.call(e, this._q, start, end);
+                ae._drawAt(pos.position, pos.angle);
+                continue;
+            }
 
             // get queue angle
             const
@@ -451,15 +481,11 @@ class AnimatedQueue {
                 sin = Math.sin(rad),
                 cos = -Math.cos(rad);
     
-            // get/create AnimatedEntity for this entity
+            // prepare to draw
             const
-                ae = anim._getAnimatedEntity(e),
                 stack = this._stackEntities,
                 hWid = stack ? 0 : ae._width * cos / 2,
                 hHei = stack ? 0 : (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
-
-            // update entity icon
-            ae._element.innerHTML = ae._getEntityHtml();
 
             // update entity position and insertion point position
             pt.x += hWid;
@@ -506,11 +532,11 @@ class AnimatedEntity {
                 break;
             case 'SVG':
                 e = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                (e as any).style.opacity = '0';
+                (e as HTMLElement).style.opacity = '0';
                 break;
             default:
                 e = document.createElement('div');
-                (e as any).style.opacity = '0';
+                (e as HTMLElement).style.opacity = '0';
                 break;
         }
         e.innerHTML = this._getEntityHtml();
@@ -564,8 +590,9 @@ class AnimatedEntity {
     _drawAt(pt: IPoint, angle?: number) {
         const
             anim = this._anim,
-            e = this._element as HTMLElement;
-
+            e = this._element as HTMLElement,
+            s = e.style;
+        
         // update the entity element
         switch (anim.hostTag) {
             case 'X3D':
@@ -590,7 +617,6 @@ class AnimatedEntity {
                 }
 
                 // and apply it
-                const s = e.style;
                 s.transform = transform;
                 s.opacity = '';
                 break;

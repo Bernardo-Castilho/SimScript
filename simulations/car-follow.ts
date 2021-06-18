@@ -1,12 +1,12 @@
 import { Simulation } from '../simscript/simulation';
-import { Entity } from '../simscript/entity';
+import { Queue } from '../simscript/queue';
+import { Entity, IAnimationPosition } from '../simscript/entity';
 import { Uniform, Exponential } from '../simscript/random';
+import { Point, IPoint } from '../simscript/util';
 
 //// TODO: This sample is still a work in progress.
 
-const STRIP_LENGTH = 10000;
-
-interface ICarFollow {
+interface ICar {
     speed: number;
     maxSpeed: number;
     accel: number;
@@ -14,21 +14,25 @@ interface ICarFollow {
 }
 
 export class CarFollow extends Simulation {
-    strip: Car[] = [];
-    timeIncrement = 1;
-    interArrival = new Exponential(100);
-    carSpeeds = new Uniform(50, 100);
+    timeIncrement = 2; // seconds
+    totalCars = 1000; // number of cars to simulate
+    stripLength = 1000; // meters
+    carSpeeds = new Uniform(40 / 3.6, 100 / 3.6); // 40-100 km/h in m/s
+    interArrival = new Exponential(20); // avg seconds between car arrivals
+    qStrip = new Queue('strip');
+
     onStarting(e) {
         super.onStarting(e);
-        this.generateEntities(Car, this.interArrival, 100);
+        this.maxTimeStep = this.timeIncrement;
+        this.generateEntities(Car, this.interArrival, this.totalCars);
     }
 }
 
-export class Car extends Entity implements ICarFollow {
-    speed = 0;
-    accel = 10;
-    position = 0;
-    maxSpeed = 0;
+export class Car extends Entity implements ICar {
+    speed = 0; // starting speed
+    accel = 10; // acceleration/deceleration
+    position = 0; // current position
+    maxSpeed = 0; // random value from simulation
 
     async script() {
         const sim = this.simulation as CarFollow;
@@ -37,10 +41,10 @@ export class Car extends Entity implements ICarFollow {
 
         // enter the strip
         ////console.log(this.toString(), 'entering at', sim.timeNow, 'speed', this.speed);
-        sim.strip.push(this);
+        this.enterQueueImmediately(sim.qStrip);
 
         // loop until the end of the strip
-        while (this.position < STRIP_LENGTH) {
+        while (this.position < sim.stripLength) {
             this.speed = this.getSpeed(dt);
             await this.delay(dt);
             this.position += this.speed * dt;
@@ -48,18 +52,29 @@ export class Car extends Entity implements ICarFollow {
         }
 
         // exit the strip
-        sim.strip.splice(sim.strip.indexOf(this), 1);
+        this.leaveQueue(sim.qStrip);
         ////console.log(this.toString(), 'left at', sim.timeNow, 'speed', this.speed);
+    }
+
+    // gets the car's animation position
+    getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
+        const
+            sim = this.simulation as CarFollow,
+            pt = Point.interpolate(start, end, this.position / sim.stripLength);
+        return {
+            position: pt,
+            angle: Point.angle(start, end, false)
+        }
     }
 
     // gets the vehicle speed taking into account the max safe speed
     getSpeed(dt: number): number {
-        const targetSpeed = Math.min(this.getSafeSpeed(dt), this.maxSpeed);
-        if (targetSpeed > this.speed) { // accelerate
-            return Math.min(targetSpeed, this.speed + this.accel * dt);
+        const safeSpeed = Math.min(this.getSafeSpeed(dt), this.maxSpeed);
+        if (safeSpeed > this.speed) { // accelerate
+            return Math.min(safeSpeed, this.speed + this.accel * dt);
         }
-        if (targetSpeed < this.speed) { // decelerate
-            return Math.max(targetSpeed, this.speed - this.accel * dt);
+        if (safeSpeed < this.speed) { // decelerate
+            return Math.max(safeSpeed, this.speed - this.accel * dt);
         }
         return this.speed; // no change
     }
@@ -72,7 +87,7 @@ export class Car extends Entity implements ICarFollow {
         let speed = this.maxSpeed;
         
         // get vehicle ahead of us (or end of the road)
-        const vAhead = this.getCarAhead() as ICarFollow;
+        const vAhead = this.getCarAhead() as ICar;
         if (vAhead != null) {
 
             // calculate vehicle ahead's breaking distance
@@ -86,27 +101,31 @@ export class Car extends Entity implements ICarFollow {
             const rad = dt * dt / 4 - (this.speed * dt - 2 * breakingDistance) / this.accel;
             speed = rad > 0
                 ? +this.accel * (Math.sqrt(rad) - dt / 2)
-                : -this.accel * dt / 2;
+                : -this.accel * dt / 2; // no time to stop, negative speed...
         }
 
         // done 
-        return speed;
+        return Math.max(0, speed);
     }
 
     // gets the car that is ahead of this one
-    getCarAhead(): ICarFollow {
-        const sim = this.simulation as CarFollow;
-        let index = sim.strip.indexOf(this);
+    getCarAhead(): ICar {
+        const
+            sim = this.simulation as CarFollow,
+            strip = sim.qStrip.entities;
+
+        // index 0 is the first car
+        let index = strip.indexOf(this);
         if (index > 0) {
-            return sim.strip[index - 1];
+            return strip[index - 1] as Car;
         }
 
-        // no vehicle ahead, return end of the strip
+        // no vehicle ahead, stop at the end of the strip
         return {
             speed: 0,
             maxSpeed: 0,
             accel: 0,
-            position: STRIP_LENGTH
+            position: sim.stripLength
         };
     }
 }

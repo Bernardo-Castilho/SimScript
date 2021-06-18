@@ -64,6 +64,7 @@ export class Queue {
     private _name = '';
     private _capy: number | null = null;
     private _items = new Map<Entity, QueueItem>();
+    private _entities: Entity[];
     private _tmLastChange = 0;
     private _inUse = 0;
     private _totalIn = 0;
@@ -71,7 +72,7 @@ export class Queue {
     private _grossDwell = new Tally();
     private _netPop = new Tally();
     private _netDwell = new Tally();
-
+    
     /**
      * Initializes a new instance of a {@link Queue} object.
      * 
@@ -145,7 +146,10 @@ export class Queue {
      * Gets an array containing the entities currently in the {@link Queue}.
      */
     get entities(): Entity[] {
-        return Array.from(this._items.keys());
+        if (!this._entities) {
+            this._entities = Array.from(this._items.keys());
+        }
+        return this._entities;
     }
     /**
      * Gets a **Map** where the keys are the entities in the queue and the values
@@ -276,6 +280,12 @@ export class Queue {
         this._items.set(e, new QueueItem(e, units, sim.timeNow));
         this._inUse += units;
         this._totalIn++;
+
+        // update entities array
+        const ents = this._entities;
+        if (ents) {
+            ents.push(e);
+        }
     }
     /**
      * Removes an {@link Entity} from this {@link Queue}.
@@ -285,13 +295,25 @@ export class Queue {
      * If the {@link Entity} is not currently in the {@link Queue}, an exception is thrown.
      */
     remove(e: Entity) {
-        let item = this._items.get(e) as QueueItem;
+
+        // get the item
+        const item = this._items.get(e) as QueueItem;
         assert(item != null, 'Entity ' + e.toString() + ' is not in queue ' + this.toString());
+
+        // update tallies
         this._updatePopTallies();
         this._updateDwellTallies(item.timeIn);
+
+        // remove item from queue
         this._items.delete(e);
         e._queues.delete(this);
         this._inUse -= item.units;
+
+        // update entities array
+        const ents = this._entities;
+        if (ents) {
+            ents.splice(ents.indexOf(e), 1);
+        }
     }
     /**
      * Resets the {@link Queue} to its initial state, removing all entities and
@@ -302,6 +324,7 @@ export class Queue {
         this._inUse = 0;
         this._totalIn = 0;
         this._tmLastChange = 0;
+        this._entities = null;
         this._items.clear();
         this._grossPop.reset();
         this._grossDwell.reset();
@@ -332,7 +355,6 @@ export class Queue {
             this._netDwell.add(dwell, 1);
         }
     }
-
 }
 
 /**

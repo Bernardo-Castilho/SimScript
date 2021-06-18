@@ -10,7 +10,7 @@ export interface INode {
     /** Gets or sets the node's position. */
     position?: IPoint;
     /** Gets or sets the {@link Queue} associated with the node. */
-    queue?: Queue
+    queue?: Queue;
 }
 
 /**
@@ -33,14 +33,16 @@ export interface ILink {
      * currently disabled.
      */
     disabled?: boolean;
+    /** Gets or sets the {@link Queue} associated with the link. */
+    queue?: Queue;
 }
 
 // Defines properties for path segments.
 interface PathPart {
     id?: string;
     node: INode,
+    link: ILink,
     distance: number,
-    link: ILink
 };
 
 /**
@@ -72,7 +74,7 @@ export class Network {
     /**
      * Gets or sets the network nodes.
      */
-     set nodes(value: INode[]) {
+    set nodes(value: INode[]) {
         this._nodes = value;
     }
     get nodes(): INode[] {

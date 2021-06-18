@@ -19,19 +19,8 @@ import { AnimationOptions, RoamEntity } from './simulations/animation-options';
 import { MultiServer } from './simulations/multiserver';
 import { NetworkIntro, ServiceVehicle, renderNetworkSVG, renderNetworkX3D } from './simulations/network-intro';
 import { CarFollow } from './simulations/car-follow';
+import { CarFollowNetwork } from './simulations/car-follow-network';
 
-
-/*
-//----------------------------------------------------------
-// CarFollow
-showSimulation(
-    new CarFollow(),
-    'Car Following',
-    `<p>
-        Simple car-following demo.
-    </p>`
-);
-*/
 
 //----------------------------------------------------------
 // Generator
@@ -737,8 +726,8 @@ showSimulation(
                     return createX3Person('pedestrian');
                 } else {
                     return e.serial % 2
-                        ? createX3Car('car red', 30, 14, 8, 1, 0, 0)
-                        : createX3Car('car green', 25, 12, 8, 1, 1, 0);
+                        ? createX3Car('car red', 30, 14, 8, [1, 0, 0])
+                        : createX3Car('car green', 25, 12, 8, [1, 1, 0]);
                 }
             },
             queues: [
@@ -1085,12 +1074,12 @@ showSimulation(new AnimationOptions({
             getEntityHtml: (e: Entity) => {
                 if (e instanceof RoamEntity) {
                     return e.fast
-                        ? createX3Car('yellow', 30, 10, 4, 1, 1, 0)
-                        : createX3Car('red', 20, 8, 4, 1, 0, 0);
+                        ? createX3Car('yellow', 30, 10, 4, [1, 1, 0])
+                        : createX3Car('red', 20, 8, 4, [1, 0, 0]);
                 } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
-                        ? createX3Car('green', 30, 10, 4, 0, 1, 0)
-                        : createX3Car('blue', 20, 8, 4, 0, 0, 1);
+                        ? createX3Car('green', 30, 10, 4, [0, 1, 0])
+                        : createX3Car('blue', 20, 8, 4, [0, 0, 1]);
                 }
             },
             queues: [
@@ -1135,12 +1124,12 @@ function createX3Queue(name: string, x: number, y: number, z = 0): string {
             </shape>
         </transform>`;
 }
-function createX3Car(name: string, w: number, h: number, d: number, r: number, g: number, b: number): string {
+function createX3Car(name: string, w: number, h: number, d: number, rgb: number[]): string {
     return `<transform class='ss-car ${name}' translation='0 0 ${h/2}'>
         <transform>
             <shape> <!-- body -->
                 <appearance>
-                    <material diffuseColor='${r} ${g} ${b}'></material>
+                    <material diffuseColor='${rgb[0]} ${rgb[1]} ${rgb[2]}'></material>
                 </appearance>
                 <box size='${w} ${h} ${d}'></box>
             </shape>
@@ -1151,7 +1140,7 @@ function createX3Car(name: string, w: number, h: number, d: number, r: number, g
         <transform translation='${-w * .2} 0 ${+d * .5}'>
             <shape> <!-- cabin -->
                 <appearance>
-                    <material diffuseColor='${r/3} ${g/3} ${b/3}'></material>
+                    <material diffuseColor='${rgb[0]/3} ${rgb[1]/3} ${rgb[2]/3}'></material>
                 </appearance>
                 <box size='${w * .5} ${h * .75} ${d}'></box>
             </shape>
@@ -1384,7 +1373,7 @@ showSimulation(
 
                 <!-- default viewpoint -->
                 <viewpoint
-                    position='400 -120 800'
+                    position='400 -80 700'
                     orientation='1 0 0 0.36771'
                     centerOfRotation='450 250 0'>
                 </viewpoint>
@@ -1417,7 +1406,7 @@ showSimulation(
             rotateEntities: true,
             getEntityHtml: e => {
                 if (e instanceof ServiceVehicle) { // green/yellow sphere
-                    return createX3Car('service', 40, 15, 10, e.busy ? 1 : 0, 0.5, 0);
+                    return createX3Car('service', 40, 15, 10, [e.busy ? 1 : 0, 0.5, 0]);
                 } else { // red sphere
                     return `<shape>
                         <appearance>
@@ -1454,6 +1443,229 @@ showSimulation(
     }
 );
 
+//----------------------------------------------------------
+// CarFollow
+showSimulation(
+    new CarFollow(),
+    'Car Following',
+    `<p>
+        Simple car-following demo.
+    </p>
+    <p>
+        Cars are randomly generated and follow the car ahead, adjusting
+        their speed as needed to keep a safe headway (so they could
+        stop before hitting the car ahead).
+    </p>
+    <p>
+        The animation is not to scale, so the cars may appear to move
+        together too closely (the road strip is 1km long).
+    </p>
+    <p>
+        The simulation uses a simplified version of
+        <a href='https://en.wikipedia.org/wiki/Gipps%27_model'>Gipp's model</a>
+        to update the vehicle speeds at fixed time intervals.
+    </p>
+    <p>
+        This sample shows how to use the <b>getAnimationPosition</b>
+        method in the <b>Entity</b> class to customize queue
+        animations.
+    </p>
+    <label>
+        Vehicle Count:
+        <b><span id='carfollow-cnt'>0</span></b> / <span id='carfollow-tot'>0</span>
+    </label>
+    <label>
+        Max Speed:
+        <b><span id='carfollow-speed-max'>0</span></b> km/h
+    </label>
+    <label>
+        Min Speed:
+        <b><span id='carfollow-speed-min'>0</span></b> km/h
+    </label>
+    <label>
+        Average Speed:
+        <b><span id='carfollow-speed'>0</span></b> km/h
+    </label>
+    <svg class='anim-host ss-anim car-follow' viewBox='0 0 1000 500'>
+        <line class='strip'
+            x1='0%' y1='90%'
+            x2='100%' y2='10%'
+            stroke='lightgrey'
+            stroke-width='5%'>
+        </line>
+        <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5'></circle>
+        <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5'></circle>
+    </svg>`,
+    (sim: CarFollow, animationHost: HTMLElement) => {
+        
+        const colors = ['red', 'green', 'blue', 'white'];
+        
+        new Animation(sim, animationHost, {
+            rotateEntities: true,
+            queues: [
+                { queue: sim.qStrip, element: '.strip-start', endElement: '.strip-end' },
+            ],
+            getEntityHtml: (e: Entity) => {
+                return `<g>
+                    <polygon
+                        stroke-width='1'
+                        stroke='black'
+                        fill='${colors[e.serial % colors.length]}'
+                        points='0 0, 40 0, 42 3, 42 17, 40 20, 0 20'>
+                    </polygon>
+                    <polygon
+                        fill='black'
+                        points='20 2, 30 2, 30 18, 20 18'>
+                    </polygon>
+                </g>`;
+            },
+        });
+
+        // update stats when time or state change
+        const tot = document.getElementById('carfollow-tot');
+        tot.textContent = format(sim.totalCars, 0);
+        const spdMax = document.getElementById('carfollow-speed-max');
+        spdMax.textContent = format(sim.carSpeeds.max * 3.6, 0);
+        const spdMin = document.getElementById('carfollow-speed-min');
+        spdMin.textContent = format(sim.carSpeeds.min * 3.6, 0);
+        const cnt = document.getElementById('carfollow-cnt');
+        const spd = document.getElementById('carfollow-speed');
+        const updateStats = () => {
+            const
+                time = sim.qStrip.averageDwell, // seconds
+                len = sim.stripLength; // meters
+            cnt.textContent = format(sim.qStrip.totalCount, 0);
+            spd.textContent = format(time ? len / time * 3.6 : 0, 0); // km/h
+        }
+        sim.timeNowChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(updateStats);
+    }
+);
+
+//----------------------------------------------------------
+// CarFollowing
+showSimulation(
+    new CarFollowNetwork({
+        //frameDelay: 1
+    }),
+    'Network Car Following (X3DOM)',
+    `<p>
+        Network-based car-following demo.
+    </p>
+    <p>
+        Cars are randomly generated travel from the first to the
+        last network nodes using a simple car-following model.
+    </p>
+    <p>
+        The animation is not to scale, so the cars may appear to move
+        together too closely (the network nodes are 100m apart).
+        But they may not overtake each other.
+    </p>
+    <p>
+        The simulation uses a simplified version of
+        <a href='https://en.wikipedia.org/wiki/Gipps%27_model'>Gipp's model</a>
+        to update the vehicle speeds at fixed time intervals.
+        It also accounts for congestion when calculating shortest paths.
+    </p>
+    <p>
+        This sample shows how to use the <b>getAnimationPosition</b>
+        method in the <b>Entity</b> class to customize queue
+        animations.
+    </p>
+    <label>
+        Vehicle Count:
+        <b><span id='carfollowing-cnt'>0</span></b> / <span id='carfollowing-tot'>0</span>
+    </label>
+    <label>
+        Max Speed:
+        <b><span id='carfollowing-speed-max'>0</span></b> km/h
+    </label>
+    <label>
+        Min Speed:
+        <b><span id='carfollowing-speed-min'>0</span></b> km/h
+    </label>
+    <label>
+        Average Speed:
+        <b><span id='carfollowing-speed'>0</span></b> km/h
+    </label>
+        <p></p>
+        <x3d class='ss-anim anim-host car-following'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='400 -80 700'
+                    orientation='1 0 0 0.36771'
+                    centerOfRotation='450 250 0'>
+                </viewpoint>
+
+                <!-- background -->
+                <transform translation='400 200 0'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0 .5 .5'></material>
+                        </appearance>
+                        <box size='1200 800 .1'></box>
+                    </shape>
+                </transform>
+            </transform>                
+            </scene>
+        </x3d>
+    `,
+    (sim: CarFollowNetwork, animationHost: HTMLElement) => {
+        renderNetworkX3D(sim.network, animationHost);
+
+        const queues: IAnimatedQueue[] = [];
+        sim.network.nodes.forEach(nd => {
+            queues.push({
+                queue: nd.queue,
+                element: 'x3d.car-following .ss-queue.q' + nd.id
+            })
+        });
+        sim.network.links.forEach(link => {
+            queues.push({
+                queue: link.queue,
+                element: 'x3d.car-following .ss-queue.q' + link.from.id,
+                endElement: 'x3d.car-following .ss-queue.q' + link.to.id,
+            })
+        });
+
+        const colors = [
+            [1, 0, 0], // red
+            [0, 1, 0], // green
+            [0, 0, 1], // blue
+            [1, 1, 1]  // white
+        ];
+
+        new Animation(sim, animationHost, {
+            queues: queues,
+            rotateEntities: true,
+            getEntityHtml: (e: Entity) => {
+                return createX3Car('car', 25, 10, 6, colors[e.serial % colors.length]);
+            }
+        });
+
+        // update stats when time or state change
+        const tot = document.getElementById('carfollowing-tot');
+        tot.textContent = format(sim.totalCars, 0);
+        const spdMax = document.getElementById('carfollowing-speed-max');
+        spdMax.textContent = format(sim.carSpeeds.max * 3.6, 0);
+        const spdMin = document.getElementById('carfollowing-speed-min');
+        spdMin.textContent = format(sim.carSpeeds.min * 3.6, 0);
+        const cnt = document.getElementById('carfollowing-cnt');
+        const spd = document.getElementById('carfollowing-speed');
+        const updateStats = () => {
+            const
+                time = sim.stats.totalTime, // seconds
+                len = sim.stats.totalDistance; // meters
+            cnt.textContent = format(sim.stats.carsDone, 0);
+            spd.textContent = format(time ? len / time * 3.6: 0, 0); // km/h
+        }
+        sim.timeNowChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(updateStats);
+    }
+);
+
 
 //----------------------------------------------------------
 // my little framework
@@ -1465,9 +1677,9 @@ function showSimulation(sim: Simulation, title: string, intro: string, showStats
     let e = createElement(`
         <div class='sim'>
             <h2>
-                <button class='collapse'>-</button> ${title}
+                <button class='collapse'>+</button> ${title}
             </h2>
-            <div class='body'>
+            <div class='body' style='display:none'>
                 <div class='intro'>
                     ${intro}
                 </div>
@@ -1485,7 +1697,7 @@ function showSimulation(sim: Simulation, title: string, intro: string, showStats
     let eLog = e.querySelector('div.log') as HTMLElement;
 
     // animation
-    if (animationHost) {
+    if (animationHost && showStats) {
         showStats(sim, animationHost);
     }
 

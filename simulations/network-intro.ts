@@ -328,7 +328,7 @@ export function createNetwork(rows: number, cols: number, spacing: number) {
     });
 }
 
-// renders a network onto an SVG element
+// renders a network into an SVG element
 export function renderNetworkSVG(network: Network, svg: HTMLElement, nodes = true, links = true, distances = false) {
     const
         svgns = 'http://www.w3.org/2000/svg',
@@ -406,7 +406,7 @@ export function renderNetworkSVG(network: Network, svg: HTMLElement, nodes = tru
     }
 }
 
-// renders a network onto an x3d element
+// renders a network into an x3d element
 export function renderNetworkX3D(network: Network, x3d: HTMLElement) {
     const scene = x3d.querySelector('scene');
     let html = '';
