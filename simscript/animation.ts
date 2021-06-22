@@ -519,10 +519,10 @@ class AnimatedQueue {
 class AnimatedEntity {
     private _anim: Animation;
     private _entity: Entity;
-    /** internal */ private _element: Element;
-    /** internal */ private _sz: IPoint;
-    /** internal */ private _offset: IPoint;
-    /** internal */ private _inUse: boolean;
+    /** internal */ _element: Element;
+    /** internal */ _sz: IPoint;
+    /** internal */ _offset: IPoint;
+    /** internal */ _inUse: boolean;
 
     // ctor
     constructor(anim: Animation, entity: Entity) {

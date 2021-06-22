@@ -1,18 +1,8 @@
 # Todo
 - more docs/examples
-    * asteroids
-        * spin ship around zero
-        * fix positioning/collision detection
-        - game over message
-        - scale down with viewport
-        - https://www.mediacollege.com/downloads/sound-effects/explosion/
-    - add blitzes
-        - car-follow-network
-        - asteroids
-    - update npm
-    - add react samples
     - elevators
     - robot/warehouse (3d)
+- react samples
 - more tests
 - strips
     - length, max speed, vehicle list (with positions: extends queue)

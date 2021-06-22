@@ -269,5 +269,7 @@ svg.ss-anim .crosswalk {
 .ss-anim.asteroids {
     overflow: hidden;
     background: black;
+    width: 80%;
+    margin: auto auto;
 }
 

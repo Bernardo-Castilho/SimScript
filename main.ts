@@ -1592,8 +1592,8 @@ showSimulation(
 
                 <!-- default viewpoint -->
                 <viewpoint
-                    position='400 -80 700'
-                    orientation='1 0 0 0.36771'
+                    position='400 -50 600'
+                    orientation='1 0 0 0.34'
                     centerOfRotation='450 250 0'>
                 </viewpoint>
 
@@ -1670,9 +1670,11 @@ showSimulation(
 
 //----------------------------------------------------------
 // Asteroids
+const PRO_STEP = 0.01;
+const DEF_STEP = 0.005;
 showSimulation(
     new Asteroids({
-        frameDelay: 10
+        maxTimeStep: DEF_STEP
     }),
     'Asteroids (SVG)',
     `<p>
@@ -1692,6 +1694,10 @@ showSimulation(
         <li><code>SPACE</code> bar to fire a missile.</li>
         <li><code>S</code> to toggle sound effects.</li>
     </ul>
+    <label>
+        Professional Mode:
+        <input id='pro-mode' type='checkbox'>
+    </label>
     <label>
         Missiles Fired:
         <b><span id='missiles-fired'>0</span></b>
@@ -1752,6 +1758,9 @@ showSimulation(
                 { queue: sim.q, element: 'svg.asteroids .ss-queue.center' },
             ]
         });
+
+        // bind pro-mode button
+        bind('pro-mode', false, (v: boolean) => sim.maxTimeStep = (v ? PRO_STEP : DEF_STEP));
 
         // update display when the time or state change
         const fired = document.getElementById('missiles-fired');

@@ -17,6 +17,7 @@ const ASTEROID_COUNT = 8;
  * Sounds used in the game.
  */
 enum Sounds {
+    // https://www.mediacollege.com/downloads/sound-effects/explosion/
     thrust = './resources/thrust.mp3',
     missile = './resources/missile.mp3',
     explosion = './resources/explosion.mp3',
@@ -240,9 +241,11 @@ export class Ship extends Flyer {
             // space fires a missile
             case ' ':
                 const missile = new Missile(this);
-                sim.activate(missile);
-                sim.missilesFired++;
-                sim.onMissilesFiredChanged();
+                if (missile) {
+                    sim.activate(missile);
+                    sim.missilesFired++;
+                    sim.onMissilesFiredChanged();
+                }
                 e.preventDefault();
                 break;
 
