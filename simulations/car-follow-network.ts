@@ -4,6 +4,7 @@ import { Entity, IAnimationPosition } from '../simscript/entity';
 import { Network, INode, ILink } from '../simscript/network';
 import { Uniform, Exponential, RandomInt } from '../simscript/random';
 import { Point, IPoint } from '../simscript/util';
+import { Event, EventArgs } from '../simscript/event';
 
 interface ICar {
     speed: number;
@@ -24,6 +25,7 @@ export class CarFollowNetwork extends Simulation {
         totalTime: 0,
         carsDone: 0
     };
+    readonly carFinished = new Event<CarFollowNetwork, EventArgs>();
 
     onStarting(e) {
         this.stats.totalDistance = 0;
@@ -32,6 +34,9 @@ export class CarFollowNetwork extends Simulation {
     
         super.onStarting(e);
         this.generateEntities(Car, this.interArrival, this.totalCars);
+    }
+    onCarFinished(e?: EventArgs) {
+        this.carFinished.raise(this, e);
     }
 }
 
@@ -55,7 +60,8 @@ export class Car extends Entity implements ICar {
         // select from/to nodes
         let
             ndFrom = nodes[0],
-            ndTo = nodes[nodes.length - 1];
+            ndTo = nodes[nodes.length - 1],
+            position = 0;
 
         // travel one link at a time, 
         // re-computing the path to avoid congestion
@@ -70,7 +76,7 @@ export class Car extends Entity implements ICar {
             const length = sim.network.getLinkDistance(link);
 
             // enter link
-            this.position = 0;
+            this.position = position;
             this.enterQueueImmediately(link.queue);
 
             // move along the link
@@ -85,6 +91,7 @@ export class Car extends Entity implements ICar {
 
             // ready for the next link
             ndFrom = link.to;
+            position = Math.max(0, this.position - length);
 
             // update link simulation stats
             sim.stats.totalDistance += Point.distance(link.from.position, link.to.position);
@@ -93,6 +100,7 @@ export class Car extends Entity implements ICar {
 
         // update car count simulation stats
         sim.stats.carsDone++;
+        sim.onCarFinished();
     }
 
     // gets the car's animation position and angle

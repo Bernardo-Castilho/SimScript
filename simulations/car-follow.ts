@@ -3,8 +3,7 @@ import { Queue } from '../simscript/queue';
 import { Entity, IAnimationPosition } from '../simscript/entity';
 import { Uniform, Exponential } from '../simscript/random';
 import { Point, IPoint } from '../simscript/util';
-
-//// TODO: This sample is still a work in progress.
+import { Event, EventArgs } from '../simscript/event';
 
 interface ICar {
     speed: number;
@@ -20,11 +19,15 @@ export class CarFollow extends Simulation {
     carSpeeds = new Uniform(40 / 3.6, 100 / 3.6); // 40-100 km/h in m/s
     interArrival = new Exponential(20); // avg seconds between car arrivals
     qStrip = new Queue('strip');
+    readonly carFinished = new Event<CarFollow, EventArgs>();
 
     onStarting(e) {
         super.onStarting(e);
         this.maxTimeStep = this.timeIncrement;
         this.generateEntities(Car, this.interArrival, this.totalCars);
+    }
+    onCarFinished(e?: EventArgs) {
+        this.carFinished.raise(this, e);
     }
 }
 
@@ -40,7 +43,6 @@ export class Car extends Entity implements ICar {
         this.maxSpeed = sim.carSpeeds.sample();
 
         // enter the strip
-        ////console.log(this.toString(), 'entering at', sim.timeNow, 'speed', this.speed);
         this.enterQueueImmediately(sim.qStrip);
 
         // loop until the end of the strip
@@ -48,12 +50,11 @@ export class Car extends Entity implements ICar {
             this.speed = this.getSpeed(dt);
             await this.delay(dt);
             this.position += this.speed * dt;
-            ////console.log(this.toString(), 'moving, now at', this.position, 'speed', this.speed);
         }
 
         // exit the strip
         this.leaveQueue(sim.qStrip);
-        ////console.log(this.toString(), 'left at', sim.timeNow, 'speed', this.speed);
+        sim.onCarFinished();
     }
 
     // gets the car's animation position

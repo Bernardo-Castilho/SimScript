@@ -20,6 +20,7 @@ import { MultiServer } from './simulations/multiserver';
 import { NetworkIntro, ServiceVehicle, renderNetworkSVG, renderNetworkX3D } from './simulations/network-intro';
 import { CarFollow } from './simulations/car-follow';
 import { CarFollowNetwork } from './simulations/car-follow-network';
+import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 
 
 //----------------------------------------------------------
@@ -536,46 +537,44 @@ showSimulation(
             Time: <b><span>0.00</span></b> hours
         </div>
         <svg class='ss-anim' viewBox='0 0 1000 500'>
-            <g class='light' >
-                <rect class='light' x='47.5%' y='0%' width='5%' height='25%' rx='2%'></rect>
-                <circle class='red' cx='50%' cy='5%' r='2%'></circle>
-                <circle class='yellow' cx='50%' cy='12.5%' r='2%'></circle>
-                <circle class='green' cx='50%' cy='20%' r='2%'></circle>
+            <g class='light'>
+                <rect class='light' x='47.5%' y='0%' width='5%' height='25%' rx='2%' />
+                <circle class='red' cx='50%' cy='5%' r='2%' />
+                <circle class='yellow' cx='50%' cy='12.5%' r='2%' />
+                <circle class='green' cx='50%' cy='20%' r='2%' />
             </g>
 
-            <rect class='street' x='10%' y='50%' width='80%' height='20%'></rect>
-            <rect class='crosswalk' x='45%' y='50%' width='10%' height='20%'></rect>
+            <rect class='street' x='10%' y='50%' width='80%' height='20%' />
+            <rect class='crosswalk' x='45%' y='50%' width='10%' height='20%' />
 
-            <circle class='ss-queue car-arr' cx='10%' cy='60%' r='10'></circle>
-            <circle class='ss-queue car-xing' cx='40%' cy='60%' r='10'></circle>
-            <circle class='ss-queue car-xed' cx='90%' cy='60%' r='10'></circle>
+            <circle class='ss-queue car-arr' cx='10%' cy='60%' r='10' />
+            <circle class='ss-queue car-xing' cx='40%' cy='60%' r='10' />
+            <circle class='ss-queue car-xed' cx='90%' cy='60%' r='10' />
 
-            <circle class='ss-queue ped-arr' cx='10%' cy='85%' r='10'></circle>
-            <circle class='ss-queue ped-xing' cx='50%' cy='75%' r='10'></circle>
-            <circle class='ss-queue ped-xed' cx='50%' cy='45%' r='10'></circle>
-            <circle class='ss-queue ped-leave' cx='90%' cy='35%' r='10'></circle>
+            <circle class='ss-queue ped-arr' cx='10%' cy='85%' r='10' />
+            <circle class='ss-queue ped-xing' cx='50%' cy='75%' r='10' />
+            <circle class='ss-queue ped-xed' cx='50%' cy='45%' r='10' />
+            <circle class='ss-queue ped-leave' cx='90%' cy='35%' r='10' />
         </svg>
     `,
     (sim: Crosswalk, animationHost: HTMLElement) => {
         new Animation(sim, animationHost, {
             getEntityHtml: e => {
                 if (e instanceof Pedestrian) {
-                    return `
-                        <g class='ped' fill='black' stroke='black' opacity='0.8' transform='scale(1,0.8)'>
-                            <circle cx='1%' cy='1%' r='0.5%' fill='orange'></circle>
-                            <rect x='.4%' y='2%' width='1.3%' height='4%' fill='green' rx='0.7%'></rect>
-                            <rect x='.66%' y='4%' width='.8%' height='3%' fill='blue'></rect>
-                            <rect x='.4%' y='7%' width='1.3%' height='.75%' rx='0.5%'></rect>
-                        </g>`;
+                    return `<g class='ped' fill='black' stroke='black' opacity='0.8' transform='scale(1,0.8)'>
+                        <circle cx='1%' cy='1%' r='0.5%' fill='orange' />
+                        <rect x='.4%' y='2%' width='1.3%' height='4%' fill='green' rx='0.7%' />
+                        <rect x='.66%' y='4%' width='.8%' height='3%' fill='blue' />
+                        <rect x='.4%' y='7%' width='1.3%' height='.75%' rx='0.5%' />
+                    </g>`;
                 } else {
-                    return `
-                        <g class='car' fill='black' stroke='black'>
-                            <rect x='1%' y='0' width='5%' height='4%' rx='1%'></rect>
-                            <rect x='0' y='1.5%' width='9%' height='3%' fill='red' rx='0.5%'></rect>
-                            <circle cx='1.5%' cy='4%' r='.9%' opacity='0.8'></circle>
-                            <circle cx='7.5%' cy='4%' r='.9%' opacity='0.8'></circle>
-                            <rect x='0' y='0' width='10%' height='1%' opacity='0'></rect>
-                        </g>`;
+                    return `<g class='car' fill='black' stroke='black'>
+                        <rect x='1%' y='0' width='5%' height='4%' rx='1%' />
+                        <rect x='0' y='1.5%' width='9%' height='3%' fill='red' rx='0.5%' />
+                        <circle cx='1.5%' cy='4%' r='.9%' opacity='0.8' />
+                        <circle cx='7.5%' cy='4%' r='.9%' opacity='0.8' />
+                        <rect x='0' y='0' width='10%' height='1%' opacity='0' />
+                    </g>`;
                 }
             },
             queues: [
@@ -817,12 +816,12 @@ showSimulation(
             getEntityHtml: (e: Entity) => {
                 if (e instanceof RoamEntity) {
                     return e.fast
-                        ? `<polygon points='0,0 40,0 50,10 40,20 0,20' stroke='black' fill='yellow' opacity='0.5' />`
-                        : `<polygon points='0,0 20,0 30,20 20,40 0,40' stroke='black' fill='red' opacity='0.5'/>`;
+                        ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='yellow' opacity='0.5' />`
+                        : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='red' opacity='0.5'/>`;
                 } else { // EnterLeaveEntity
                     return e.serial % 2 // long/short images
-                        ? `<polygon points='0,0 40,0 50,10 40,20 0,20' stroke='black' fill='blue' />`
-                        : `<polygon points='0,0 20,0 30,20 20,40 0,40' stroke='black' fill='green' />`;
+                        ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='blue' />`
+                        : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='green' />`;
                 }
             },
             queues: [
@@ -1270,27 +1269,15 @@ showSimulation(
             getEntityHtml: e => {
                 if (e instanceof ServiceVehicle) {
                     return `<g opacity='0.5'>
-                        <circle
-                            r='20'
-                            cx='20'
-                            cy='20'
-                            stroke='black'
-                            fill=${e.busy ? 'yellow' : 'green'}>
-                        </circle>
+                        <circle r='20' stroke='black' fill=${e.busy ? 'yellow' : 'green'} />
                         <polygon
                             stroke='none'
                             fill=${e.busy ? 'none' : 'black'}
-                            points='40 20, 7 2, 7 37'>
-                        </polygon>
+                            points='20 0, -13 -18, -13 18' />
                     </g>`;
                 } else {
                     return `<g opacity='0.5'>
-                        <circle
-                            r='30'
-                            cx='30'
-                            cy='30'
-                            fill='red'>
-                        </circle>
+                        <circle r='30' fill='red'/>
                     </g>`;
                 }
             }
@@ -1316,7 +1303,8 @@ showSimulation(
             served.textContent = format(sim.requestsServed, 0);
             missed.textContent = format(sim.requestsMissed, 0);
         }
-        sim.timeNowChanged.addEventListener(updateStats);
+        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
+        sim.requestFinished.addEventListener(updateStats);
         sim.stateChanged.addEventListener(updateStats);
     }
 );
@@ -1438,7 +1426,8 @@ showSimulation(
             served.textContent = format(sim.requestsServed, 0);
             missed.textContent = format(sim.requestsMissed, 0);
         }
-        sim.timeNowChanged.addEventListener(updateStats);
+        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
+        sim.requestFinished.addEventListener(updateStats);
         sim.stateChanged.addEventListener(updateStats);
     }
 );
@@ -1446,7 +1435,10 @@ showSimulation(
 //----------------------------------------------------------
 // CarFollow
 showSimulation(
-    new CarFollow(),
+    new CarFollow({
+        maxTimeStep: 1,
+        frameDelay: 1
+    }),
     'Car Following',
     `<p>
         Simple car-following demo.
@@ -1491,10 +1483,9 @@ showSimulation(
             x1='0%' y1='90%'
             x2='100%' y2='10%'
             stroke='lightgrey'
-            stroke-width='5%'>
-        </line>
-        <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5'></circle>
-        <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5'></circle>
+            stroke-width='5%' />
+        <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5' />
+        <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5' />
     </svg>`,
     (sim: CarFollow, animationHost: HTMLElement) => {
         
@@ -1511,12 +1502,10 @@ showSimulation(
                         stroke-width='1'
                         stroke='black'
                         fill='${colors[e.serial % colors.length]}'
-                        points='0 0, 40 0, 42 3, 42 17, 40 20, 0 20'>
-                    </polygon>
+                        points='0 0, 40 0, 42 3, 42 17, 40 20, 0 20' />
                     <polygon
                         fill='black'
-                        points='20 2, 30 2, 30 18, 20 18'>
-                    </polygon>
+                        points='20 2, 30 2, 30 18, 20 18' />
                 </g>`;
             },
         });
@@ -1537,16 +1526,18 @@ showSimulation(
             cnt.textContent = format(sim.qStrip.totalCount, 0);
             spd.textContent = format(time ? len / time * 3.6 : 0, 0); // km/h
         }
-        sim.timeNowChanged.addEventListener(updateStats);
+        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
+        sim.carFinished.addEventListener(updateStats);
         sim.stateChanged.addEventListener(updateStats);
     }
 );
 
 //----------------------------------------------------------
-// CarFollowing
+// CarFollowNetwork
 showSimulation(
     new CarFollowNetwork({
-        //frameDelay: 1
+        //frameDelay: 10
+        maxTimeStep: 0.1
     }),
     'Network Car Following (X3DOM)',
     `<p>
@@ -1572,6 +1563,10 @@ showSimulation(
         method in the <b>Entity</b> class to customize queue
         animations.
     </p>
+    <label>
+        Slow Mode
+        <input id='carfollowing-slow' type='checkbox'>
+    </label>
     <label>
         Vehicle Count:
         <b><span id='carfollowing-cnt'>0</span></b> / <span id='carfollowing-tot'>0</span>
@@ -1645,6 +1640,9 @@ showSimulation(
             }
         });
 
+        // toggle slow mode
+        bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.1 : 0);
+
         // update stats when time or state change
         const tot = document.getElementById('carfollowing-tot');
         tot.textContent = format(sim.totalCars, 0);
@@ -1661,11 +1659,117 @@ showSimulation(
             cnt.textContent = format(sim.stats.carsDone, 0);
             spd.textContent = format(time ? len / time * 3.6: 0, 0); // km/h
         }
-        sim.timeNowChanged.addEventListener(updateStats);
+        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
+        sim.carFinished.addEventListener(updateStats);
         sim.stateChanged.addEventListener(updateStats);
     }
 );
 
+//----------------------------------------------------------
+// Asteroids
+showSimulation(
+    new Asteroids({
+        frameDelay: 10
+    }),
+    'Asteroids (SVG)',
+    `<p>
+        SimScript is not a game engine, but it can be used to create
+        simple games such as the classic Asteroids.
+    </p>
+    <p>
+        This sample shows how simulations can handle keyboard events
+        and perform collision tests.
+    </p>
+    <p>
+        To play, press the run button and use these keys:
+    </p>
+    <ul>
+        <li><code>LEFT/RIGHT</code> arrows to turn the ship.</li>
+        <li><code>UP</code> arrow to accelerate.</li>
+        <li><code>SPACE</code> bar to fire a missile.</li>
+        <li><code>S</code> to toggle sound effects.</li>
+    </ul>
+    <label>
+        Missiles Fired:
+        <b><span id='missiles-fired'>0</span></b>
+    </label>
+    <label>
+        Asteroids Destroyed:
+            <b><span id='asteroids-destroyed'>0</span></b>
+            /
+            <span id='asteroids-cnt'>0</span>
+    </label>
+    <svg class='ss-anim anim-host asteroids' viewBox='0 0 1000 500'>
+        <radialGradient id='jetGradient' fx='1'>
+            <stop offset='0%' stop-color='yellow'/>
+            <stop offset='100%' stop-color='transparent'/>
+        </radialGradient>    
+        <circle class='ss-queue center' cx='50%' cy='50%' r='0'/>
+        <text class='game-over' x='50%' y='50%' fill='white' text-anchor='middle' font-size='36pt'>
+        </text>
+    </svg>`,
+    (sim: Asteroids, animationHost: HTMLElement) => {
+        new Animation(sim, animationHost, {
+            rotateEntities: true,
+            getEntityHtml: e => {
+                if (e instanceof Ship) {
+                    return `<g>
+                        <polygon
+                            fill='none'
+                            stroke='white'
+                            stroke-width='2'
+                            points='0 0, -40 60, 80 0, -40 -60' />
+                        <circle
+                            r='25'
+                            cx='-30'
+                            fill='url(#jetGradient)'
+                            opacity=${e.engineOn ? '1' : '0'} />
+                    </g>`;
+                } else if (e instanceof Missile) {
+                    return `<g>
+                        <line
+                            x1='-10' y1='0' x2='10' y2='0'
+                            stroke='red'
+                            stroke-width='6' />
+                    </g>`;
+                } else if (e instanceof Asteroid) {
+                    const scale = e.small ? `transform='scale(0.5, 0.5)'`: ``;
+                    return `<g ${scale}'>
+                        <polygon
+                            fill='none'
+                            stroke='white'
+                            stroke-width='2'
+                            points='0 49, 17 29, 41 24, 46 0, 29 -17, 21 -36, 0 -50, -20 -35, -26 -15, -53 0, -29 17, -27 46' />
+                    </g>`
+                } else {
+                    throw 'unknown entity type'
+                }
+            },
+            queues: [
+                { queue: sim.q, element: 'svg.asteroids .ss-queue.center' },
+            ]
+        });
+
+        // update display when the time or state change
+        const fired = document.getElementById('missiles-fired');
+        const destroyed = document.getElementById('asteroids-destroyed');
+        const cnt = document.getElementById('asteroids-cnt');
+        cnt.textContent = format(sim.asteroidCount, 0);
+        const gameOver = animationHost.querySelector('.game-over');
+        const updateStats = () => {
+            fired.textContent = format(sim.missilesFired, 0);
+            destroyed.textContent = format(sim.asteroidsDestroyed, 0);
+        }
+        sim.asteroidsDestroyedChanged.addEventListener(updateStats);
+        sim.missilesFiredChanged.addEventListener(updateStats);
+        sim.stateChanged.addEventListener(() => {
+            updateStats();
+            gameOver.innerHTML = sim.state == SimulationState.Finished
+                ? `Game Over! You ${sim.won ? 'Won!!!' : 'Lost...'}`
+                : ``;
+        });
+    }
+);
 
 //----------------------------------------------------------
 // my little framework
@@ -1717,6 +1821,12 @@ function showSimulation(sim: Simulation, title: string, intro: string, showStats
         } else {
             btnCollapse.innerHTML = '-';
             body.style.display = '';
+
+            // A-Frame needs a resize event to refresh
+            const scene = body.querySelector('a-scene');
+            if (scene) {
+                window.dispatchEvent(new Event('resize'));
+            }
         }
     });
 

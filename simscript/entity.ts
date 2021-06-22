@@ -316,7 +316,9 @@ export class Entity {
      * This method allows you to override the default queue layout and
      * provide custom positions for the entities in the queues.
      * 
-     * For example, the code below
+     * For example, the code below overrides the {@link getAnimationPosition}
+     * method to calculate the entity's position and angle based on the
+     * entity's position along a car-following strip:
      * 
      * ```typescript
      * export class Car extends Entity implements ICarFollow {
@@ -325,28 +327,28 @@ export class Entity {
      *     position = 0; // current position
      *     maxSpeed = 0; // random value from simulation
      * 
-     * async script() {
-     *     // script updates 'position'
-     *     // ...
-     * }
+     *     async script() {
+     *         // script updates 'position'
+     *         // ...
+     *     }
      * 
-     * // gets the car's animation position
-     * getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
-     *     const
-     *         sim = this.simulation as CarFollow,
-     *         pt = Point.interpolate(start, end, this.position / sim.stripLength);
-     *     return {
-     *         position: pt,
-     *         angle: Point.angle(start, end, false)
+     *     // gets the car's animation position
+     *     getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
+     *         const
+     *             sim = this.simulation as CarFollow,
+     *             pt = Point.interpolate(start, end, this.position / sim.stripLength);
+     *         return {
+     *             position: pt,
+     *             angle: Point.angle(start, end, false)
+     *         }
      *     }
      * }
      * ```
-     * 
      * @param q Queue being animated.
      * @param start Position of the queue's start.
      * @param end Position of the queue's end.
      * @returns An {@link IAnimationPosition} value used to position the
-     * entity in the animation.
+     * entity in the animation. or null to use the standard queue layout.
      */
     getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
         return null;

@@ -28,7 +28,7 @@ export class Crosswalk extends Simulation {
     driveToXing = new Uniform(5, 6);
     driveAway = new Uniform(10, 12);
 
-    pedestrianArrivalInterval = new Exponential(60 / 15); // 15/min
+    pedestrianArrivalInterval = new Exponential(60 / 10); // 10/min
     carArrivalInterval = new Exponential(60 / 6); // 6/min
 
     cycle = {

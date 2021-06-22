@@ -89,6 +89,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimatedqueue.html#angle" class="tsd-kind-icon">angle</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimatedqueue.html#element" class="tsd-kind-icon">element</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimatedqueue.html#endelement" class="tsd-kind-icon">end<wbr>Element</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimatedqueue.html#max" class="tsd-kind-icon">max</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimatedqueue.html#queue" class="tsd-kind-icon">queue</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimatedqueue.html#stackentities" class="tsd-kind-icon">stack<wbr>Entities</a></li>
@@ -105,13 +106,13 @@
 					<div class="tsd-signature tsd-kind-icon">angle<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in animation.ts:29</li>
+							<li>Defined in animation.ts:33</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The <a href="../classes/queue.html">Queue</a> angle, in degrees, measured in clockwise
-							direction from the nine o&#39;clock position (defaults to <strong>zero</strong>).</p>
+							<p>The <a href="../classes/queue.html">Queue</a> angle, in degrees, measured clockwise
+							from the nine o&#39;clock position (defaults to <strong>zero</strong>).</p>
 						</div>
 					</div>
 				</section>
@@ -126,7 +127,22 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>HTML element that defines the {@see Queue} location.</p>
+							<p>HTML element that defines the {@see Queue} start location.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="endelement" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> end<wbr>Element</h3>
+					<div class="tsd-signature tsd-kind-icon">end<wbr>Element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Element</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in animation.ts:28</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>HTML element that defines the {@see Queue} end location.</p>
 						</div>
 					</div>
 				</section>
@@ -136,7 +152,7 @@
 					<div class="tsd-signature tsd-kind-icon">max<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in animation.ts:38</li>
+							<li>Defined in animation.ts:42</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -166,7 +182,7 @@
 					<div class="tsd-signature tsd-kind-icon">stack<wbr>Entities<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in animation.ts:34</li>
+							<li>Defined in animation.ts:38</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -260,6 +276,9 @@
 								<a href="ianimatedqueue.html#element" class="tsd-kind-icon">element</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="ianimatedqueue.html#endelement" class="tsd-kind-icon">end<wbr>Element</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="ianimatedqueue.html#max" class="tsd-kind-icon">max</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -272,6 +291,9 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface">
+						<a href="ianimationposition.html" class="tsd-kind-icon">IAnimation<wbr>Position</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
 						<a href="ieventlistener.html" class="tsd-kind-icon">IEvent<wbr>Listener</a>
 					</li>
@@ -307,9 +329,6 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../modules.html#interpolatepath" class="tsd-kind-icon">interpolate<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>

@@ -57,6 +57,17 @@ interface PathPart {
  * {@link Entity.delay} method.
  * 
  * For an example, please see the {@link shortestPath} method.
+ * 
+ * Networks are defined by arrays of {@link INode} and {@link ILink}
+ * objects.
+ * 
+ * Both {@link INode} and {@link ILink} objects may optionally 
+ * include {@link Queue} objects. These queues are not used by the
+ * {@link Network} class, but may be used by calling simulations to
+ * control the flow of entities along the network.
+ * 
+ * For an example of using link queues to account for congestion, 
+ * please see the {@link getLinkDistance} method.
  */
 export class Network {
     _nodes: INode[];
@@ -234,6 +245,25 @@ export class Network {
      * The function returns the link's **distance** value, if specified,
      * or the distance between the link's **from** and **to** nodes.
      * 
+     * You can override this method to account for congestion along
+     * links, turning costs, or temporary flow restrictions.
+     * 
+     * For example, the code below creates a **CongestionNetwork** 
+     * class that accounts for congestion by increasing the calculated
+     * distance based on the link's current population:
+     * 
+     * ```typescript
+     * // network with congestion cost
+     * // assumes the simulation adds entities to the link's queue 
+     * // while they move along each link.
+     * class CongestionNetwork extends Network {
+     *     getLinkDistance(link: ILink, prevLink?: ILink): number {
+     *         let dist = super.getLinkDistance(link, prevLink);
+     *         dist += dist * link.queue.pop * 0.5; // add some congestion cost
+     *         return dist;
+     *     }
+     * }
+     * ```
      * @param link Link whose distance is being evaluated.
      * @param prevLink Previous link in the path (used to calculate turning costs).
      * @returns The distance (cost) associated with the link.
@@ -256,7 +286,7 @@ export class Network {
                 a1 = this._getLinkAngle(link),
                 a2 = this._getLinkAngle(prevLink);
             let angle = Math.abs(a1 - a2) / Math.PI * 180; // turn in radians
-            //distance += f(angle)?
+            distance += f(angle);
         }
         */
 

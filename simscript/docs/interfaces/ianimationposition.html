@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IFecItemOptions | simscript</title>
+	<title>IAnimationPosition | simscript</title>
 	<meta name="description" content="Documentation for simscript">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">simscript</a>
 				</li>
 				<li>
-					<a href="ifecitemoptions.html">IFecItemOptions</a>
+					<a href="ianimationposition.html">IAnimationPosition</a>
 				</li>
 			</ul>
-			<h1>Interface IFecItemOptions</h1>
+			<h1>Interface IAnimationPosition</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Represents options for <a href="../classes/fecitem.html">FecItem</a> objects.</p>
+						<p>Defines parameters for animating entities in queues.</p>
 					</div>
 				</div>
 			</section>
@@ -76,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IFecItemOptions</span>
+						<span class="target">IAnimationPosition</span>
 					</li>
 				</ul>
 			</section>
@@ -87,12 +87,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#delay" class="tsd-kind-icon">delay</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#path" class="tsd-kind-icon">path</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#queue" class="tsd-kind-icon">queue</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#ready" class="tsd-kind-icon">ready</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#signal" class="tsd-kind-icon">signal</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ifecitemoptions.html#units" class="tsd-kind-icon">units</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimationposition.html#angle" class="tsd-kind-icon">angle</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ianimationposition.html#position" class="tsd-kind-icon">position</a></li>
 							</ul>
 						</section>
 					</div>
@@ -101,92 +97,33 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="delay" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> delay</h3>
-					<div class="tsd-signature tsd-kind-icon">delay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="angle" class="tsd-anchor"></a>
+					<h3>angle</h3>
+					<div class="tsd-signature tsd-kind-icon">angle<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:606</li>
+							<li>Defined in entity.ts:18</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Number of simulated time units to wait for.</p>
+							<p>Entity rotation angle, in degrees, measured clockwise
+							from the nine o&#39;clock position.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="path" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> path</h3>
-					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <a href="imovepath.html" class="tsd-signature-type" data-tsd-kind="Interface">IMovePath</a></div>
+					<a name="position" class="tsd-anchor"></a>
+					<h3>position</h3>
+					<div class="tsd-signature tsd-kind-icon">position<span class="tsd-signature-symbol">:</span> <a href="ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:608</li>
+							<li>Defined in entity.ts:13</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p><a href="imovepath.html">IMovePath</a> object that defines the path for moving an entity.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="queue" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> queue</h3>
-					<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <a href="../classes/queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in simulation.ts:610</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p><a href="../classes/queue.html">Queue</a> that the entity is about to enter.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="ready" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ready</h3>
-					<div class="tsd-signature tsd-kind-icon">ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in simulation.ts:616</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether the entity is ready to resume execution.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="signal" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> signal</h3>
-					<div class="tsd-signature tsd-kind-icon">signal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in simulation.ts:614</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Signal that the entity is waiting for.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="units" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> units</h3>
-					<div class="tsd-signature tsd-kind-icon">units<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in simulation.ts:612</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Number of queue capacity units the entity is about to seize.</p>
+							<p>Entity position in the <a href="../classes/animation.html">Animation</a>.</p>
 						</div>
 					</div>
 				</section>
@@ -265,39 +202,27 @@
 					<li class=" tsd-kind-interface">
 						<a href="ianimatedqueue.html" class="tsd-kind-icon">IAnimated<wbr>Queue</a>
 					</li>
-					<li class=" tsd-kind-interface">
-						<a href="ianimationposition.html" class="tsd-kind-icon">IAnimation<wbr>Position</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter">
-						<a href="ieventlistener.html" class="tsd-kind-icon">IEvent<wbr>Listener</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="ifecitemoptions.html" class="tsd-kind-icon">IFec<wbr>Item<wbr>Options</a>
+						<a href="ianimationposition.html" class="tsd-kind-icon">IAnimation<wbr>Position</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ifecitemoptions.html#delay" class="tsd-kind-icon">delay</a>
+								<a href="ianimationposition.html#angle" class="tsd-kind-icon">angle</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ifecitemoptions.html#path" class="tsd-kind-icon">path</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ifecitemoptions.html#queue" class="tsd-kind-icon">queue</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ifecitemoptions.html#ready" class="tsd-kind-icon">ready</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ifecitemoptions.html#signal" class="tsd-kind-icon">signal</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ifecitemoptions.html#units" class="tsd-kind-icon">units</a>
+								<a href="ianimationposition.html#position" class="tsd-kind-icon">position</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="ieventlistener.html" class="tsd-kind-icon">IEvent<wbr>Listener</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="ifecitemoptions.html" class="tsd-kind-icon">IFec<wbr>Item<wbr>Options</a>
+					</li>
 					<li class=" tsd-kind-interface">
 						<a href="ihistogramentry.html" class="tsd-kind-icon">IHistogram<wbr>Entry</a>
 					</li>

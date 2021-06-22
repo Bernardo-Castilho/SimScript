@@ -17,6 +17,12 @@ h2 {
     border-top: 1px solid rgba(0, 0, 0, .2);
 }
 
+code {
+    font-weight: bold;
+    font-size: 120%;
+    background: #f0f0f0;
+}
+
 button,
 input,
 select {
@@ -259,3 +265,9 @@ svg.ss-anim .crosswalk {
     border: 2px solid black;
     padding: 12px;
 }
+
+.ss-anim.asteroids {
+    overflow: hidden;
+    background: black;
+}
+

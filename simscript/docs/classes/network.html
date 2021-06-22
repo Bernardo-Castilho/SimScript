@@ -77,6 +77,14 @@
 						the simulation, them move entities along the path using the entity&#39;s
 					<a href="entity.html#delay">Entity.delay</a> method.</p>
 					<p>For an example, please see the <a href="network.html#shortestpath">shortestPath</a> method.</p>
+					<p>Networks are defined by arrays of <a href="../interfaces/inode.html">INode</a> and <a href="../interfaces/ilink.html">ILink</a>
+					objects.</p>
+					<p>Both <a href="../interfaces/inode.html">INode</a> and <a href="../interfaces/ilink.html">ILink</a> objects may optionally
+						include <a href="queue.html">Queue</a> objects. These queues are not used by the
+						<a href="network.html">Network</a> class, but may be used by calling simulations to
+					control the flow of entities along the network.</p>
+					<p>For an example of using link queues to account for congestion,
+					please see the <a href="network.html#getlinkdistance">getLinkDistance</a> method.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -137,7 +145,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:61</li>
+									<li>Defined in network.ts:74</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -167,7 +175,7 @@
 					<div class="tsd-signature tsd-kind-icon">_links<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ilink.html" class="tsd-signature-type" data-tsd-kind="Interface">ILink</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in network.ts:61</li>
+							<li>Defined in network.ts:74</li>
 						</ul>
 					</aside>
 				</section>
@@ -177,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">_nodes<span class="tsd-signature-symbol">:</span> <a href="../interfaces/inode.html" class="tsd-signature-type" data-tsd-kind="Interface">INode</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in network.ts:60</li>
+							<li>Defined in network.ts:73</li>
 						</ul>
 					</aside>
 				</section>
@@ -195,7 +203,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:87</li>
+									<li>Defined in network.ts:100</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -208,7 +216,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:84</li>
+									<li>Defined in network.ts:97</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -237,7 +245,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:78</li>
+									<li>Defined in network.ts:91</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -250,7 +258,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:75</li>
+									<li>Defined in network.ts:88</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -281,7 +289,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:309</li>
+									<li>Defined in network.ts:341</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -304,7 +312,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:312</li>
+									<li>Defined in network.ts:344</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -330,7 +338,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:239</li>
+									<li>Defined in network.ts:271</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -339,6 +347,22 @@
 								</div>
 								<p>The function returns the link&#39;s <strong>distance</strong> value, if specified,
 								or the distance between the link&#39;s <strong>from</strong> and <strong>to</strong> nodes.</p>
+								<p>You can override this method to account for congestion along
+								links, turning costs, or temporary flow restrictions.</p>
+								<p>For example, the code below creates a <strong>CongestionNetwork</strong>
+									class that accounts for congestion by increasing the calculated
+								distance based on the link&#39;s current population:</p>
+								<pre><code class="language-typescript"><span style="color: #008000">// network with congestion cost</span>
+<span style="color: #008000">// assumes the simulation adds entities to the link&#039;s queue </span>
+<span style="color: #008000">// while they move along each link.</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CongestionNetwork</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Network</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #795E26">getLinkDistance</span><span style="color: #000000">(</span><span style="color: #001080">link</span><span style="color: #000000">: </span><span style="color: #267F99">ILink</span><span style="color: #000000">, </span><span style="color: #001080">prevLink</span><span style="color: #000000">?: </span><span style="color: #267F99">ILink</span><span style="color: #000000">): </span><span style="color: #267F99">number</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">dist</span><span style="color: #000000"> = </span><span style="color: #0000FF">super</span><span style="color: #000000">.</span><span style="color: #795E26">getLinkDistance</span><span style="color: #000000">(</span><span style="color: #001080">link</span><span style="color: #000000">, </span><span style="color: #001080">prevLink</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #001080">dist</span><span style="color: #000000"> += </span><span style="color: #001080">dist</span><span style="color: #000000"> * </span><span style="color: #001080">link</span><span style="color: #000000">.</span><span style="color: #001080">queue</span><span style="color: #000000">.</span><span style="color: #001080">pop</span><span style="color: #000000"> * </span><span style="color: #098658">0.5</span><span style="color: #000000">; </span><span style="color: #008000">// add some congestion cost</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">dist</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -370,7 +394,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:94</li>
+									<li>Defined in network.ts:107</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -401,7 +425,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:294</li>
+									<li>Defined in network.ts:326</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -454,7 +478,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in network.ts:164</li>
+									<li>Defined in network.ts:177</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -647,6 +671,9 @@
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/ianimatedqueue.html" class="tsd-kind-icon">IAnimated<wbr>Queue</a>
 					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ianimationposition.html" class="tsd-kind-icon">IAnimation<wbr>Position</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
 						<a href="../interfaces/ieventlistener.html" class="tsd-kind-icon">IEvent<wbr>Listener</a>
 					</li>
@@ -682,9 +709,6 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../modules.html#interpolatepath" class="tsd-kind-icon">interpolate<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>

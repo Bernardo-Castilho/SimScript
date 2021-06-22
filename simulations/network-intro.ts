@@ -3,6 +3,7 @@ import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Exponential, Uniform, RandomInt } from '../simscript/random';
 import { Network, INode, ILink } from '../simscript/network';
+import { Event, EventArgs } from '../simscript/event';
 import { assert, Point } from '../simscript/util';
 
 // signals used in this Simulation
@@ -32,7 +33,7 @@ export class NetworkIntro extends Simulation {
     requests = 1000;
     requestsServed = 0;
     requestsMissed = 0;
-    servers: ServiceVehicle[] = []; // all service vehicles
+    servers: ServiceVehicle[]; // all service vehicles
     qBusy = new Queue('busy', this.serviceVehicles); // server utilization (traveling + servicing)
     qWait = new Queue('wait'); // request wait before service starts
     qService = new Queue('service'); // service times
@@ -41,9 +42,11 @@ export class NetworkIntro extends Simulation {
     serviceVehicleSpeed = new Uniform(3, 6); // m/s, about 10-20km/h
     network = createNetwork(5, 9, 100); // nodes are 100m apart
     rndNode = new RandomInt(this.network.nodes.length - 1);
-    
+    readonly requestFinished = new Event<NetworkIntro, EventArgs>();
+
     onStarting() {
         super.onStarting();
+        this.servers = [];
         this.requestsServed = 0;
         this.requestsMissed = 0;
         this.generateEntities(ServiceRequest, this.interArrivalTime, this.requests);
@@ -59,6 +62,9 @@ export class NetworkIntro extends Simulation {
             }
         }
         return null; // no free node
+    }
+    onRequestFinished(e?: EventArgs) {
+        this.requestFinished.raise(this, e);
     }
 }
 
@@ -82,18 +88,15 @@ export class ServiceRequest extends Entity {
         }
         
         // enter node and wait queues
-        //console.log('ServiceRequest created at node', this.node.id, 'at time', sim.timeNow);
         this.enterQueueImmediately(sim.qWait);
         this.enterQueueImmediately(this.node.queue);
         this.sendSignal(Signal.RequestArrived);
 
-        // wait for service vehicle to assume request
+        // wait for service vehicle to take the request
         await this.waitSignal(makeSignal(Signal.RequestAssigned, this));
-        //console.log('ServiceRequest for node', this.node.id, 'assigned at time', sim.timeNow);
 
         // wait for service vehicle to arrive
         await this.waitSignal(makeSignal(Signal.ServiceArrived, this));
-        //console.log('ServiceRequest for node', this.node.id, 'service arrived at time', sim.timeNow);
 
         // leave wait and node
         this.leaveQueue(sim.qWait);
@@ -101,7 +104,7 @@ export class ServiceRequest extends Entity {
 
         // undergo service and be done
         await this.waitSignal(makeSignal(Signal.ServiceFinished, this));
-        //console.log('** ServiceRequest for node', this.node.id, 'finished at time', sim.timeNow);
+        sim.onRequestFinished();
     }
 }
 
@@ -123,7 +126,6 @@ export class ServiceVehicle extends Entity {
         // select initial location, enter node queue
         this.node = sim.getRandomFreeNode();
         this.enterQueueImmediately(this.node.queue);
-        //console.log('ServiceVehicle', this.serial, 'starting at node', this.node.id);
 
         // loop
         for (; ;) {
@@ -137,7 +139,6 @@ export class ServiceVehicle extends Entity {
             }
 
             // send RequestAssigned signal
-            //console.log('ServiceVehicle assigned to node', this.request.node.id, 'at', sim.timeNow);
             assert(this.request.assigned == null, 'request should not be assigned');
             this.request.assigned = this.serial;
             this.sendSignal(makeSignal(Signal.RequestAssigned, this.request));
@@ -170,7 +171,6 @@ export class ServiceVehicle extends Entity {
             }
 
             // arrive service node
-            //console.log('ServiceVehicle for node', this.request.node.id, 'arrived at', sim.timeNow);
             this.busy = true;
             this.node = this.request.node;
             this.sendSignal(makeSignal(Signal.ServiceArrived, this.request));
@@ -188,41 +188,46 @@ export class ServiceVehicle extends Entity {
 
             // keep track of server utilization
             this.leaveQueue(sim.qBusy);
-            //console.log('** ServiceVehicle for node', this.request.node.id, 'done at', sim.timeNow);
         }
     }
 
     // gets the closest request to this server
-    // this method is simple and fast, but it does not take into account
-    // the position of other idle service vehicles.
-    getClosestRequestQuick(): ServiceRequest {
+    getClosestRequest(): ServiceRequest {
         const sim = this.simulation as NetworkIntro;
         assert(!this.busy, 'should not be looking for service while busy');
-        let request: ServiceRequest = null;
-        let minDist: number;
+        let
+            closestRequest: ServiceRequest = null,
+            minDist: number;
         sim.qWait.entities.forEach((e: ServiceRequest) => {
             if (e.assigned == null) { // request has not been assigned
                 const dist = Point.distance(this.node.position, e.node.position);
-                if (!request || dist < minDist) { // closest so far
-                    request = e;
+                if (minDist == null || dist < minDist) { // keep closest request
+                    closestRequest = e;
                     minDist = dist;
                 }
             }
         });
-        return request;
+        return closestRequest;
     }
 
     // gets the closest request to this server
     // taking into account the position of other idle service vehicles.
-    getClosestRequest(): ServiceRequest {
+    getClosestRequest2(): ServiceRequest {
         const sim = this.simulation as NetworkIntro;
         assert(!this.busy, 'should not be looking for service while busy');
 
-        // get vehicles and requests
+        // get unassigned vehicles and requests
         const servers = sim.servers.filter(server => server.busy == false);
         const requests = (sim.qWait.entities as ServiceRequest[]).filter(request => request.assigned == null);
 
+        // no requests...
+        if (requests.length == 0) {
+            return null;
+        }
+
         // build distance matrix
+        // distances[i] contains an array with the distances 
+        // from the ith server to each request.
         const distances = [];
         servers.forEach(server => {
             let serverDist = [];
@@ -238,23 +243,23 @@ export class ServiceVehicle extends Entity {
         const requestMap = new Map<any, any>();
         while (serverMap.size < servers.length && requestMap.size < requests.length) {
             const min = {
+                distance: null,
                 vehicle: null,
                 destination: null,
-                distance: null,
             };
         
-            // scan unassigned vehicles
-            for (let v = 0; v < distances.length; v++) {
-                if (!serverMap.has(servers[v])) {
+            // scan unassigned servers
+            for (let s = 0; s < distances.length; s++) {
+                if (!serverMap.has(servers[s])) {
         
-                    // scan unassigned destinations
-                    for (let d = 0; d < distances[v].length; d++) {
+                    // scan unassigned requests
+                    for (let d = 0; d < distances[s].length; d++) {
                         if (!requestMap.has(requests[d])) {
         
                             // keep shortest unassigned value
-                            let distance = distances[v][d];
+                            let distance = distances[s][d];
                             if (min.distance == null || distance < min.distance) {
-                                min.vehicle = servers[v];
+                                min.vehicle = servers[s];
                                 min.destination = requests[d];
                                 min.distance = distance;
                             }

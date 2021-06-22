@@ -35,10 +35,10 @@ export interface IAnimatedQueue {
      * Whether all entities should be shown stacked over each other 
      * rather than distributed along the given **angle**.
      */
-     stackEntities?: boolean,
-     /**
-     * The maximum number of entities to display in the {@link Queue}.
-     */
+    stackEntities?: boolean,
+    /**
+    * The maximum number of entities to display in the {@link Queue}.
+    */
     max?: number,
 }
 
@@ -120,7 +120,7 @@ export class Animation {
         sim.stateChanged.addEventListener(this.updateDisplay, this);
 
         // slow down the simulation to keep the animation smooth
-        sim.yieldInterval = 15; // about 60 fps
+        sim.yieldInterval = 30; // about 60 fps
 
         // internal stuff
         this._lastUpdate = 0;
@@ -428,10 +428,18 @@ class AnimatedQueue {
 
     // draws the entities in this animation queue.
     _draw() {
+        const
+            anim = this._anim,
+            q = this._q;
+
+        // skip this if we're empty
+        if (!q.pop) {
+            this._ptEnd = null;
+            return;
+        }
 
         // skip this if we're up-to-date
-        const anim = this._anim;
-        if (!this._customPositions && this._q.lastChange < anim._lastUpdate && anim.hostTag != 'A-SCENE') {
+        if (!this._customPositions && q.lastChange < anim._lastUpdate && anim.hostTag != 'A-SCENE') {
             for (let item of this._q.items.values()) {
                 const ae = anim._entities.get(item.entity);
                 if (ae) {
@@ -447,7 +455,7 @@ class AnimatedQueue {
 
         // loop through entities in the queue
         let cnt = 0;
-        for (let item of this._q.items.values()) {
+        for (let item of q.items.values()) {
 
             // honor max numer of entities to display
             if (this._max != null && cnt >= this._max) {
@@ -465,13 +473,15 @@ class AnimatedQueue {
             // use custom entity position
             const getPos = e.getAnimationPosition;
             if (getPos != Entity.prototype.getAnimationPosition) { // overridden
-                this._customPositions = true;
                 const
                     start = Point.clone(this._getStart()),
                     end = Point.clone(this._getEnd()),
-                    pos = getPos.call(e, this._q, start, end);
-                ae._drawAt(pos.position, pos.angle);
-                continue;
+                    pos = getPos.call(e, q, start, end);
+                if (pos != null) {
+                    this._customPositions = true;
+                    ae._drawAt(pos.position, pos.angle);
+                    continue;
+                }
             }
 
             // get queue angle
@@ -484,8 +494,8 @@ class AnimatedQueue {
             // prepare to draw
             const
                 stack = this._stackEntities,
-                hWid = stack ? 0 : ae._width * cos / 2,
-                hHei = stack ? 0 : (anim.rotateEntities ? ae._width : ae._height) * sin / 2;
+                hWid = stack ? 0 : ae._sz.x * cos / 2,
+                hHei = stack ? 0 : (anim.rotateEntities ? ae._sz.x : ae._sz.y) * sin / 2;
 
             // update entity position and insertion point position
             pt.x += hWid;
@@ -509,11 +519,10 @@ class AnimatedQueue {
 class AnimatedEntity {
     private _anim: Animation;
     private _entity: Entity;
-    /** internal */ _element: Element;
-    /** internal */ _width: number;
-    /** internal */ _height: number;
-    /** internal */ _depth: number;
-    /** internal */ _inUse: boolean;
+    /** internal */ private _element: Element;
+    /** internal */ private _sz: IPoint;
+    /** internal */ private _offset: IPoint;
+    /** internal */ private _inUse: boolean;
 
     // ctor
     constructor(anim: Animation, entity: Entity) {
@@ -547,33 +556,53 @@ class AnimatedEntity {
         anim.sceneElement.appendChild(e);
 
         // measure element
-        this._width = this._height = this._depth = 0;
         switch (anim.hostTag) {
             case 'X3D':
                 const sz = new BoundingBox(e).size;
-                this._width = sz.x;
-                this._height = sz.y;
-                this._depth = sz.z;
+                this._sz = {
+                    x: sz.x,
+                    y: sz.y,
+                    z: sz.z
+                }
                 break;
             case 'A-SCENE':
+                this._sz = new Point();
                 requestAnimationFrame(() => {
                     const
                         model = (e as any).object3D,
                         box = new THREE.Box3().setFromObject(model);
-                    this._width = box.max.x - box.min.x;
-                    this._height = box.max.y - box.min.y;
-                    this._depth = box.max.z - box.min.z;
+                    this._sz = {
+                        x: box.max.x - box.min.x,
+                        y: box.max.y - box.min.y,
+                        z: box.max.z - box.min.z
+                    }
                 });
                 break;
             case 'SVG':
-                const rcSvg = (e as any).getBBox();
-                this._width = rcSvg.width;
-                this._height = rcSvg.height;
+                {
+                    const rc = (e as any).getBBox();
+                    this._sz = {
+                        x: rc.width,
+                        y: rc.height
+                    }
+                    this._offset = {
+                        x: rc.x + rc.width / 2,
+                        y: rc.y + rc.height / 2
+                    }
+                }
                 break;
             default:
-                const rcEl = e.getBoundingClientRect();
-                this._width = rcEl.width;
-                this._height = rcEl.height;
+                {
+                    const rc = e.getBoundingClientRect();
+                    this._sz = {
+                        x: rc.width,
+                        y: rc.height
+                    }
+                    this._offset = {
+                        x: rc.width / 2,
+                        y: rc.height / 2
+                    }
+                }
                 break;
         }
     }
@@ -608,12 +637,13 @@ class AnimatedEntity {
             default:
 
                 // adjust reference point (middle of the element)
-                const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2, pt.z);
+                //const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2, pt.z);
+                const p = new Point(pt.x - this._offset.x, pt.y - this._offset.y);
 
                 // calculate the transform
                 let transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
                 if (angle && anim.rotateEntities) {
-                    transform += ` rotate(${angle}deg)`;
+                    transform += `rotate(${angle}deg) `;
                 }
 
                 // and apply it

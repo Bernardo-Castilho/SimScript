@@ -89,6 +89,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="imovepath.html#queues" class="tsd-kind-icon">queues</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="imovepath.html#radius" class="tsd-kind-icon">radius</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="imovepath.html#tension" class="tsd-kind-icon">tension</a></li>
 							</ul>
 						</section>
@@ -113,12 +114,31 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="radius" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> radius</h3>
+					<div class="tsd-signature tsd-kind-icon">radius<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in simulation.ts:771</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Value that defines a turning radius for entities.</p>
+						</div>
+						<p>Setting this option to a value greater than zero causes the
+							<a href="../classes/animation.html">Animation</a> to add extra points to multi-queue paths
+						to constrain entities when turning.</p>
+						<p>Radius values have no effect on entity travel times.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="tension" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> tension</h3>
 					<div class="tsd-signature tsd-kind-icon">tension<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in simulation.ts:760</li>
+							<li>Defined in simulation.ts:761</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -128,9 +148,9 @@
 						</div>
 						<p>Zero (0) creates a path with straight line segments, one (1)
 						generates smooth curves.</p>
-						<p>Note that if you use tension values greater than zero, entities
-							will move <strong>close</strong> to intermediate nodes rather than directly
-						<strong>over</strong> them.</p>
+						<p>Tension values greater than zero cause entities to move <strong>close</strong>
+						to intermediate nodes rather than directly <strong>over</strong> them.</p>
+						<p>Tension values have no effect on entity travel times.</p>
 					</div>
 				</section>
 			</section>
@@ -208,6 +228,9 @@
 					<li class=" tsd-kind-interface">
 						<a href="ianimatedqueue.html" class="tsd-kind-icon">IAnimated<wbr>Queue</a>
 					</li>
+					<li class=" tsd-kind-interface">
+						<a href="ianimationposition.html" class="tsd-kind-icon">IAnimation<wbr>Position</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
 						<a href="ieventlistener.html" class="tsd-kind-icon">IEvent<wbr>Listener</a>
 					</li>
@@ -227,6 +250,9 @@
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="imovepath.html#queues" class="tsd-kind-icon">queues</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="imovepath.html#radius" class="tsd-kind-icon">radius</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="imovepath.html#tension" class="tsd-kind-icon">tension</a>
@@ -255,9 +281,6 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../modules.html#interpolatepath" class="tsd-kind-icon">interpolate<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>
