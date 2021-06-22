@@ -25,6 +25,7 @@ import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 
 //----------------------------------------------------------
 // Generator
+if (false)
 showSimulation(
     new Generator(),
     'Generator',
@@ -35,6 +36,7 @@ showSimulation(
 
 //----------------------------------------------------------
 // SimplestSimulation
+if (false)
 showSimulation(
     new SimplestSimulation(),
     'SimplestSimulation',
@@ -45,6 +47,7 @@ showSimulation(
 
 //----------------------------------------------------------
 // SimpleTest
+if (false)
 showSimulation(
     new SimpleTest({
         stateChanged: (sim) => {
@@ -1718,7 +1721,7 @@ showSimulation(
                             fill='none'
                             stroke='white'
                             stroke-width='2'
-                            points='0 0, -40 60, 80 0, -40 -60' />
+                            points='0 0, -20 30, 40 0, -20 -30' />
                         <circle
                             r='25'
                             cx='-30'
