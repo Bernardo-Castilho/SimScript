@@ -106,6 +106,18 @@ class Customer extends Entity {
 
 The links below show some samples of **SimScript** simulations:
 
+## New Samples
+
+- [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt?file=index.ts)\
+    Shows how you can customize the behavior of a SimScript **Network** to use a
+    car-following model and to account for network congestion.
+
+- [Asteroids (SVG animation)](https://stackblitz.com/edit/typescript-mcoqyz?file=index.ts)\
+    Shows how you can use Simscript to implement a simple arcade game with
+    support for keyboard/touch events, sounds, and collision detection.
+
+## Other Samples
+
 - [Barbershop](https://stackblitz.com/edit/typescript-efht9t?file=index.ts)\
     Classic GPSS simulation example:
     customers arrive at a barbershop, wait until the barber is available, get serviced, and leave.
@@ -143,11 +155,3 @@ The links below show some samples of **SimScript** simulations:
 - [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya?file=index.ts)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show how to use SimScript's
     **Network** class.
-
-- [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt?file=index.ts)\
-    Shows how you can customize the behavior of a SimScript **Network** to use a
-    car-following model and to account for network congestion.
-
-- [Asteroids (SVG animation)](https://stackblitz.com/edit/typescript-mcoqyz?file=index.ts)\
-    Shows how you can use Simscript to implement a simple arcade game, with
-    support for keyboard events, sounds, and collision detection.

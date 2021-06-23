@@ -12,6 +12,7 @@ const STEP_SPEED = 2;
 const MAX_SPEED = 20;
 const MISSILE_SPEED = 30;
 const ASTEROID_COUNT = 8;
+const AUDIO: any = {};
 
 /**
  * Sounds used in the game.
@@ -57,6 +58,16 @@ export class Asteroids extends Simulation {
     onStarting() {
         super.onStarting();
 
+        // pre-load sounds
+        Object.keys(Sounds).forEach(key => {
+            const sound = Sounds[key];
+            if (!AUDIO[sound]) {
+                const res = `https://bernardo-castilho.github.io/simscript/dist/resources/${sound}`;
+                //const res = `./resources/${sound}`;
+                AUDIO[sound] = new Audio(res);
+            }
+        });
+
         // create ship
         this.ship = new Ship();
         this.activate(this.ship);
@@ -93,9 +104,9 @@ export class Asteroids extends Simulation {
     // play a sound
     play(sound: Sounds) {
         if (this.sound) {
-            //const res = `https://bernardo-castilho.github.io/simscript/dist/resources/${sound}`;
-            const res = `./resources/${sound}`;
-            new Audio(res).play();
+            const audio = AUDIO[sound];
+            audio.currentTime = 0;
+            audio.play();                  
         }
     }
 
@@ -153,6 +164,12 @@ class Flyer extends Entity {
         if (!options || options.angle == null) {
             this.angle = -90;
         }
+        if (!options || !options.pos) {
+            this.pos = {
+                x: SCREEN_X / 2,
+                y: SCREEN_Y / 2
+            };
+        }
     }
 
     // gets or sets the Flyer's current angle (and updates sin/cos).
@@ -200,10 +217,15 @@ class Flyer extends Entity {
         pos.x += spd ? spd.x * dt : 0;
         pos.y += spd ? spd.y * dt : 0;
         if (wrap) {
-            pos.x = (pos.x + SCREEN_X) % SCREEN_X;
-            pos.y = (pos.y + SCREEN_Y) % SCREEN_Y;
+            pos.x = this.wrap(pos.x, SCREEN_X);
+            pos.y = this.wrap(pos.y, SCREEN_Y);
         }
         return pos.x >= 0 && pos.x <= SCREEN_X && pos.y >= 0 && pos.y <= SCREEN_Y;
+    }
+
+    // wrap a value between zero and a max value
+    wrap(val: number, max: number): number {
+        return val < 0 ? max : val > max ? 0 : val;
     }
 
     // checks whether this flyer has collided with another
@@ -246,7 +268,7 @@ export class Ship extends Flyer {
         for (; !this.done;) {
             await this.delay(dt);
             this.updatePosition(dt, true);
-            if (sim.timeNow - this.engineOn > 5) {
+            if (sim.timeNow - this.engineOn > 3) {
                 this.engineOn = 0;
             }
         }

@@ -1,7 +1,6 @@
 # Todo
-- asteroids ipad test
 - improve animation in network following example
-- thenable research
+- asteroids ipad test
 - new samples in readme
 - more docs/examples
     - elevators
