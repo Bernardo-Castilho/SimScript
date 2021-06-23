@@ -194,7 +194,7 @@ export class Point implements IPoint {
         return {
             x: p1.x + (p2.x - p1.x) * t,
             y: p1.y + (p2.y - p1.y) * t,
-            z: p1.z + (p2.z || 0 - p1.z || 0) * t
+            z: (p1.z || 0) + (p2.z || 0 - p1.z || 0) * t
         };
     }
     /**

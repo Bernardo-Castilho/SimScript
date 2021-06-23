@@ -1539,8 +1539,7 @@ showSimulation(
 // CarFollowNetwork
 showSimulation(
     new CarFollowNetwork({
-        //frameDelay: 10
-        maxTimeStep: 0.1
+        maxTimeStep: 1
     }),
     'Network Car Following (X3DOM)',
     `<p>

@@ -11,6 +11,7 @@ interface ICar {
     maxSpeed: number;
     accel: number;
     position: number;
+    length: number;
 }
 
 export class CarFollowNetwork extends Simulation {
@@ -44,7 +45,9 @@ export class Car extends Entity implements ICar {
     speed = 0; // starting speed
     accel = 10; // acceleration/deceleration
     position = 0; // current position
+    length = 25; // vehicle length (not to scale)
     maxSpeed = 0; // random value from simulation
+    delayStart = 0; // time when the entity started moving along the current link
     path: ILink[]; // current path
 
     async script() {
@@ -82,6 +85,7 @@ export class Car extends Entity implements ICar {
             // move along the link
             while (this.position < length) {
                 this.speed = this.getSpeed(dt);
+                this.delayStart = sim.timeNow; // used by getAnimatinPosition
                 await this.delay(dt);
                 this.position += this.speed * dt;
             }
@@ -108,7 +112,8 @@ export class Car extends Entity implements ICar {
         const
             sim = this.simulation as CarFollowNetwork,
             len = sim.network.getLinkDistance(this.path[0]),
-            pt = Point.interpolate(start, end, this.position / len);
+            pos = this.position + (sim.timeNow - this.delayStart) * this.speed,
+            pt = Point.interpolate(start, end, pos / len);
         return {
             position: pt,
             angle: Point.angle(start, end, false)
@@ -139,7 +144,7 @@ export class Car extends Entity implements ICar {
         if (vAhead != null) {
 
             // calculate vehicle ahead's breaking distance
-            const dAhead = vAhead.position - this.position;
+            const dAhead = Math.max(0, vAhead.position - this.position - vAhead.length);
             let breakingDistance = dAhead;
             if (vAhead.speed && vAhead.accel) {
                 breakingDistance += (vAhead.speed * vAhead.speed) / (2 * vAhead.accel);
@@ -178,7 +183,8 @@ export class Car extends Entity implements ICar {
                     speed: carAhead.speed,
                     maxSpeed: carAhead.maxSpeed,
                     accel: carAhead.maxSpeed,
-                    position: this.position + carAhead.position
+                    position: this.position + carAhead.position,
+                    length: carAhead.length
                 }
             } else {
                 return null; // no cars in the next link
@@ -190,7 +196,8 @@ export class Car extends Entity implements ICar {
             speed: 0,
             maxSpeed: 0,
             accel: 0,
-            position: sim.network.getLinkDistance(link)
+            position: sim.network.getLinkDistance(link),
+            length: 0
         };
     }
 }
