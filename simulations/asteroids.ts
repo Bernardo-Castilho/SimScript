@@ -18,11 +18,11 @@ const ASTEROID_COUNT = 8;
  */
 enum Sounds {
     // https://www.mediacollege.com/downloads/sound-effects/explosion/
-    thrust = './resources/thrust.mp3',
-    missile = './resources/missile.mp3',
-    explosion = './resources/explosion.mp3',
-    won = './resources/won.mp3',
-    lost = './resources/lost.mp3'
+    thrust = 'thrust.mp3',
+    missile = 'missile.mp3',
+    explosion = 'explosion.mp3',
+    won = 'won.mp3',
+    lost = 'lost.mp3'
 }
 
 /**
@@ -33,13 +33,17 @@ export class Asteroids extends Simulation {
     asteroidCount = ASTEROID_COUNT;
     asteroidInterval = new Uniform(0, 50);
     asteroidSpeed = new Uniform(MISSILE_SPEED * .25, MISSILE_SPEED * .5);
-    keydown = this._keydown.bind(this);
     q = new Queue();
     ship: Ship;
     missilesFired: number;
     asteroidsDestroyed: number;
     sound = true;
     won = false;
+
+    keydown = this._keydown.bind(this);
+    touchstart = this._touchstart.bind(this);
+    touchend = this._touchend.bind(this);
+    _touch: Touch;
 
     readonly missilesFiredChanged = new Event<Asteroids, EventArgs>();
     onMissilesFiredChanged(e?: EventArgs) {
@@ -64,13 +68,17 @@ export class Asteroids extends Simulation {
         this.onAsteroidsDestroyedChanged();
         this.generateEntities(Asteroid, this.asteroidInterval, this.asteroidCount);
 
-        // add event listener
+        // add event listeners
         document.addEventListener('keydown', this.keydown);
+        document.addEventListener('touchstart', this.touchstart, { passive: false });
+        document.addEventListener('touchend', this.touchend);
     }
     onFinishing() {
 
-        // remove event listener
+        // remove event listeners
         document.removeEventListener('keydown', this.keydown);
+        document.removeEventListener('touchstart', this.touchstart);
+        document.removeEventListener('touchend', this.touchend);
     }
 
     // game over!
@@ -82,16 +90,48 @@ export class Asteroids extends Simulation {
         }, 800);
     }
 
-    // handle keyboard commands
-    _keydown(e: KeyboardEvent) {
-        this.ship.keydown(e);
-    }
-
     // play a sound
     play(sound: Sounds) {
         if (this.sound) {
-            new Audio(sound).play();
+            //const res = `https://bernardo-castilho.github.io/simscript/dist/resources/${sound}`;
+            const res = `./resources/${sound}`;
+            new Audio(res).play();
         }
+    }
+
+    // handle keyboard and touch events
+    _keydown(e: KeyboardEvent) {
+        this.ship.keydown(e);
+    }
+    _touchstart(e: TouchEvent) {
+        const
+            target = e.target as HTMLElement,
+            svg = target.closest('svg.asteroids');
+        this._touch = svg ? e.touches[0] : null;
+        if (this._touch) {
+            e.preventDefault();
+        }
+    }
+    _touchend(e: TouchEvent) {
+        const
+            target = e.target as HTMLElement,
+            svg = target.closest('svg.asteroids');
+        if (svg && this._touch) {
+            const
+                ts = this._touch,
+                te = e.changedTouches[0],
+                DELTA = 30;
+
+            // select key to emulate
+            const key = (te.clientX - ts.clientX > DELTA) ? 'ArrowRight' : // turn right
+                (ts.clientX - te.clientX > DELTA) ? 'ArrowLeft' : // turn left
+                (ts.clientY - te.clientY > DELTA) ? 'ArrowUp' : // thrust
+                ' '; // shoot
+
+            // let the ship handle it
+            this.ship.keydown(new KeyboardEvent('keydown', { key: key, shiftKey: true }));
+        }
+        this._touch = null;
     }
 }
 
@@ -217,44 +257,47 @@ export class Ship extends Flyer {
 
     // handle keyboard commands
     keydown(e: KeyboardEvent) {
-        const sim = this.simulation as Asteroids;
-        switch (e.key) {
+        if (!this.done) { // the ship may have been destroyed...
+            const sim = this.simulation as Asteroids;
+            switch (e.key) {
 
-            // left/right arrows turn the ship
-            case 'ArrowLeft':
-            case 'ArrowRight':
-                {
-                    const step = (e.key == 'ArrowLeft') ? -STEP_ANGLE : +STEP_ANGLE;
-                    this.angle = (this.angle + step) % 360;
-                }
-                e.preventDefault();
-                break;
+                // left/right arrows turn the ship
+                case 'ArrowLeft':
+                case 'ArrowRight':
+                    {
+                        let step = (e.key == 'ArrowLeft') ? -STEP_ANGLE : +STEP_ANGLE;
+                        if (e.shiftKey) {
+                            step *= 3;
+                        }
+                        this.angle = (this.angle + step) % 360;
+                    }
+                    e.preventDefault();
+                    break;
             
-            // up arrow accelerates the ship
-            case 'ArrowUp':
-                this.incrementSpeed(STEP_SPEED, MAX_SPEED);
-                this.engineOn = sim.timeNow;
-                sim.play(Sounds.thrust);
-                e.preventDefault();
-                break;
+                // up arrow accelerates the ship
+                case 'ArrowUp':
+                    this.incrementSpeed(STEP_SPEED, MAX_SPEED);
+                    this.engineOn = sim.timeNow;
+                    sim.play(Sounds.thrust);
+                    e.preventDefault();
+                    break;
 
-            // space fires a missile
-            case ' ':
-                const missile = new Missile(this);
-                if (missile) {
+                // space fires a missile
+                case ' ':
+                    const missile = new Missile(this);
                     sim.activate(missile);
                     sim.missilesFired++;
                     sim.onMissilesFiredChanged();
-                }
-                e.preventDefault();
-                break;
+                    e.preventDefault();
+                    break;
 
-            // S/s toggle sound
-            case 'S':
-            case 's':
-                sim.sound = !sim.sound;
-                e.preventDefault();
-                break;
+                // S/s toggle sound
+                case 'S':
+                case 's':
+                    sim.sound = !sim.sound;
+                    e.preventDefault();
+                    break;
+            }
         }
     }
 }

@@ -1,4 +1,8 @@
 # Todo
+- asteroids ipad test
+- improve animation in network following example
+- thenable research
+- new samples in readme
 - more docs/examples
     - elevators
     - robot/warehouse (3d)

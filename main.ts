@@ -1682,17 +1682,28 @@ showSimulation(
         simple games such as the classic Asteroids.
     </p>
     <p>
-        This sample shows how simulations can handle keyboard events
-        and perform collision tests.
+        This sample shows how simulations can handle keyboard and
+        touch events, and perform collision tests.
     </p>
     <p>
         To play, press the run button and use these keys:
     </p>
     <ul>
-        <li><code>LEFT/RIGHT</code> arrows to turn the ship.</li>
-        <li><code>UP</code> arrow to accelerate.</li>
-        <li><code>SPACE</code> bar to fire a missile.</li>
-        <li><code>S</code> to toggle sound effects.</li>
+        <li>
+            <code>LEFT/RIGHT</code> arrows to turn the ship
+            (or swipe left/right on touch devices).
+        </li>
+        <li>
+            <code>UP</code> arrow to accelerate
+            (or swipe up on touch devices).
+        </li>
+        <li>
+            <code>SPACE</code> bar to fire a missile
+            (or tap on touch devices).
+        </li>
+        <li>
+            <code>S</code> to toggle sound effects.
+        </li>
     </ul>
     <label>
         Professional Mode:
