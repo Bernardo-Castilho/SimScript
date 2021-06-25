@@ -18,7 +18,7 @@ export class CarFollowNetwork extends Simulation {
     timeIncrement = 1; // seconds
     totalCars = 1000; // number of cars to simulate
     carSpeeds = new Uniform(40 / 3.6, 100 / 3.6); // 40-100 km/h in m/s
-    interArrival = new Exponential(30); // avg seconds between car arrivals
+    interArrival = new Exponential(15); // avg seconds between car arrivals
     network = createNetwork(5, 9, 100); // nodes are 100m apart    
     rndNode = new RandomInt(this.network.nodes.length - 1);
     stats = {

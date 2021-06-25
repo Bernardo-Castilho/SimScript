@@ -169,6 +169,18 @@ export class Point implements IPoint {
         }
     }
     /**
+     * Copies an {@link IPoint} object into another.
+     * @param dst Destination {@link IPoint} object.
+     * @param src Source {@link IPoint} object.
+     * @returns The destination {@link IPoint} object.
+     */
+    static copy(dst: IPoint, src: IPoint): IPoint {
+        dst.x = src.x;
+        dst.y = src.y;
+        dst.z = src.z;
+        return dst;
+    }
+    /**
      * Calculates the distance between two {@link IPoint} objects.
      * @param p1 First point.
      * @param p2 Second point.

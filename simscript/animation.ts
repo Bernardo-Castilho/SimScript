@@ -90,6 +90,7 @@ export class Animation {
     private _height: number;
     private _queues = new Map<Queue, AnimatedQueue>();
     private _queueArray: IAnimatedQueue[];
+    private _disabled = false;
     private _rotateEntities = false;
     private _toQueueEnd = true;
     private _getEntityHtml: Function;
@@ -218,6 +219,25 @@ export class Animation {
         this._toQueueEnd = value;
     }
     /**
+     * Gets or sets a value that determines whether the animation
+     * is currently disabled.
+     * 
+     * The default value for this property is **false**, which causes
+     * the animation to update whenever the simulation's current
+     * time advances.
+     */
+    get disabled(): boolean {
+        return this._disabled;
+    }
+    set disabled(value: boolean) {
+        if (value != this.disabled) {
+            this._disabled = value;
+            if (!value) {
+                this.updateDisplay();
+            }
+        }
+    }
+    /**
      * Gets or sets an array with queue animation information.
      * 
      * The items in the array should implement the {@link IAnimatedQueue} interface.
@@ -266,11 +286,16 @@ export class Animation {
      */
     updateDisplay() {
 
+        // no updates while disabled
+        if (this._disabled) {
+            return;
+        }
+
         // reset queue start positions
-         const
-             host = this._host,
-             sim = this._sim,
-             rc = host.getBoundingClientRect();
+        const
+            host = this._host,
+            sim = this._sim,
+            rc = host.getBoundingClientRect();
         if (rc.height != this._height || rc.width != this._width) {
             this._height = rc.height;
             this._width = rc.width;
@@ -318,7 +343,7 @@ export class Animation {
                 }
 
                 // update entity icon
-                ae._element.innerHTML = ae._getEntityHtml();
+                ae.updateIcon();
 
                 // update entity position
                 const
@@ -374,6 +399,8 @@ class AnimatedQueue {
     /** internal */ _q: Queue;
     /** internal */ _ptStart: IPoint;
     /** internal */ _ptEnd: IPoint;
+    private _pt1: IPoint = new Point();
+    private _pt2: IPoint = new Point();
 
     // ctor
     constructor(anim: Animation, options: IAnimatedQueue) {
@@ -468,14 +495,14 @@ class AnimatedQueue {
                 ae = anim._getAnimatedEntity(e);
             
             // update entity icon
-            ae._element.innerHTML = ae._getEntityHtml();
+            ae.updateIcon();
 
             // use custom entity position
             const getPos = e.getAnimationPosition;
             if (getPos != Entity.prototype.getAnimationPosition) { // overridden
                 const
-                    start = Point.clone(this._getStart()),
-                    end = Point.clone(this._getEnd()),
+                    start = Point.copy(this._pt1, this._getStart()),
+                    end = Point.copy(this._pt2, this._getEnd()),
                     pos = getPos.call(e, q, start, end);
                 if (pos != null) {
                     this._customPositions = true;
@@ -519,6 +546,7 @@ class AnimatedQueue {
 class AnimatedEntity {
     private _anim: Animation;
     private _entity: Entity;
+    private _html: string; ////
     /** internal */ _element: Element;
     /** internal */ _sz: IPoint;
     /** internal */ _offset: IPoint;
@@ -548,9 +576,9 @@ class AnimatedEntity {
                 (e as HTMLElement).style.opacity = '0';
                 break;
         }
-        e.innerHTML = this._getEntityHtml();
         e.classList.add('ss-entity');
         this._element = e;
+        this.updateIcon();
 
         // append animation element to host
         anim.sceneElement.appendChild(e);
@@ -615,6 +643,14 @@ class AnimatedEntity {
             : _DEFAULT_ENTITY_ICON;
     }
 
+    // update the animated entity's icon
+    updateIcon() {
+        const html = this._getEntityHtml();
+        if (html != this._html) { // update only if the icon changed!!!
+            this._element.innerHTML = this._html = html;
+        }
+    }
+
     // sets the position of this animated entity.
     _drawAt(pt: IPoint, angle?: number) {
         const
@@ -637,7 +673,6 @@ class AnimatedEntity {
             default:
 
                 // adjust reference point (middle of the element)
-                //const p = new Point(pt.x - this._width / 2, pt.y - this._height / 2, pt.z);
                 const p = new Point(pt.x - this._offset.x, pt.y - this._offset.y);
 
                 // calculate the transform

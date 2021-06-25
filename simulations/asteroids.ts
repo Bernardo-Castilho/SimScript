@@ -32,7 +32,7 @@ enum Sounds {
 export class Asteroids extends Simulation {
     timeIncrement = 1;
     asteroidCount = ASTEROID_COUNT;
-    asteroidInterval = new Uniform(0, 50);
+    asteroidInterval = new Uniform(0, 20);
     asteroidSpeed = new Uniform(MISSILE_SPEED * .25, MISSILE_SPEED * .5);
     q = new Queue();
     ship: Ship;

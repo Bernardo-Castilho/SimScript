@@ -763,7 +763,9 @@ showSimulation(
 //----------------------------------------------------------
 // AnimationOptions (SVG)
 showSimulation(
-    new AnimationOptions(),
+    new AnimationOptions({
+        maxTimeStep: 0.1
+    }),
     'Animation Options (SVG)',
     `   <p>
             Change the animation parameters to see their effect:
@@ -863,7 +865,7 @@ showSimulation(
 // AnimationOptions (A-Frame)
 showSimulation(
     new AnimationOptions({
-        frameDelay: 10
+        maxTimeStep: 0.1
     }),
     'Animation Options (A-Frame)',
     `
@@ -991,8 +993,9 @@ showSimulation(
 
 //----------------------------------------------------------
 // AnimationOptions (X3DOM)
-showSimulation(new AnimationOptions({
-        frameDelay: 10
+showSimulation(
+    new AnimationOptions({
+        maxTimeStep: 0.1
     }),
     'Animation Options (X3DOM)',
     `
@@ -1316,8 +1319,7 @@ showSimulation(
 // NetworkIntro (X3DOM)
 showSimulation(
     new NetworkIntro({
-        maxTimeStep: 1,
-        //frameDelay: 1
+        maxTimeStep: 0.1,
     }),
     'Network Intro (X3DOM)',
     `   <p>
@@ -1439,8 +1441,7 @@ showSimulation(
 // CarFollow
 showSimulation(
     new CarFollow({
-        maxTimeStep: 1,
-        frameDelay: 1
+        maxTimeStep: 1
     }),
     'Car Following',
     `<p>
@@ -1491,9 +1492,7 @@ showSimulation(
         <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5' />
     </svg>`,
     (sim: CarFollow, animationHost: HTMLElement) => {
-        
         const colors = ['red', 'green', 'blue', 'white'];
-        
         new Animation(sim, animationHost, {
             rotateEntities: true,
             queues: [
@@ -1539,7 +1538,7 @@ showSimulation(
 // CarFollowNetwork
 showSimulation(
     new CarFollowNetwork({
-        maxTimeStep: 1
+        maxTimeStep: .005
     }),
     'Network Car Following (X3DOM)',
     `<p>
@@ -1643,7 +1642,7 @@ showSimulation(
         });
 
         // toggle slow mode
-        bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.1 : 0);
+        bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.005 : 0);
 
         // update stats when time or state change
         const tot = document.getElementById('carfollowing-tot');
@@ -1669,11 +1668,11 @@ showSimulation(
 
 //----------------------------------------------------------
 // Asteroids
-const PRO_STEP = 0.01;
-const DEF_STEP = 0.005;
+const DEF_STEP = 0.0002;
+const PRO_STEP = DEF_STEP * 4;
 showSimulation(
     new Asteroids({
-        maxTimeStep: DEF_STEP
+        maxTimeStep: DEF_STEP,
     }),
     'Asteroids (SVG)',
     `<p>
