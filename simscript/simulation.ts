@@ -93,7 +93,7 @@ export class Simulation {
     private _tmElapsed = 0;
     private _state = SimulationState.Paused;
     private _queues: Queue[] = [];
-    private _lastUpdate = 0;
+    private _lastYield = 0;
     private _lastFrame = 0;
     private _yieldInterval = 250;
 
@@ -139,7 +139,10 @@ export class Simulation {
      * the simulation to advance the time in steps of any size.
      * 
      * This property can be useful to slow down and set the pace for
-     * animated simulations.
+     * animated simulations. This will prevent animations from 
+     * becoming too jerky and hard to follow.
+     * 
+     * See also the {@link frameDelay} property.
      */
     get maxTimeStep(): number | null {
         return this._tmMaxStep;
@@ -148,13 +151,19 @@ export class Simulation {
         this._tmMaxStep = value;
     }
     /**
-     * Gets or sets a delay, measured in milliseconds, that should
-     * be applied after each simulated time advance.
+     * Gets or sets the duration, in milliseconds of each simulated
+     * time advance.
+     * 
+     * This property is useful to slow down animated simulations.
+     * 
+     * For example, if you set **frameDelay** to 100, each animation
+     * frame will be displayed for 100ms before being updated.
      * 
      * The default value for this property is **0**, which means
-     * no frame delays should be applied.
+     * no frame delays should be applied and the animation will run
+     * as quickly as possible.
      * 
-     * This property can be useful to slow down animated simulations.
+     * See also the {@link maxTimeStep} property.
      */
     get frameDelay(): number | null {
         return this._frameDelay;
@@ -502,8 +511,8 @@ export class Simulation {
 
         // call requestAnimationFrame to keep the thread alive
         const now = Date.now();
-        if (now - this._lastUpdate > this._yieldInterval) {
-            this._lastUpdate = now;
+        if (now - this._lastYield > this._yieldInterval) {
+            this._lastYield = now;
             requestAnimationFrame(() => this._step());
         } else {
             this._step();

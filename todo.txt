@@ -1,14 +1,6 @@
 # Todo
-- frameDelay:
-        if (sim.frameDelay) {
-            const delay = Date.now() - this._lastFrame;
-            if (sim.frameDelay > delay) {
-                await new Promise(r => setTimeout(r, sim.frameDelay - delay));
-            }
-            this._lastFrame = Date.now();
-        }
-- ship
-- new samples in readme
+- ship 1.0.24
+    - update/review blitzes
 - more docs/examples
     - pac-man
     - elevators

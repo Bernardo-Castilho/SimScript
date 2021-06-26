@@ -449,7 +449,9 @@ showSimulation(
 //----------------------------------------------------------
 // Animated Crosswalk (div)
 showSimulation(
-    new Crosswalk(),
+    new Crosswalk({
+        frameDelay: 20
+    }),
     'Animated Crosswalk Simulation',
     `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
@@ -530,7 +532,9 @@ showSimulation(
 //----------------------------------------------------------
 // Animated Crosswalk (SVG)
 showSimulation(
-    new Crosswalk(),
+    new Crosswalk({
+        frameDelay: 20
+    }),
     'Animated Crosswalk Simulation (SVG)',
     `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
@@ -609,7 +613,9 @@ showSimulation(
 //----------------------------------------------------------
 // Animated Crosswalk (X3DOM)
 showSimulation(
-    new Crosswalk(),
+    new Crosswalk({
+        frameDelay: 20
+    }),
     'Animated Crosswalk Simulation (X3DOM)',
     `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
@@ -1667,11 +1673,12 @@ showSimulation(
 
 //----------------------------------------------------------
 // Asteroids
-const DEF_STEP = 0.0002;
-const PRO_STEP = DEF_STEP * 4;
+const DEF_DELAY = 50;
+const PRO_DELAY = 10;
 showSimulation(
     new Asteroids({
-        maxTimeStep: DEF_STEP,
+        //maxTimeStep: DEF_STEP,
+        frameDelay: DEF_DELAY,
     }),
     'Asteroids (SVG)',
     `<p>
@@ -1768,7 +1775,7 @@ showSimulation(
         });
 
         // bind pro-mode button
-        bind('pro-mode', false, (v: boolean) => sim.maxTimeStep = (v ? PRO_STEP : DEF_STEP));
+        bind('pro-mode', false, (v: boolean) => sim.maxTimeStep = (v ? PRO_DELAY : DEF_DELAY));
 
         // update display when the time or state change
         const fired = document.getElementById('missiles-fired');

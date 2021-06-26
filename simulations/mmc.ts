@@ -19,15 +19,15 @@ export class MMC extends Simulation {
 
         // use seeded random generators with the same mean
         //// ** REVIEW: using the same seed produces wrong results?!?!?!?
-        this.interArrival = new Exponential(this.interArrival.mean, 1);
-        this.service = new Exponential(this.service.mean, 2);
+        this.interArrival = new Exponential(this.interArrival.mean);
+        this.service = new Exponential(this.service.mean);
 
         // get up tally histograms
         this.qWait.grossPop.setHistogramParameters(1, 0, 10);
         this.qWait.grossDwell.setHistogramParameters(60, 0, 500 - 0.1);
 
         // start simulation
-        this.generateEntities(Customer, this.interArrival, 10000); // limit the # of customers
+        this.generateEntities(Customer, this.interArrival, 100000); // limit the # of customers
     }
 }
 

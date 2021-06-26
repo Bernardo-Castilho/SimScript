@@ -69,7 +69,7 @@ For example:
 // network with congestion cost
 class CongestionNetwork extends Network {
     getLinkDistance(link: ILink, prevLink?: ILink): number {
-        let dist = super.getLinkDistance(link, prevLink); // regular distance
+        let dist = super.getLinkDistance(link, prevLink); // get regular distance
         dist += dist * link.queue.pop * 0.5; // add congestion cost
         // optionally add turning cost based on link and prevLink...
         return dist;
