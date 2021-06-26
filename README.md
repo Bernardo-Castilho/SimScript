@@ -173,4 +173,3 @@ The links below show some samples of **SimScript** simulations:
 - [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya?file=index.ts)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show how to use SimScript's
     **Network** class.
-
