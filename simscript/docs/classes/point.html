@@ -109,6 +109,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="point.html#angle" class="tsd-kind-icon">angle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="point.html#clone" class="tsd-kind-icon">clone</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="point.html#copy" class="tsd-kind-icon">copy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="point.html#distance" class="tsd-kind-icon">distance</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="point.html#interpolate" class="tsd-kind-icon">interpolate</a></li>
 							</ul>
@@ -128,7 +129,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:146</li>
+									<li>Defined in util.ts:150</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -171,7 +172,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/ipoint.html">IPoint</a>.<a href="../interfaces/ipoint.html#x">x</a></p>
 						<ul>
-							<li>Defined in util.ts:144</li>
+							<li>Defined in util.ts:148</li>
 						</ul>
 					</aside>
 				</section>
@@ -182,7 +183,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/ipoint.html">IPoint</a>.<a href="../interfaces/ipoint.html#y">y</a></p>
 						<ul>
-							<li>Defined in util.ts:145</li>
+							<li>Defined in util.ts:149</li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +194,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/ipoint.html">IPoint</a>.<a href="../interfaces/ipoint.html#z">z</a></p>
 						<ul>
-							<li>Defined in util.ts:146</li>
+							<li>Defined in util.ts:150</li>
 						</ul>
 					</aside>
 				</section>
@@ -210,7 +211,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:209</li>
+									<li>Defined in util.ts:225</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -256,7 +257,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:164</li>
+									<li>Defined in util.ts:168</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -279,6 +280,44 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="copy" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> copy</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>dst<span class="tsd-signature-symbol">: </span><a href="../interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a>, src<span class="tsd-signature-symbol">: </span><a href="../interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in util.ts:181</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copies an <a href="../interfaces/ipoint.html">IPoint</a> object into another.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>dst: <a href="../interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Destination <a href="../interfaces/ipoint.html">IPoint</a> object.</p>
+									</div>
+								</li>
+								<li>
+									<h5>src: <a href="../interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Source <a href="../interfaces/ipoint.html">IPoint</a> object.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ipoint.html" class="tsd-signature-type" data-tsd-kind="Interface">IPoint</a></h4>
+							<p>The destination <a href="../interfaces/ipoint.html">IPoint</a> object.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="distance" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> distance</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -288,7 +327,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:177</li>
+									<li>Defined in util.ts:193</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -326,7 +365,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:193</li>
+									<li>Defined in util.ts:209</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -433,6 +472,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="point.html#clone" class="tsd-kind-icon">clone</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="point.html#copy" class="tsd-kind-icon">copy</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="point.html#distance" class="tsd-kind-icon">distance</a>

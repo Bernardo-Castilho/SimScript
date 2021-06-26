@@ -59,6 +59,24 @@ Networks are defined by sets of nodes and links.
 The **Network** class provides a **shortestPath** method that returns a
 list of links so entities may travel along the network.
 
+The **Network** class has a **getLinkDistance** that returns the distance
+represented by a link.
+You may create classes that extend **Network** and override this method
+to provide custom behaviors such as congestion and turning costs.
+For example:
+
+```typescript
+// network with congestion cost
+class CongestionNetwork extends Network {
+    getLinkDistance(link: ILink, prevLink?: ILink): number {
+        let dist = super.getLinkDistance(link, prevLink); // regular distance
+        dist += dist * link.queue.pop * 0.5; // add congestion cost
+        // optionally add turning cost based on link and prevLink...
+        return dist;
+    }
+}
+```
+
 ## Styles
 
 **SimScript** includes a CSS file with some simple formatting for the
@@ -155,3 +173,4 @@ The links below show some samples of **SimScript** simulations:
 - [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya?file=index.ts)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show how to use SimScript's
     **Network** class.
+

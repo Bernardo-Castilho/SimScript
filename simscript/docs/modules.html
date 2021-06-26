@@ -125,13 +125,13 @@
 					<a name="assert" class="tsd-anchor"></a>
 					<h3>assert</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">assert<span class="tsd-signature-symbol">(</span>condition<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">assert<span class="tsd-signature-symbol">(</span>condition<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:9</li>
+									<li>Defined in util.ts:10</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -148,9 +148,10 @@
 									</div>
 								</li>
 								<li>
-									<h5>msg: <span class="tsd-signature-type">string</span></h5>
+									<h5>msg: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Function</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Message of the Exception thrown if the condition is false.</p>
+										<p>Message of the Exception thrown if the condition is false.
+										This parameter can be a string or a function that returns a string.</p>
 									</div>
 								</li>
 							</ul>
@@ -168,7 +169,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:47</li>
+									<li>Defined in util.ts:51</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -217,7 +218,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:125</li>
+									<li>Defined in util.ts:129</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -261,7 +262,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:23</li>
+									<li>Defined in util.ts:27</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -299,7 +300,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:109</li>
+									<li>Defined in util.ts:113</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -330,7 +331,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:91</li>
+									<li>Defined in util.ts:95</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

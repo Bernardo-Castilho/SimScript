@@ -59,11 +59,6 @@ Networks are defined by sets of nodes and links.
 The **Network** class provides a **shortestPath** method that returns a
 list of links so entities may travel along the network.
 
-The **Network** class has a **getLinkDistance** that returns the
-distance represented by a link. You may create classes that extend
-**Network** and override this method to provide custom behaviors such
-as congestion and turning costs.
-
 ## Styles
 
 **SimScript** includes a CSS file with some simple formatting for the

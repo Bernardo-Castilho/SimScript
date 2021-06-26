@@ -258,9 +258,27 @@ export class Network {
      * // while they move along each link.
      * class CongestionNetwork extends Network {
      *     getLinkDistance(link: ILink, prevLink?: ILink): number {
+     * 
+     *         // regular distance
      *         let dist = super.getLinkDistance(link, prevLink);
-     *         dist += dist * link.queue.pop * 0.5; // add some congestion cost
+     * 
+     *         // add congestion cost
+     *         dist += dist * link.queue.pop * 0.5;
+     * 
+     *         // add turning cost
+     *         if (prevLink) {
+     *             const
+     *                 a1 = this._getLinkAngle(link),
+     *                 a2 = this._getLinkAngle(prevLink);
+     *             let angle = Math.abs(a1 - a2); // turn in radians
+     *             distance += someFunction(angle);
+     *         }
+     * 
+     *         // done
      *         return dist;
+     *     }
+     *     _getLinkAngle(link: ILink): number {
+     *         return Point.angle(link.from.position, link.to.position, true);
      *     }
      * }
      * ```
