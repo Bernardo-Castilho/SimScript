@@ -1,8 +1,16 @@
 # Todo
-- improve animation in network following example
-- asteroids ipad test
+- frameDelay:
+        if (sim.frameDelay) {
+            const delay = Date.now() - this._lastFrame;
+            if (sim.frameDelay > delay) {
+                await new Promise(r => setTimeout(r, sim.frameDelay - delay));
+            }
+            this._lastFrame = Date.now();
+        }
+- ship
 - new samples in readme
 - more docs/examples
+    - pac-man
     - elevators
     - robot/warehouse (3d)
 - react samples

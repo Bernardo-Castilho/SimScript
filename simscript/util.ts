@@ -5,9 +5,13 @@ import { Event } from './event';
  * 
  * @param condition Boolean value representing the condition to test.
  * @param msg Message of the Exception thrown if the condition is false.
+ * This parameter can be a string or a function that returns a string.
  */
-export function assert(condition: boolean, msg: string) {
+export function assert(condition: boolean, msg: string | Function) {
     if (!condition) {
+        if (typeof msg === 'function') {
+            msg = msg();
+        }
         console.error(msg);
         throw msg;
     }

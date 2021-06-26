@@ -93,7 +93,7 @@ export class Tally {
      * @param weight Weight of the observed value.
      */
     add(value: number, weight = 1) {
-        assert(weight >= 0, 'Tally weights must be >= 0');
+        assert(weight >= 0, 'tally weights must be >= 0');
 
         // keep track of min/max
         if (!this._cnt || value > this._max) this._max = value;

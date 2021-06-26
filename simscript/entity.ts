@@ -361,7 +361,7 @@ export class Entity {
         if (this._queues.size) {
             let queues = [];
             Array.from(this._queues.keys()).forEach(q => queues.push(q.name));
-            assert(false, `Entity finished script without leaving all queues: ${queues.join(', ')}.`);
+            assert(false, () => `Entity finished script without leaving all queues: ${queues.join(', ')}.`);
         }
     }
     /**

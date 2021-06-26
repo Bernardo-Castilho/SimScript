@@ -6,7 +6,7 @@ import { Animation, IAnimatedQueue } from './simscript/animation';
 import { Entity } from './simscript/entity';
 import { Queue } from './simscript/queue';
 import { Exponential } from './simscript/random';
-import { format, bind } from './simscript/util';
+import { format, bind, assert } from './simscript/util';
 
 import { SimpleTest } from './simulations/simpletest';
 import { SimplestSimulation } from './simulations/simpletest';
@@ -1205,7 +1205,6 @@ function createX3Person(name: string) {
 showSimulation(
     new NetworkIntro({
         maxTimeStep: 0.25,
-        //frameDelay: 1
     }),
     'Network Intro (SVG)',
     `   <p>
@@ -1441,7 +1440,8 @@ showSimulation(
 // CarFollow
 showSimulation(
     new CarFollow({
-        maxTimeStep: 1
+        maxTimeStep: 0.0001,
+        frameDelay: 50
     }),
     'Car Following',
     `<p>
@@ -1528,7 +1528,6 @@ showSimulation(
             cnt.textContent = format(sim.qStrip.totalCount, 0);
             spd.textContent = format(time ? len / time * 3.6 : 0, 0); // km/h
         }
-        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
         sim.carFinished.addEventListener(updateStats);
         sim.stateChanged.addEventListener(updateStats);
     }
@@ -1538,7 +1537,7 @@ showSimulation(
 // CarFollowNetwork
 showSimulation(
     new CarFollowNetwork({
-        maxTimeStep: .005
+        maxTimeStep: .001
     }),
     'Network Car Following (X3DOM)',
     `<p>
@@ -1642,7 +1641,7 @@ showSimulation(
         });
 
         // toggle slow mode
-        bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.005 : 0);
+        bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.001 : 0);
 
         // update stats when time or state change
         const tot = document.getElementById('carfollowing-tot');

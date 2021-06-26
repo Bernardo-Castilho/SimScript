@@ -94,7 +94,8 @@ export class Simulation {
     private _state = SimulationState.Paused;
     private _queues: Queue[] = [];
     private _lastUpdate = 0;
-    private _yieldInterval = 200;
+    private _lastFrame = 0;
+    private _yieldInterval = 250;
 
     /**
      * Initializes a new instance of the {@link Simulation} class.
@@ -246,7 +247,7 @@ export class Simulation {
     async activate(e: Entity) {
 
         // activate only once!
-        assert(e.simulation == null, 'Entity ' + e.toString() + ' is already active');
+        assert(e.simulation == null, () => 'Entity ' + e.toString() + ' is already active');
 
         // initialize entity
         e._sim = this;
@@ -460,7 +461,6 @@ export class Simulation {
 
     // perform actions due now, wait and repeat
     private async _step() {
-        ////console.log('called _step at', this.timeNow, 'fec has', this._fec.length, 'items');
 
         // make sure we are running
         if (this._state != SimulationState.Running) {
@@ -489,11 +489,15 @@ export class Simulation {
         // advance the time
         if (nextTime > 0) {
             this._setTimeNow(nextTime);
-        }
 
-        // apply frame delay
-        if (this.frameDelay && this.frameDelay > 0) {
-            await new Promise(r => setTimeout(r, this.frameDelay));
+            // honor frameDelay
+            if (this.frameDelay) {
+                const delay = Date.now() - this._lastFrame;
+                if (this.frameDelay > delay) {
+                    await new Promise(r => setTimeout(r, this.frameDelay - delay));
+                }
+                this._lastFrame = Date.now();
+            }
         }
 
         // call requestAnimationFrame to keep the thread alive

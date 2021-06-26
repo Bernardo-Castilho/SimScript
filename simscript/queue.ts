@@ -267,7 +267,7 @@ export class Queue {
         }
 
         // check that the entity is not already in the queue
-        assert(this._items.get(e) == null, e.toString() + ' is already in queue' + this.name);
+        assert(this._items.get(e) == null, () => e.toString() + ' is already in queue' + this.name);
 
         // check that the entity fits
         assert(this.canEnter(units), 'Queue does not have enough capacity');
@@ -298,7 +298,7 @@ export class Queue {
 
         // get the item
         const item = this._items.get(e) as QueueItem;
-        assert(item != null, 'Entity ' + e.toString() + ' is not in queue ' + this.toString());
+        assert(item != null, () => 'Entity ' + e.toString() + ' is not in queue ' + this.toString());
 
         // update tallies
         this._updatePopTallies();

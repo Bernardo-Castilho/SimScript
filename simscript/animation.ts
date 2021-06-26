@@ -357,9 +357,6 @@ export class Animation {
             }
         });
 
-        // remember time of last update
-        this._lastUpdate = sim.timeNow;
-
         // remove elements that are not currently in use
         this._entities.forEach((ae, key) => {
             if (!ae._inUse) {
@@ -370,6 +367,9 @@ export class Animation {
                 }
             }
         });
+
+        // remember time of last update
+        this._lastUpdate = sim.timeNow;
     }
 
     // ** implementation
