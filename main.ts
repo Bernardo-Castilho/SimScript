@@ -1210,7 +1210,7 @@ function createX3Person(name: string) {
 // NetworkIntro (SVG)
 showSimulation(
     new NetworkIntro({
-        maxTimeStep: 0.25,
+        maxTimeStep: 0.01,
     }),
     'Network Intro (SVG)',
     `   <p>
@@ -1295,7 +1295,7 @@ showSimulation(
         });
 
         // toggle slow mode
-        bind('network-svg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.25 : 0);
+        bind('network-svg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.01 : 0);
 
         // show number of service vehicles
         const nsvc = document.getElementById('network-svg-nsvc');

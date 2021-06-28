@@ -1,8 +1,7 @@
 # Todo
-- ship 1.0.24
-    - update/review blitzes
 - more docs/examples
     - pac-man
+    - GPSS/web examples
     - elevators
     - robot/warehouse (3d)
 - react samples

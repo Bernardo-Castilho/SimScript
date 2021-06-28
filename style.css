@@ -9,7 +9,7 @@ body {
 
 h1,
 h2 {
-    margin: 1.75em 0 0 -1em;
+    margin-top: 1.75em;
     line-height: 2em;
 }
 
@@ -50,6 +50,7 @@ h2 button {
     width: 1.5em;
     height: 1.5em;
     border-radius: .3em;
+    margin-right: .25em;
 }
 
 .error {
