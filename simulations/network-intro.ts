@@ -192,7 +192,7 @@ export class ServiceVehicle extends Entity {
     }
 
     // gets the closest request to this server
-    getClosestRequest(): ServiceRequest {
+    getClosestRequestQuick(): ServiceRequest {
         const sim = this.simulation as NetworkIntro;
         assert(!this.busy, 'should not be looking for service while busy');
         let
@@ -212,7 +212,7 @@ export class ServiceVehicle extends Entity {
 
     // gets the closest request to this server
     // taking into account the position of other idle service vehicles.
-    getClosestRequest2(): ServiceRequest {
+    getClosestRequest(): ServiceRequest {
         const sim = this.simulation as NetworkIntro;
         assert(!this.busy, 'should not be looking for service while busy');
 

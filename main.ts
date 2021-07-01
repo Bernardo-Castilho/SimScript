@@ -21,7 +21,332 @@ import { NetworkIntro, ServiceVehicle, renderNetworkSVG, renderNetworkX3D } from
 import { CarFollow } from './simulations/car-follow';
 import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
+import {
+    Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint,
+    Manufacturing, Textile
+} from './simulations/gpss';
 
+//----------------------------------------------------------
+// Telephone
+showSimulation(
+    new Telephone(),
+    'Telephone (GPSS)',
+    `<p>
+        A simple telephone system has two external lines.
+        Calls, which originate externally, arrive every 100±60 seconds.
+        When the line is occupied, the caller redials after 5±1 minutes have elapsed.
+        Call duration is 3±1 minutes.
+    </p>
+    <p>
+        A tabulation of the distribution of the time each caller takes to make a
+        successful call is required.
+    </p>
+    <ol>
+        <li>
+            How long will it take for 200 calls to be completed?
+            GPSS says <b>359.16</b> minutes,
+            SimScript says <b><span id='gpss-tel-total'>?</span></b> minutes.
+        </li>
+        <li>
+            How long did it take callers to complete their calls?
+            GPSS says most calls were completed in less than <b>9.5</b> minutes,
+            but <i>many took much longer</i>.
+            SimScript says the average call took
+            <b><span id='gpss-tel-complete'>?</span></b> minutes.
+        </li>
+        <li>
+            What is the utilization of the phone lines?
+            GPSS says the lines are utilized at <b>84%</b> of capacity,
+            SimScript says <b><span id='gpss-tel-utz'>?</span>%</b>
+        </li>
+    </ol>`,
+    (sim: Telephone, log: HTMLElement) => {
+        setText('#gpss-tel-total', format(sim.timeNow / 60));
+        setText('#gpss-tel-complete', format(sim.totalDuration.averageDwell / 60));
+        setText('#gpss-tel-utz', format(sim.lines.utilization * 100, 0));
+        log.innerHTML = sim.totalDuration.grossDwell.getHistogramChart('Call Duration (min)', 1 / 60);
+    }    
+)
+
+//----------------------------------------------------------
+// Inventory
+showSimulation(
+    new Inventory(),
+    'Inventory (GPSS)',
+    `<p>
+        A finished product inventory is controlled by means of a weekly
+        review system.
+        The initial stock is 1,000 units.
+        The daily demand varies between 40 and 63 units with equal probability.
+        The target inventory is 1,000 units, that is, the order is placed for the
+        difference between the current stock and 1,000 units.
+        If the current stock is 800 or more, no order is placed for that week.
+        The company operates a five-day week. The lead time for delivery of an
+        order is one week.
+    </p>
+    <p>
+        Simulate the inventory system for 200 days and determine if any stockouts occur.
+        GPSS says there won't be any. SimScript says there will be
+        <b><span id='gpss-inv-stockout'>?</span></b>.
+    </p>`,
+    (sim: Inventory, log: HTMLElement) => {
+        setText('#gpss-inv-stockout', format(sim.stockOuts, 0));
+    }    
+)
+
+//----------------------------------------------------------
+// TVRepairShop
+showSimulation(
+    new TVRepairShop(),
+    'TV Repair Shop (GPSS)',
+    `
+    <p>
+        A television shop employs a single repairman to overhaul its
+        rented television sets, service customers’ sets and do
+        on-the-spot repairs.
+    </p>
+    <ul>
+        <li>
+            Overhaul of company owned television sets commences every 40±8
+            hours and takes 10±1 hours to complete.
+        </li>
+        <li>
+            On-the-spot repairs, such as fuse replacement, tuning and
+            adjustments are done immediately. These arrive every 90±10 minutes
+            and take 15±5 minutes.
+        </li>
+        <li>
+            Customers’ television sets requiring normal service arrive every
+            5±1 hours and take 120±30 minutes to complete.
+        </li>
+    </ul>
+    <p>
+        Normal service of television sets has a higher priority than the 
+        overhaul of company owned, rented sets.
+    </p>
+    <p>
+        After 50 days of operation, determine the following:
+    </p>
+    <ol>
+        <li>
+            The repairman utilization. GPSS says <b>78%</b>,
+            SimScript says <b><span id='tv-utz'>?</span>%</b>.
+        </li>
+        <li>
+            The average waiting times for each type of job.<br/>
+            GPSS says <b>12</b> min overall, <b>25</b> for overhaul jobs,
+            <b>51</b> for customer jobs, and <b>zero</b> for on-the-spot jobs;
+            SimScript says <b><span id='tv-wait'>?</span></b> min overall,
+            <b><span id='tv-wait-overhaul'>?</span></b> for overhaul jobs,
+            <b><span id='tv-wait-customer'>?</span></b> for customer jobs, and
+            <b><span id='tv-wait-ots'>?</span></b> for on-the-spot jobs.
+        </li>
+    </ol>
+    <p>
+        Simscript shows significantly higher delays. This can be partly
+        explained because it does not support pre-empting jobs.
+        But the GPSS values do seem too small.
+    <p>
+
+    `,
+    (sim: TVRepairShop, log: HTMLElement) => {
+        log.innerHTML = sim.getStatsTable();
+        setText('#tv-utz', format(sim.qRepairMan.utilization * 100, 0));
+        setText('#tv-wait', format(sim.qAllJobs.averageDwell, 0));
+        setText('#tv-wait-overhaul', format(sim.qOverhaulJobs.averageDwell, 0));
+        setText('#tv-wait-customer', format(sim.qCustomerJobs.averageDwell, 0));
+        setText('#tv-wait-ots', format(sim.qOnTheSpotJobs.averageDwell, 0));
+    }
+)
+
+//----------------------------------------------------------
+// QualityControl
+showSimulation(
+    new QualityControl(),
+    'Quality Control (GPSS)',
+    `
+    <p>
+        A component is manufactured by a sequence of three processes, 
+        each followed by a short two minute inspection.
+    </p>
+    <p>
+        The first process requires 20% of components to be reworked.
+        The second and third processes require 15% and 5% of components reworked.
+    </p>
+    <p>
+        Sixty percent of components reworked are scrapped and the remaining forty
+        percent need reprocessing on the process from which they were rejected.
+    </p>
+    <p>
+        Manufacturing of a new component commences on average, every 30 minutes,
+        exponentially distributed.
+    </p>
+    <p>
+        Simulate the manufacturing processes for 100 completed components.
+        Determine the time taken
+        (GPSS says about <b>69</b> hours,
+        Simscript says <b><span id='qc-tm'>?</span></b> hours)
+        and the number of components rejected
+        (GPSS says <b>21</b>,
+        Simscript says <b><span id='qc-rejected'>?</span></b>).
+    </p>
+    `,
+    (sim: QualityControl, log: HTMLElement) => {
+        log.innerHTML = sim.getStatsTable();
+        setText('#qc-tm', format(sim.timeNow / 60, 0))
+        setText('#qc-rejected', format(sim.cntRejected, 0));
+    }
+);
+
+//-------------------------------------------------------------------------
+// OrderPoint
+showSimulation(
+    new OrderPoint(),
+    'Order Point (GPSS)',
+    `
+    <p>
+        An inventory system is controlled by an order point, set at 600 units,
+        and an economic order quantity of 500 units.
+    </p>
+    <p>
+        The initial stock quantity is 700. Daily demand is in the range 40 to 63
+        units, evenly distributed.
+        The lead-time from ordering to delivery of goods is one week (5 days).
+    </p>
+    <p>
+        Simulate the inventory system for a period of 100 days.
+        Determine the distribution of inventory and the actual daily sales.
+    </p>
+    `,
+    (sim: OrderPoint, log: HTMLElement) => {
+
+        // show inventory chart and stats
+        log.innerHTML = getLineChart('Demand and Inventory',
+            { name: 'Daily Orders', data: sim.dailyOrders, color: 'green' },
+            { name: 'Inventory', data: sim.inventoryLevel, color: 'blue' },
+            { data: [sim.stockTally.min, sim.stockTally.min], color: '#d0d0d0' },
+            { data: [sim.stockTally.max, sim.stockTally.max], color: '#d0d0d0' },
+            { data: [sim.stockTally.avg, sim.stockTally.avg], color: '#d0d0d0' }
+        ) + `
+            Minimum Inventory: <b>${format(sim.stockTally.min, 0)}</b> units.<br/>
+            Maximum Inventory: <b>${format(sim.stockTally.max, 0)}</b> units.<br/>
+            Average Inventory: <b>${format(sim.stockTally.avg, 0)}</b> units.<br/>
+        `;
+    }
+);
+
+//-------------------------------------------------------------------------
+// Manufacturing
+showSimulation(
+    new Manufacturing(),
+    'Manufacturing (GPSS)',
+    `
+    <p>
+        A manufacturing department of an electronics company makes digital
+        watches. In the dispatch department, the watches are packed by an
+        automatic packing machine, in display packets, in the quantities
+        ordered by retailers.
+    </p>
+    <p>
+        The order size is given by an empirical function. The mean time
+        between order arrivals is 15 minutes, exponentially distributed.
+        The packing time per order is 120 seconds plus 10 seconds per watch
+        packed in the order.
+    </p>
+    <p>
+        The manufacturing department produces the digital watches in lot
+        sizes of 60 units, in 40±5 minutes.
+    </p>
+    <p>
+        Simulate 5 days of the company operation to provide the following
+        information:
+    </p>
+    <ol>
+        <li>
+            The average number of orders waiting in the packing department.<br/>
+            GPSS says <b>0.12</b>,
+            SimScript says <b><span id='man-wait'>?</span></b> orders.
+        </li>
+        <li>
+            The quantity of watches dispatched each day.<br/>
+            SimScript says <b><span id='man-dispatched'>?</span></b>
+            watches per day.
+        </li>
+        <li>
+            The distribution of transit times of orders.
+            SimScript says orders take <b><span id='man-transit'>?</span></b>
+            minutes to process on average.
+        </li>
+    </ol>
+    `,
+    (sim: Manufacturing, log: HTMLElement) => {
+        setText('#man-wait', format(sim.qPacking.averageLength, 2));
+        setText('#man-dispatched', format(sim.dispatched / 5, 0));
+        setText('#man-transit', format(sim.qOrderTransit.averageDwell));
+        //log.innerHTML = sim.getStatsTable();
+        log.innerHTML = sim.qOrderTransit.grossDwell.getHistogramChart('Order Transit Times (min)');
+    }
+);
+
+//----------------------------------------------------------
+// Textile
+showSimulation(
+    new Textile(),
+    'Textile (GPSS)',
+    `
+    <p>
+        A textile factory produces fine mohair yarn in three departments.
+        The first department draws and blends the raw material, in sliver form,
+        and reduces it to a suitable thickness for spinning, in 5 reducer frames.
+        The second department spins the yarn in one of 40 spinning frames.
+        The final process is in the winding department, where the yarn is wound
+        from spinning bobbins onto cones for dispatch.
+    </p>
+    <p>
+        There are 8 winding frames to perform the winding operation.
+        The factory works 8 hours per day.
+        The unit of production is 10 kilograms of yarn.
+        Reducing frames produce one unit every 38±2 minutes, while the spinning 
+        frames and winding frames produce one unit in 320±20 minutes and 64±4
+        minutes, respectively.
+    </p>
+    <p>
+        The initial inventory of reduced material is 50 units, spun material
+        is 25 units and finished yarn is 25 units.
+        The finished material is dispatched, in a container of capacity 200
+        units, every two days.
+    </p>
+    <ol>
+        <li>
+            Simulate the production process in the textile factory for 5 days.
+        </li>
+        <li>
+            Find the distribution of the in-process inventories.
+        </li>
+        <li>
+            Determine the utilization of each of the three types of machine.<br/>
+            GPSS says the utilization of reducers was about <b>39%</b>,
+            spinners <b>36%</b>, and winders <b>32%</b>.<br/>
+            SimScript says the utilization of
+            reducers was <b><span id='txt-utz-red'>?</span>%</b>,
+            spinners <b><span id='txt-utz-spin'>?</span>%</b>, and
+            winders <b><span id='txt-utz-wind'>?</span>%</b>.
+        </li>
+    </ol>`,
+    (sim: Textile, log: HTMLElement) => {
+        setText('#txt-utz-red', format(sim.qReducers.utilization * 100, 0));
+        setText('#txt-utz-spin', format(sim.qSpinners.utilization * 100, 0));
+        setText('#txt-utz-wind', format(sim.qWinders.utilization * 100, 0));
+        //log.innerHTML = sim.getStatsTable();
+        log.innerHTML =
+            getLineChart('In-Process Inventories',
+                { name: 'Reduced', data: sim.recReduced, color: 'red' },
+                { name: 'Wound', data: sim.recWound, color: 'green' },
+                { name: 'Spun', data: sim.recSpun, color: 'blue' }
+            ) +
+            sim.getStatsTable();
+    }
+)
 
 //----------------------------------------------------------
 // Generator
@@ -99,38 +424,38 @@ showSimulation(
             return options;
         }
         log.innerHTML = `
-        <label>
-            Type:
-            <select id='rand-type'>${getRandomVarOptions()}</select>
-        </label>
-        <label>
-            Sample size:
-            <input id='rand-size' type='range' data='size' min='10' max='100000'>
-        </label>
-        <label>
-            Seeded:
-            <input id='rand-seeded' type='checkbox'>
-        </label>
-        <ul>
-            <li>Count:
-                <b>${format(sim.tally.cnt, 0)}</b>
-            </li>
-            <li>Average:
-                <b>${format(sim.tally.avg)}</b>
-            </li>
-            <li>Standard Deviation:
-                <b>${format(sim.tally.stdev)}</b>
-            </li>
-            <li>Variance:
-                <b>${format(sim.tally.var)}</b>
-            </li>
-            <li>Min:
-                <b>${format(sim.tally.min)}</b>
-            </li>
-            <li>Max:
-                <b>${format(sim.tally.max)}</b>
-            </li>
-        </ul>` +
+            <label>
+                Type:
+                <select id='rand-type'>${getRandomVarOptions()}</select>
+            </label>
+            <label>
+                Sample size:
+                <input id='rand-size' type='range' data='size' min='10' max='100000'>
+            </label>
+            <label>
+                Seeded:
+                <input id='rand-seeded' type='checkbox'>
+            </label>
+            <ul>
+                <li>Count:
+                    <b>${format(sim.tally.cnt, 0)}</b>
+                </li>
+                <li>Average:
+                    <b>${format(sim.tally.avg)}</b>
+                </li>
+                <li>Standard Deviation:
+                    <b>${format(sim.tally.stdev)}</b>
+                </li>
+                <li>Variance:
+                    <b>${format(sim.tally.var)}</b>
+                </li>
+                <li>Min:
+                    <b>${format(sim.tally.min)}</b>
+                </li>
+                <li>Max:
+                    <b>${format(sim.tally.max)}</b>
+                </li>
+            </ul>` +
             sim.tally.getHistogramChart(sim.randomVar.name);
         
         // parameters
@@ -1298,21 +1623,15 @@ showSimulation(
         bind('network-svg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.01 : 0);
 
         // show number of service vehicles
-        const nsvc = document.getElementById('network-svg-nsvc');
-        nsvc.textContent = format(sim.serviceVehicles, 0);
-        const nreq = document.getElementById('network-svg-nreq');
-        nreq.textContent = format(sim.requests, 0);
+        setText('#network-svg-nsvc', format(sim.serviceVehicles, 0));
+        setText('#network-svg-nreq', format(sim.requests, 0));
         
         // update stats when time or state change
-        const utz = document.getElementById('network-svg-utz');
-        const wait = document.getElementById('network-svg-wait');
-        const served = document.getElementById('network-svg-served');
-        const missed = document.getElementById('network-svg-missed');
         const updateStats = () => {
-            utz.textContent = format(sim.qBusy.utilization * 100, 0);
-            wait.textContent = format(sim.qWait.averageDwell, 0);
-            served.textContent = format(sim.requestsServed, 0);
-            missed.textContent = format(sim.requestsMissed, 0);
+            setText('#network-svg-utz', format(sim.qBusy.utilization * 100, 0));
+            setText('#network-svg-wait', format(sim.qWait.averageDwell, 0));
+            setText('#network-svg-served', format(sim.requestsServed, 0));
+            setText('#network-svg-missed', format(sim.requestsMissed, 0));
         }
         //sim.timeNowChanged.addEventListener(updateStats); // too many updates
         sim.requestFinished.addEventListener(updateStats);
@@ -1420,21 +1739,15 @@ showSimulation(
         bind('network-x3d-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 1 : 0);
 
         // show number of service vehicles
-        const nsvc = document.getElementById('network-x3d-nsvc');
-        nsvc.textContent = format(sim.serviceVehicles, 0);
-        const nreq = document.getElementById('network-x3d-nreq');
-        nreq.textContent = format(sim.requests, 0);
+        setText('#network-x3d-nsvc', format(sim.serviceVehicles, 0));
+        setText('#network-x3d-nreq', format(sim.requests, 0));
         
         // update stats when time or state change
-        const utz = document.getElementById('network-x3d-utz');
-        const wait = document.getElementById('network-x3d-wait');
-        const served = document.getElementById('network-x3d-served');
-        const missed = document.getElementById('network-x3d-missed');
         const updateStats = () => {
-            utz.textContent = format(sim.qBusy.utilization * 100, 0);
-            wait.textContent = format(sim.qWait.averageDwell, 0);
-            served.textContent = format(sim.requestsServed, 0);
-            missed.textContent = format(sim.requestsMissed, 0);
+            setText('#network-x3d-utz', format(sim.qBusy.utilization * 100, 0));
+            setText('#network-x3d-wait', format(sim.qWait.averageDwell, 0));
+            setText('#network-x3d-served', format(sim.requestsServed, 0));
+            setText('#network-x3d-missed', format(sim.requestsMissed, 0));
         }
         //sim.timeNowChanged.addEventListener(updateStats); // too many updates
         sim.requestFinished.addEventListener(updateStats);
@@ -1519,20 +1832,15 @@ showSimulation(
         });
 
         // update stats when time or state change
-        const tot = document.getElementById('carfollow-tot');
-        tot.textContent = format(sim.totalCars, 0);
-        const spdMax = document.getElementById('carfollow-speed-max');
-        spdMax.textContent = format(sim.carSpeeds.max * 3.6, 0);
-        const spdMin = document.getElementById('carfollow-speed-min');
-        spdMin.textContent = format(sim.carSpeeds.min * 3.6, 0);
-        const cnt = document.getElementById('carfollow-cnt');
-        const spd = document.getElementById('carfollow-speed');
+        setText('#carfollow-tot', format(sim.totalCars, 0));
+        setText('#carfollow-speed-max', format(sim.carSpeeds.max * 3.6, 0));
+        setText('#carfollow-speed-min', format(sim.carSpeeds.min * 3.6, 0));
         const updateStats = () => {
             const
                 time = sim.qStrip.averageDwell, // seconds
                 len = sim.stripLength; // meters
-            cnt.textContent = format(sim.qStrip.totalCount, 0);
-            spd.textContent = format(time ? len / time * 3.6 : 0, 0); // km/h
+            setText('#carfollow-cnt', format(sim.qStrip.totalCount, 0));
+            setText('#carfollow-speed', format(time ? len / time * 3.6 : 0, 0)); // km/h
         }
         sim.carFinished.addEventListener(updateStats);
         sim.stateChanged.addEventListener(updateStats);
@@ -1650,20 +1958,15 @@ showSimulation(
         bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.001 : 0);
 
         // update stats when time or state change
-        const tot = document.getElementById('carfollowing-tot');
-        tot.textContent = format(sim.totalCars, 0);
-        const spdMax = document.getElementById('carfollowing-speed-max');
-        spdMax.textContent = format(sim.carSpeeds.max * 3.6, 0);
-        const spdMin = document.getElementById('carfollowing-speed-min');
-        spdMin.textContent = format(sim.carSpeeds.min * 3.6, 0);
-        const cnt = document.getElementById('carfollowing-cnt');
-        const spd = document.getElementById('carfollowing-speed');
+        setText('#carfollowing-tot', format(sim.totalCars, 0));
+        setText('#carfollowing-speed-max', format(sim.carSpeeds.max * 3.6, 0));
+        setText('#carfollowing-speed-min', format(sim.carSpeeds.min * 3.6, 0));
         const updateStats = () => {
             const
                 time = sim.stats.totalTime, // seconds
                 len = sim.stats.totalDistance; // meters
-            cnt.textContent = format(sim.stats.carsDone, 0);
-            spd.textContent = format(time ? len / time * 3.6: 0, 0); // km/h
+            setText('#carfollowing-cnt', format(sim.stats.carsDone, 0));
+            setText('#carfollowing-speed', format(time ? len / time * 3.6: 0, 0)); // km/h
         }
         //sim.timeNowChanged.addEventListener(updateStats); // too many updates
         sim.carFinished.addEventListener(updateStats);
@@ -1778,19 +2081,16 @@ showSimulation(
         bind('pro-mode', false, (v: boolean) => sim.maxTimeStep = (v ? PRO_DELAY : DEF_DELAY));
 
         // update display when the time or state change
-        const fired = document.getElementById('missiles-fired');
-        const destroyed = document.getElementById('asteroids-destroyed');
-        const cnt = document.getElementById('asteroids-cnt');
-        cnt.textContent = format(sim.asteroidCount, 0);
-        const gameOver = animationHost.querySelector('.game-over');
+        setText('#asteroids-cnt', format(sim.asteroidCount, 0));
         const updateStats = () => {
-            fired.textContent = format(sim.missilesFired, 0);
-            destroyed.textContent = format(sim.asteroidsDestroyed, 0);
+            setText('#missiles-fired', format(sim.missilesFired, 0));
+            setText('#asteroids-destroyed', format(sim.asteroidsDestroyed, 0));
         }
         sim.asteroidsDestroyedChanged.addEventListener(updateStats);
         sim.missilesFiredChanged.addEventListener(updateStats);
         sim.stateChanged.addEventListener(() => {
             updateStats();
+            const gameOver = animationHost.querySelector('.game-over');
             gameOver.innerHTML = sim.state == SimulationState.Finished
                 ? `Game Over! You ${sim.won ? 'Won!!!' : 'Lost...'}`
                 : ``;
@@ -1891,6 +2191,17 @@ function showSimulation(sim: Simulation, title: string, intro: string, showStats
     }
 }
 
+// shows some formatted text
+function setText(selector: string, text: string, html?: boolean) {
+    const e = document.querySelector(selector);
+    assert(e != null, () => `element '${selector}' not found`);
+    if (html) {
+        e.innerHTML = text;
+    } else {
+        e.textContent = text;
+    }
+}
+
 // creates an HTML element
 function createElement(template: string, appendTo?: Element) {
 
@@ -1908,4 +2219,82 @@ function createElement(template: string, appendTo?: Element) {
 
     // return new element
     return e;
+}
+
+/**
+ * Defines parameters for series in a chart created by the
+ * {@link getLineChart} method.
+ */
+interface IChartSeries {
+    /** The series name as shown in the legend. */
+    name?: string,
+    /** The series color (defaults to black). */
+    color?: string,
+    /** The series line width (defaults to 1). */
+    width?: string,
+    /** An array containing the series data. */
+    data: number[]
+}
+
+/**
+ * Gets an HTML string showing numeric arrays as an SVG line chart.
+ * @param title Chart title.
+ * @param series Array of {@link IChartSeries} objects.
+ * @returns A string showing the series as an SVG line chart.
+ */
+function getLineChart(title: string, ...series: IChartSeries[]): string {
+
+    // get max and min (accounting for all series)
+    let max = null;
+    let min = null;
+    series.forEach((s: IChartSeries) => {
+        min = Math.min(min, Math.min.apply(null, s.data));
+        max = Math.max(max, Math.max.apply(null, s.data));
+    });
+    const rng = max - min || 1;
+
+    // start chart
+    let svg = `<svg xmlns='http://www.w3.org/2000/svg' class='ss-chart' fill='none'>`;
+
+    // add box
+    svg += `<rect width='100%' height='100%' stroke='black' />`;
+
+    // add each series
+    series.forEach((s: IChartSeries) => {
+        if (s.data.length > 1) {
+            svg += `<g stroke='${s.color || 'black'}' stroke-width='${s.width || '1'}'>`;
+            if (s.name) {
+                svg += `<title>${s.name}</title>`;
+            }
+            for (let i = 0; i < s.data.length - 1; i++) {
+                const
+                    x1 = 10 + i / (s.data.length - 1) * 80, // 10% to 90%
+                    y1 = 90 - (s.data[i] - min) / rng * 80,
+                    x2 = 10 + (i + 1) / (s.data.length - 1) * 80,
+                    y2 = 90 - (s.data[i + 1] - min) / rng * 80;
+                svg += `<line x1=${x1.toFixed(1)}% y1=${y1.toFixed(1)}% x2=${x2.toFixed(1)}% y2=${y2.toFixed(1)}% />`;
+            }
+            svg += '</g>';
+        }
+    });
+
+    // add title
+    if (title) {
+        svg += `<text x='50%' y='1em' text-anchor='middle' fill='black'>${title}</text>`
+    }
+
+    // add legends
+    let top = 10;
+    series.forEach((s: IChartSeries) => {
+        if (s.name) {
+            svg += `
+                <rect x='10%' y='${top}%' width='2.5%' height='1em' fill='${s.color || 'black'}' />
+                <text x='13%' y='${top + 1}%' fill='black' font-size='80%' dominant-baseline='hanging'>${s.name}</text>`;
+            top += 10;
+        }
+    });
+
+    // finish and return chart
+    svg += `</svg>`;
+    return svg;
 }

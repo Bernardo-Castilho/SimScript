@@ -1,7 +1,7 @@
 import { Simulation, FecItem, IMovePath } from './simulation';
 import { Queue } from './queue';
 import { RandomVar } from './random';
-import { assert, setOptions, IPoint } from './util';
+import { assert, setOptions, isNumber, IPoint } from './util';
 
 /**
  * Defines parameters for animating entities in queues.
@@ -51,6 +51,7 @@ export class Entity {
     /** @internal */ _queues = new Map();
     private _serial = 0;
     private _prty = 0;
+    private _str: string;
     private static _serial = 0;
 
     /**
@@ -128,6 +129,7 @@ export class Entity {
      * the entity should be animated during the delay.
      */
     async delay(delay: number, path?: IMovePath) {
+        assert(delay >= 0, 'delays must be >= 0');
         assert(path == null || path.queues.length > 1, 'delay path should have at least two queues');
         return new FecItem(this, {
             delay: delay,
@@ -372,7 +374,10 @@ export class Entity {
      * @returns A string representation of the {@link Entity}.
      */
     toString() {
-        return this.constructor.name + '#' + this.serial.toString()
+        if (!this._str) {
+            this._str = this.constructor.name + '#' + this.serial.toString();
+        }
+        return this._str;
     }
     /**
      * Async method that contains the sequence of operations to be
@@ -411,7 +416,7 @@ export class Entity {
  */
 export class EntityGenerator extends Entity {
     private _type: any;
-    private _interval: RandomVar | null;
+    private _interval: RandomVar | number | null;
     private _max: number;
     private _tmStart: number;
     private _tmEnd: number;
@@ -421,7 +426,7 @@ export class EntityGenerator extends Entity {
      * 
      * @param entityType Type of {@link Entity} to generate.
      * @param interval {@link RandomVar} that defines the entity inter-arrival times, or
-     * **null** to generate a single entity.
+     * a number repreenting a fixed interval, or **null** to generate a single entity.
      * @param max Maximum number of entities to generate, or **null** to generate
      * an unlimited number of entities.
      * @param timeStart Simulated time when entity generation should start, or
@@ -430,7 +435,7 @@ export class EntityGenerator extends Entity {
      * **null** to keep generating entities until the simulation reaches
      * its {@link timeEnd} value.
      */
-    constructor(entityType: any, interval?: RandomVar, max?: number, timeStart?: number, timeEnd?: number) {
+    constructor(entityType: any, interval?: RandomVar | number, max?: number, timeStart?: number, timeEnd?: number) {
         super();
         this._type = entityType;
         this._interval = interval;
@@ -454,8 +459,9 @@ export class EntityGenerator extends Entity {
         }
 
         // initial interval (half)
-        if (interval && this._tmStart == null) {
-            await this.delay(interval.sample() / 2);
+        if (interval != null && this._tmStart == null) {
+            const delay = isNumber(interval) ? interval : interval.sample();
+            await this.delay(delay / 2);
         }
 
         // creator loop
@@ -477,7 +483,8 @@ export class EntityGenerator extends Entity {
 
             // wait for the given interval or break if no interval
             if (interval) {
-                await this.delay(interval.sample());
+                const delay = isNumber(interval) ? interval : interval.sample();
+                await this.delay(delay);
             } else {
                 break;
             }

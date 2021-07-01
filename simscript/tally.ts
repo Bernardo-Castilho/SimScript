@@ -172,9 +172,13 @@ export class Tally {
      * Before using this method, call the {@link setHistogramParameters}
      * to specify the desired histogram's bin size and limits.
      * 
+     * @param title The title for the histogram.
+     * @param scale Factor applied to scale all values. For example,
+     * if the simulation uses seconds and you want to show the values
+     * in minutes, set **scale** to 1/60.
      * @returns An HTML string showing the {@link Tally} as a histogram.
      */
-    getHistogramChart(title = ''): string {
+    getHistogramChart(title = '', scale = 1): string {
 
         // get the histogram
         let histo = this.getHistogram();
@@ -200,12 +204,12 @@ export class Tally {
                 x = index * barWidth,
                 gap = 5;
             bars += `<g${cls}>
-                <title>${e.count}</title>
+                <title>${e.count} (${Math.round(e.count / this.cnt * 100)}%)</title>
                 <rect
                     ${cls}
                     x="calc(${x}% + ${gap}px)"
-                    width="calc(${barWidth}% - ${2 * gap}px)"
                     y="calc(${100 - hei}% - 1.2em)"
+                    width="calc(${barWidth}% - ${2 * gap}px)"
                     height="${hei}%" />
                 <text
                     ${cls}
@@ -213,7 +217,7 @@ export class Tally {
                     y="100%"
                     text-anchor="middle"
                     dominant-baseline="text-top">
-                    ${format(e.from, dec)}-${format(e.to, dec)}
+                    ${format(e.from * scale, dec)}-${format(e.to * scale, dec)}
                 </text>
             </g>`;
         });

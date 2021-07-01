@@ -298,12 +298,13 @@ export class Simulation {
      * 
      * @param type Type of {@link Entity} to generate.
      * @param interArrival {@link RandomVar} that returns the inter-arrival time, 
-     * or **null** to generate a single entity.
+     * or a number that represents a fixed interval, or **null** to generate a single 
+     * entity.
      * @param max Maximum number of entities to generate.
      * @param startTime Time to start generating entities.
      * @param endTime Time to stop generating entities.
      */
-    generateEntities(type, interArrival?: RandomVar, max?: number, startTime?: number, endTime?: number) {
+    generateEntities(type, interArrival?: RandomVar | number, max?: number, startTime?: number, endTime?: number) {
         const gen = new EntityGenerator(type, interArrival, max, startTime, endTime);
         this.activate(gen);
     }

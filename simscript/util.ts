@@ -133,6 +133,15 @@ export function clamp(value: number, min: number | null, max: number | null): nu
 }
 
 /**
+ * Checks whether a value is a number.
+ * @param val Value to check.
+ * @returns True if the value is a number.
+ */
+export function isNumber(val: any): boolean {
+    return typeof val == 'number';
+}
+
+/**
  * Defines the properties of point objects.
  */
  export interface IPoint {
