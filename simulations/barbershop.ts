@@ -13,11 +13,11 @@ export class BarberShop extends Simulation {
         super.onStarting();
         this.timeEnd = 60 * 8 * 7; // 8 hours * 7 days
         this.qWait.grossDwell.setHistogramParameters(1);
-        this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6));
+        this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6)); // arrivals every ~18min
     }
 }
 class Customer extends Entity {
-    service = new Uniform(15 - 3, 15 + 3);
+    service = new Uniform(15 - 3, 15 + 3); // service takes ~15min
     async script() {
         const sim = this.simulation as BarberShop;
         await this.enterQueue(sim.qWait); // enter the line

@@ -124,16 +124,39 @@ export class Entity {
      * Note that calls to async methods such as {@link enterQueue}, {@link waitSignal},
      * and {@link delay} should be preceded by the **await** keyword.
      * 
+     * If you use the **signal** parameter to create an interruptible delay,
+     * the call to **delay** may return when the specified **delay** has elapsed
+     * or when the specified **signal** has been received. You can differentiate
+     * between the two by comparing the value returned with the delay that was
+     * specified. For example:
+     * 
+     * ```typescript
+     * class Interruptible extends Entity {
+     *     async script() {
+     *         const
+     *             sim = this.simulation as Interrupt,
+     *             delay = sim.delay.sample(),
+     *             timeSpent = await this.delay(delay, null, sim);
+     *         console.log(Math.abs(timeSpent - delay) < 1e-10 // account for floating point accuracy
+     *             ? 'time elapsed'
+     *             : 'signal received');
+     *     }
+     * }
+     * ```
+     * 
      * @param delay Number of simulated time units to wait for.
      * @param path {@link IMovePath} object containing information about how
      * the entity should be animated during the delay.
+     * @param signal Signal that can be used to interrupt the delay.
+     * @returns The amount of simulated time elapsed since the method was invoked.
      */
-    async delay(delay: number, path?: IMovePath) {
+    async delay(delay: number, path?: IMovePath, signal?: any): Promise<number> {
         assert(delay >= 0, 'delays must be >= 0');
         assert(path == null || path.queues.length > 1, 'delay path should have at least two queues');
         return new FecItem(this, {
             delay: delay,
-            path: path
+            path: path,
+            signal: signal
         }).promise;
     }
     /**
@@ -167,8 +190,9 @@ export class Entity {
      * 
      * @param queue {@link Queue} that the {@link Entity} will enter.
      * @param units Number of {@link Queue} capacity units to seize.
+     * @returns The amount of simulated time elapsed since the method was invoked.
      */
-    async enterQueue(queue: Queue, units = 1) {
+    async enterQueue(queue: Queue, units = 1): Promise<number> {
 
         // enter immediately if possible
         if (queue.canEnter(units)) {
@@ -279,8 +303,9 @@ export class Entity {
      * ```
      * 
      * @param signal Value of the the signal to wait for.
+     * @returns The amount of simulated time elapsed since the method was invoked.
      */
-    async waitSignal(signal: any) {
+    async waitSignal(signal: any): Promise<number> {
         return new FecItem(this, {
             signal: signal
         }).promise;
@@ -460,7 +485,7 @@ export class EntityGenerator extends Entity {
 
         // initial interval (half)
         if (interval != null && this._tmStart == null) {
-            const delay = isNumber(interval) ? interval : interval.sample();
+            const delay = interval instanceof RandomVar ? interval.sample() : interval;
             await this.delay(delay / 2);
         }
 
@@ -483,7 +508,7 @@ export class EntityGenerator extends Entity {
 
             // wait for the given interval or break if no interval
             if (interval) {
-                const delay = isNumber(interval) ? interval : interval.sample();
+                const delay = interval instanceof RandomVar ? interval.sample() : interval;
                 await this.delay(delay);
             } else {
                 break;

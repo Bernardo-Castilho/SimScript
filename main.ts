@@ -8,8 +8,7 @@ import { Queue } from './simscript/queue';
 import { Exponential } from './simscript/random';
 import { format, bind, assert } from './simscript/util';
 
-import { SimpleTest } from './simulations/simpletest';
-import { SimplestSimulation } from './simulations/simpletest';
+import { SimpleTest, SimplestSimulation, Interrupt } from './simulations/simpletest';
 import { Generator } from './simulations/simpletest';
 import { RandomVarTest } from './simulations/randomvartest';
 import { BarberShop } from './simulations/barbershop';
@@ -23,7 +22,7 @@ import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint,
-    Manufacturing, Textile
+    Manufacturing, Textile, OilDepot
 } from './simulations/gpss';
 
 //----------------------------------------------------------
@@ -349,6 +348,74 @@ showSimulation(
 )
 
 //----------------------------------------------------------
+// OilDepot
+showSimulation(
+    new OilDepot(),
+    'Oil Depot (GPSS)',
+    `
+    <p>
+        An oil storage depot distributes three grades of fuel: a) home heating
+        oil, b) light industrial fuel oil, and c) diesel fuel for road vehicles.
+        There is one pump for each grade of fuel, and the demand for each is the same.
+        Orders for fuel oil vary between 3,000 and 5,000 gallons, in increments of 10
+        gallons, evenly distributed.
+    </p>
+    <p>
+        The time required to fill fuel trucks is a function of the following:
+    </p>
+    <ol>
+        <li>The order size.</li>
+        <li>The pumping rate (6, 5 and 7 minutes per 1,000 gallons).</li>
+        <li>The number of vehicles in the depot (30 seconds extra per vehicle).</li>
+        <li>A two-minute fixed setup time.</li>
+    </ol>
+    <p>
+        The depot can hold a maximum of twelve trucks.
+        The mean arrival rate of trucks is 18 minutes, modified by the following
+        function:
+    </p>
+    <table>
+        <tr>
+            <td>Frequency</td>
+            <td>.20</td>
+            <td>.40</td>
+            <td>.25</td>
+            <td>.15</td>
+        </tr>
+        <tr>
+            <td>Ratio to mean</td>
+            <td>.45</td>
+            <td>.60</td>
+            <td>1.5</td>
+            <td>2.0</td>
+        </tr>
+    </table>
+    <p>
+        Simulate the operation of the oil storage depot for 5 days and find:
+    </p>
+    <ul>
+        <li>
+            The distribution of transit times of trucks.<br/>
+            GPSS says the mean is about <b>35</b> min with
+            standard deviation <b>14</b> min.<br/>
+            SimScript says the mean is <b><span id="oil-mean">?</span></b> min and
+            standard deviation <b><span id="oil-std">?</span> min</b>.
+        </li>
+        <li>
+            The total quantity of fuel sold each day.<br/>
+            GPSS says <b>109,490</b> gallons,
+            SimScript says <b><span id="oil-sales">?</span></b> gallons.
+        </li>
+    </ul>`,
+    (sim: OilDepot, log: HTMLElement) => {
+        setText('#oil-mean', format(sim.depot.grossDwell.avg, 0));
+        setText('#oil-std', format(sim.depot.grossDwell.stdev, 0));
+        setText('#oil-sales', format(sim.gallonsSoldPerDay, 0));
+        log.innerHTML = sim.getStatsTable();
+    }
+)
+
+//----------------------------------------------------------
 // Generator
 if (false)
 showSimulation(
@@ -393,6 +460,27 @@ showSimulation(
         log.innerHTML = sim.getStatsTable(true);
     }
 );
+
+//----------------------------------------------------------
+// Interruptible Delays
+if (false)
+showSimulation(
+    new Interrupt(),
+    'Interrupt',
+    `
+    <p>
+        Test Interruptible delays.
+        The queue's average dwell time should be less than 10.
+    </p>`,
+    (sim: Interrupt, log: HTMLElement) => {
+        log.innerHTML = `
+            <p>
+                <b>${sim.elapsed}</b> entities finished their delays.<br/>
+                <b>${sim.interrupted}</b> entities were interrupted.<br/>
+            </p>` +
+        sim.getStatsTable();
+    }
+)
 
 //----------------------------------------------------------
 // RandomVarTest
@@ -2259,6 +2347,14 @@ function getLineChart(title: string, ...series: IChartSeries[]): string {
     // add box
     svg += `<rect width='100%' height='100%' stroke='black' />`;
 
+    // chart margins
+    const margin = {
+        left: 10,
+        right: 10,
+        top: 10,
+        bottom: 10
+    };
+    
     // add each series
     series.forEach((s: IChartSeries) => {
         if (s.data.length > 1) {
@@ -2268,10 +2364,10 @@ function getLineChart(title: string, ...series: IChartSeries[]): string {
             }
             for (let i = 0; i < s.data.length - 1; i++) {
                 const
-                    x1 = 10 + i / (s.data.length - 1) * 80, // 10% to 90%
-                    y1 = 90 - (s.data[i] - min) / rng * 80,
-                    x2 = 10 + (i + 1) / (s.data.length - 1) * 80,
-                    y2 = 90 - (s.data[i + 1] - min) / rng * 80;
+                    x1 = margin.left + i / (s.data.length - 1) * (100 - margin.left - margin.right), // 10% to 90%
+                    y1 = 100 - margin.bottom - (s.data[i] - min) / rng * (100 - margin.top - margin.bottom),
+                    x2 = margin.left + (i + 1) / (s.data.length - 1) * (100 - margin.left - margin.right),
+                    y2 = 100 - margin.bottom - (s.data[i + 1] - min) / rng * (100 - margin.top - margin.bottom);
                 svg += `<line x1=${x1.toFixed(1)}% y1=${y1.toFixed(1)}% x2=${x2.toFixed(1)}% y2=${y2.toFixed(1)}% />`;
             }
             svg += '</g>';
@@ -2288,8 +2384,8 @@ function getLineChart(title: string, ...series: IChartSeries[]): string {
     series.forEach((s: IChartSeries) => {
         if (s.name) {
             svg += `
-                <rect x='10%' y='${top}%' width='2.5%' height='1em' fill='${s.color || 'black'}' />
-                <text x='13%' y='${top + 1}%' fill='black' font-size='80%' dominant-baseline='hanging'>${s.name}</text>`;
+                <rect x='${margin.left}%' y='${top}%' width='2.5%' height='1em' fill='${s.color || 'black'}' />
+                <text x='${margin.left + 3}%' y='${top + 1}%' fill='black' font-size='80%' dominant-baseline='hanging'>${s.name}</text>`;
             top += 10;
         }
     });

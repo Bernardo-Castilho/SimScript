@@ -3,7 +3,7 @@ import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Tally } from '../simscript/tally';
 import { EventArgs } from '../simscript/event';
-import { Exponential, Uniform, Normal, Empirical, RandomInt } from '../simscript/random';
+import { Exponential, Uniform, Normal, Empirical, RandomInt, RandomVar } from '../simscript/random';
 
 /*
     GPSS samples from http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
@@ -589,5 +589,80 @@ class TextileRecorder extends Entity {
             // record once a day
             await this.delay(8 * 60);
         }
+    }
+}
+
+//-------------------------------------------------------------------------
+// OilDepot
+//-------------------------------------------------------------------------
+// An oil storage depot distributes three grades of fuel: a) home heating oil,
+// b) light industrial fuel oil, and c) diesel fuel for road vehicles.
+// There is one pump for each grade of fuel, and the demand for each is the same.
+// Orders for fuel oil vary between 3000 and 5000 gallons, in increments of 10
+// gallons, evenly distributed.
+// The time required to fill fuel trucks is a function of the following:
+// 1. The pumping rate (6, 5 and 7 minutes per 1000 gallons respectively).
+// 2. The order size.
+// 3. The number of vehicles in the depot (30 seconds extra per vehicle).
+// 4. Setup time, a fixed time of two minutes.
+// The depot can hold a maximum of twelve trucks.
+// The mean arrival rate of trucks is 18 minutes, modified by the following function:
+// Frequency        .20   .40   .25   .15
+// Ratio to mean    .45   .60   1.5   2.0
+// 1. Simulate the operation of the oil storage depot for 5 days.
+// 2. Find the distribution of transit times of trucks.
+// 3. What is the total quantity of fuel sold each day?
+//-------------------------------------------------------------------------
+export class OilDepot extends Simulation {
+
+    depot = new Queue('depot', 12); // the depot can hold a maximum of twelve trucks
+    pumps = [ // one pump for each oil type
+        new Queue('pumpA', 1),
+        new Queue('pumpB', 1),
+        new Queue('pumpC', 1),
+    ];
+
+    simulatedDays = 5;
+    orderSize = new Uniform(300, 500); // units of 10 gallons
+    interArrival = new OilArrival(); // custom inter-arrival function
+    gallonsSold = 0;
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.timeEnd = this.simulatedDays * 24 * 60; // 5 days, in minutes
+        this.gallonsSold = 0;
+        this.generateEntities(OilTruck, this.interArrival);
+    }
+    get gallonsSoldPerDay(): number {
+        return this.gallonsSold / this.simulatedDays;
+    }
+}
+class OilTruck extends Entity {
+    async script() {
+        const
+            sim = this.simulation as OilDepot,
+            orderSize = Math.round(sim.orderSize.sample()) * 10, // gallons
+            orderType = Math.floor(Math.random() * 3), // oil type
+            pump = sim.pumps[orderType],
+            pumpRate = [6, 5, 7][orderType], // minutes / 1000 gallons
+            pumpTime = 2 + 0.5 * sim.depot.pop + orderSize / 1000 * pumpRate;
+        await this.enterQueue(sim.depot); // truck enters depot
+        await this.enterQueue(pump); // get a pump
+        await this.delay(pumpTime); // service time pumping
+        this.leaveQueue(pump);
+        this.leaveQueue(sim.depot);
+        sim.gallonsSold += orderSize; // tally no. of gals sold
+    }
+}
+
+// RandomVar used to generate truck arrivals. The GPSS code looks like this:
+//   GENERATE  18,FN$Arr     ;Truck arrivals
+//   Arr FUNCTION RN2,C5     ;Arrivals frequency
+//   0,0/0.2,.45/.6,1/.85,1.5/1.0,2
+class OilArrival extends RandomVar {
+    _r1 = new Exponential(18);
+    _r2 = new Empirical([0, 0.45, 1, 1.5, 2], [0, 0.2, 0.6, 0.85, 1]);
+    sample() {
+        return this._r1.sample() / this._r2.sample();
     }
 }

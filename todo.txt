@@ -1,4 +1,6 @@
 # Todo
+- Empirical(gpss style)
+- autonomous vehicles
 - more docs/examples
     - more GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
         1 * phone
@@ -8,11 +10,9 @@
         5 * order point inventory
         6 * electronics manufacturing
         7 * textile
-getChart (svg)
-Empirical(gpss style)        
-        8 - oil storage
+        8 * oil storage
         9 - pump assembly
-        10 - robot FMS
+        10 - robot FMS -------------------------------------------
         11 - bicycle factory
         12 - warehouse/branch inventory
         13 - canal and lock
@@ -22,7 +22,7 @@ Empirical(gpss style)
         17 - customer brand loyalty
         18 - solvable queueing network
         19 - supermarket
-        20 - port
+        20 - port ------------------------------------------------
         21 - PBX
         22 - flexible manufacturing system
         23 - Ethernet network

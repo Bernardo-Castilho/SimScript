@@ -1,7 +1,7 @@
 import { Simulation, FecItem } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
-import { Uniform } from '../simscript/random';
+import { Uniform, Exponential } from '../simscript/random';
 import { assert } from '../simscript/util';
 
 // Simple Test
@@ -138,7 +138,7 @@ export class Generator extends Simulation {
     cnt = 0;
     onStarting() {
         super.onStarting();
-        this.generateEntities(GeneratorEntity, new Uniform(10, 10), 100);
+        this.generateEntities(GeneratorEntity, 10, 100);
     }
     onFinished() {
         super.onFinished();
@@ -151,5 +151,44 @@ class GeneratorEntity extends Entity {
         const sim = this.simulation as Generator;
         sim.cnt++;
         console.log(' at', sim.timeNow);
+    }
+}
+
+// test interruptible delays
+export class Interrupt extends Simulation {
+    q = new Queue('the queue');
+    delay = new Exponential(10);
+    elapsed = 0;
+    interrupted = 0;
+    onStarting() {
+        super.onStarting();
+        this.timeEnd = 10000;
+        this.elapsed = 0;
+        this.interrupted = 0;
+        this.generateEntities(Interruptible, new Exponential(10));
+        this.generateEntities(Interruptor, new Exponential(10));
+    }
+}
+class Interruptible extends Entity {
+    async script() {
+        const sim = this.simulation as Interrupt;
+        this.enterQueueImmediately(sim.q);
+        const
+            delay = sim.delay.sample(),
+            timeSpent = await this.delay(delay, null, sim);
+        if (Math.abs(timeSpent - delay) < 1e-10) { // account for floating point accuracy
+            sim.elapsed++;
+        } else {
+            sim.interrupted++;
+        }
+        this.leaveQueue(sim.q);
+    }
+}
+class Interruptor extends Entity {
+    async script() {
+        const sim = this.simulation as Interrupt;
+        this.sendSignal(sim);
+        await this.delay(sim.delay.sample());
+        this.sendSignal(sim);
     }
 }

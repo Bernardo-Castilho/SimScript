@@ -638,7 +638,7 @@ export class FecItem {
     private _ready: boolean;
     private _tmStart: number;
     private _tmDue: number;
-    private _promise: Promise<void>;
+    private _promise: Promise<number>;
     private _resolve: Function | undefined;
     private _options: IFecItemOptions;
 
@@ -735,18 +735,21 @@ export class FecItem {
      * {@link Entity.script} function.
      */
     async dispatch() {
-        const options = this._options;
-        const q = options.queue;
+        const
+            e = this._e,
+            sim = e.simulation,
+            options = this._options,
+            q = options.queue;
         if (q) {
             const units = options.units;
-            q.add(this._e, units != null ? units : 1);
+            q.add(e, units != null ? units : 1);
         }
-        return await this._resolve();
+        return await this._resolve(sim.timeNow - this._tmStart);
     }
     /**
      * Gets the **Promise** represented by this item.
      */
-    get promise(): Promise<void> {
+    get promise(): Promise<number> {
         return this._promise;
     }
 }
