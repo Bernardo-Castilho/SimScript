@@ -1,5 +1,4 @@
 # Todo
-- Empirical(gpss style)
 - autonomous vehicles
 - more docs/examples
     - more GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
@@ -11,9 +10,9 @@
         5 * order point inventory
         6 * electronics manufacturing
         7 * textile
-        8 * oil storage -------------------------------------------
+        8 * oil storage
         9 - pump assembly
-        10 - robot FMS
+        10 - robot FMS -------------------------------------------
         11 - bicycle factory
         12 - warehouse/branch inventory
         13 - canal and lock

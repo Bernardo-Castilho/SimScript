@@ -3,15 +3,15 @@
 A Discrete Event Simulation Library in TypeScript with
 support for 2D and 3D animations.
 
+**SimScript** uses JavaScript's
+[async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
+features to make simulations easy to write and understand.
+
 This [SimScript Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
 shows several simulations, including 2D and 3D animations.
 
 The [SimScript API Documentation](https://bernardo-castilho.github.io/simscript/docs/)
 describes all the classes in the **SimScript** library and their properties.
-
-**SimScript** uses JavaScript's
-[async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
-features to make simulations easy to write and understand.
 
 **SimScript** simulations are built using these classes:
 
@@ -125,6 +125,11 @@ class Customer extends Entity {
 The links below show some samples of **SimScript** simulations:
 
 ## New Samples
+
+- [GPSS-inspired samples](https://stackblitz.com/edit/typescript-mapmna?file=index.html)\
+    Shows several samples inspired by traditional GPSS samples published by Minuteman software.
+    The samples show how you can use SimScript to simulate a wide range of practical applications
+    and allow you to compare results obtained by GPSS and SimScript.
 
 - [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt?file=index.ts)\
     Shows how you can customize the behavior of a SimScript **Network** to use a
