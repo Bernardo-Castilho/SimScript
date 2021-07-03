@@ -128,14 +128,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Entity<wbr>Generator<span class="tsd-signature-symbol">(</span>entityType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, interval<span class="tsd-signature-symbol">?: </span><a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a>, max<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, timeStart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, timeEnd<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entitygenerator.html" class="tsd-signature-type" data-tsd-kind="Class">EntityGenerator</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Entity<wbr>Generator<span class="tsd-signature-symbol">(</span>entityType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, interval<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a>, max<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, timeStart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, timeEnd<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entitygenerator.html" class="tsd-signature-type" data-tsd-kind="Class">EntityGenerator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="entity.html">Entity</a>.<a href="entity.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in entity.ts:417</li>
+									<li>Defined in entity.ts:447</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -152,10 +152,10 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> interval: <a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> interval: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p><a href="randomvar.html">RandomVar</a> that defines the entity inter-arrival times, or
-										<strong>null</strong> to generate a single entity.</p>
+										a number repreenting a fixed interval, or <strong>null</strong> to generate a single entity.</p>
 									</div>
 								</li>
 								<li>
@@ -199,7 +199,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:93</li>
+									<li>Defined in entity.ts:94</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -216,7 +216,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:96</li>
+									<li>Defined in entity.ts:97</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -248,7 +248,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:81</li>
+									<li>Defined in entity.ts:82</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -270,7 +270,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:75</li>
+									<li>Defined in entity.ts:76</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -290,14 +290,14 @@
 					<a name="delay" class="tsd-anchor"></a>
 					<h3>delay</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">delay<span class="tsd-signature-symbol">(</span>delay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, path<span class="tsd-signature-symbol">?: </span><a href="../interfaces/imovepath.html" class="tsd-signature-type" data-tsd-kind="Interface">IMovePath</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">delay<span class="tsd-signature-symbol">(</span>delay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, path<span class="tsd-signature-symbol">?: </span><a href="../interfaces/imovepath.html" class="tsd-signature-type" data-tsd-kind="Interface">IMovePath</a>, signal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#delay">delay</a></p>
 								<ul>
-									<li>Defined in entity.ts:130</li>
+									<li>Defined in entity.ts:153</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -323,6 +323,23 @@
 </code></pre>
 								<p>Note that calls to async methods such as <a href="entitygenerator.html#enterqueue">enterQueue</a>, <a href="entitygenerator.html#waitsignal">waitSignal</a>,
 								and <a href="entitygenerator.html#delay">delay</a> should be preceded by the <strong>await</strong> keyword.</p>
+								<p>If you use the <strong>signal</strong> parameter to create an interruptible delay,
+									the call to <strong>delay</strong> may return when the specified <strong>delay</strong> has elapsed
+									or when the specified <strong>signal</strong> has been received. You can differentiate
+									between the two by comparing the value returned with the delay that was
+								specified. For example:</p>
+								<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Interruptible</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span>
+<span style="color: #000000">            </span><span style="color: #0070C1">sim</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">Interrupt</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #0070C1">delay</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">delay</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">(),</span>
+<span style="color: #000000">            </span><span style="color: #0070C1">timeSpent</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #001080">delay</span><span style="color: #000000">, </span><span style="color: #0000FF">null</span><span style="color: #000000">, </span><span style="color: #001080">sim</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #267F99">Math</span><span style="color: #000000">.</span><span style="color: #795E26">abs</span><span style="color: #000000">(</span><span style="color: #001080">timeSpent</span><span style="color: #000000"> - </span><span style="color: #001080">delay</span><span style="color: #000000">) &lt; </span><span style="color: #098658">1e-10</span><span style="color: #000000"> </span><span style="color: #008000">// account for floating point accuracy</span>
+<span style="color: #000000">            ? </span><span style="color: #A31515">&#039;time elapsed&#039;</span>
+<span style="color: #000000">            : </span><span style="color: #A31515">&#039;signal received&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -339,8 +356,15 @@
 										the entity should be animated during the delay.</p>
 									</div>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> signal: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Signal that can be used to interrupt the delay.</p>
+									</div>
+								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The amount of simulated time elapsed since the method was invoked.</p>
 						</li>
 					</ul>
 				</section>
@@ -355,7 +379,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#dispose">dispose</a></p>
 								<ul>
-									<li>Defined in entity.ts:360</li>
+									<li>Defined in entity.ts:387</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -372,14 +396,14 @@
 					<a name="enterqueue" class="tsd-anchor"></a>
 					<h3>enter<wbr>Queue</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">enter<wbr>Queue<span class="tsd-signature-symbol">(</span>queue<span class="tsd-signature-symbol">: </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a>, units<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">enter<wbr>Queue<span class="tsd-signature-symbol">(</span>queue<span class="tsd-signature-symbol">: </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a>, units<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#enterqueue">enterQueue</a></p>
 								<ul>
-									<li>Defined in entity.ts:169</li>
+									<li>Defined in entity.ts:195</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -423,7 +447,8 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The amount of simulated time elapsed since the method was invoked.</p>
 						</li>
 					</ul>
 				</section>
@@ -438,7 +463,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#enterqueueimmediately">enterQueueImmediately</a></p>
 								<ul>
-									<li>Defined in entity.ts:222</li>
+									<li>Defined in entity.ts:248</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -502,7 +527,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#getanimationposition">getAnimationPosition</a></p>
 								<ul>
-									<li>Defined in entity.ts:353</li>
+									<li>Defined in entity.ts:380</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -579,7 +604,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#leavequeue">leaveQueue</a></p>
 								<ul>
-									<li>Defined in entity.ts:231</li>
+									<li>Defined in entity.ts:257</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -612,7 +637,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="entity.html">Entity</a>.<a href="entity.html#script">script</a></p>
 								<ul>
-									<li>Defined in entity.ts:445</li>
+									<li>Defined in entity.ts:475</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -635,7 +660,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#sendsignal">sendSignal</a></p>
 								<ul>
-									<li>Defined in entity.ts:295</li>
+									<li>Defined in entity.ts:322</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -676,7 +701,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#tostring">toString</a></p>
 								<ul>
-									<li>Defined in entity.ts:374</li>
+									<li>Defined in entity.ts:401</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -694,14 +719,14 @@
 					<a name="waitsignal" class="tsd-anchor"></a>
 					<h3>wait<wbr>Signal</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">wait<wbr>Signal<span class="tsd-signature-symbol">(</span>signal<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">wait<wbr>Signal<span class="tsd-signature-symbol">(</span>signal<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#waitsignal">waitSignal</a></p>
 								<ul>
-									<li>Defined in entity.ts:281</li>
+									<li>Defined in entity.ts:308</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -757,7 +782,8 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The amount of simulated time elapsed since the method was invoked.</p>
 						</li>
 					</ul>
 				</section>
@@ -922,6 +948,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#isnumber" class="tsd-kind-icon">is<wbr>Number</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>

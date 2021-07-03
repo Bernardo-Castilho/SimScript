@@ -82,10 +82,10 @@ export class Inventory extends Simulation {
 
         // generate demand entities once a day
         const cnt = 200;
-        this.generateEntities(Demand, new Uniform(1, 1), cnt);
+        this.generateEntities(Demand, 1, cnt);
 
         // generate reorder entities once every five days
-        this.generateEntities(Reorder, new Uniform(5, 5), cnt / 5);
+        this.generateEntities(Reorder, 5, cnt / 5);
     }
     getDemandQty() {
         return 40 + this.demand.sample(); // 40 to 63
@@ -340,7 +340,7 @@ export class OrderPoint extends Simulation {
         this.stockTally.reset();
 
         this.generateEntities(OrderMaker);
-        this.generateEntities(Order, new Uniform(1, 1));
+        this.generateEntities(Order, 1);
     }
 }
 

@@ -126,6 +126,12 @@ The links below show some samples of **SimScript** simulations:
 
 ## New Samples
 
+- [GPSS-inspired samples](https://stackblitz.com/edit/typescript-mapmna?file=index.html)\
+    Shows several samples inspired by traditional GPSS samples created by Gerard F. Cummings
+    and published by Minuteman software. The samples show how you can use SimScript to 
+    simulate a wide range of practical applications and allow you to compare results 
+    obtained by GPSS and SimScript.
+
 - [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt?file=index.ts)\
     Shows how you can customize the behavior of a SimScript **Network** to use a
     car-following model and to account for network congestion.

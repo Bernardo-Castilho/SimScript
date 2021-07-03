@@ -80,8 +80,8 @@ class CongestionNetwork extends Network {
 ## Styles
 
 **SimScript** includes a CSS file with some simple formatting for the
-tables and histograms you can create with the Simulation.getStatsTable
-and Tally.getHistogram methods.
+tables and histograms you can create with the **Simulation.getStatsTable**
+and **Tally.getHistogram** methods.
 
 To include that CSS in your projects, add this line to the main **ts**
 file in your project:
