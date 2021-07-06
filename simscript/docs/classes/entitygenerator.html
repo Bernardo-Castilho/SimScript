@@ -135,7 +135,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="entity.html">Entity</a>.<a href="entity.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in entity.ts:447</li>
+									<li>Defined in entity.ts:437</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -334,9 +334,9 @@
 <span style="color: #000000">            </span><span style="color: #0070C1">sim</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">Interrupt</span><span style="color: #000000">,</span>
 <span style="color: #000000">            </span><span style="color: #0070C1">delay</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">delay</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">(),</span>
 <span style="color: #000000">            </span><span style="color: #0070C1">timeSpent</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #001080">delay</span><span style="color: #000000">, </span><span style="color: #0000FF">null</span><span style="color: #000000">, </span><span style="color: #001080">sim</span><span style="color: #000000">);</span>
-<span style="color: #000000">        </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #267F99">Math</span><span style="color: #000000">.</span><span style="color: #795E26">abs</span><span style="color: #000000">(</span><span style="color: #001080">timeSpent</span><span style="color: #000000"> - </span><span style="color: #001080">delay</span><span style="color: #000000">) &lt; </span><span style="color: #098658">1e-10</span><span style="color: #000000"> </span><span style="color: #008000">// account for floating point accuracy</span>
-<span style="color: #000000">            ? </span><span style="color: #A31515">&#039;time elapsed&#039;</span>
-<span style="color: #000000">            : </span><span style="color: #A31515">&#039;signal received&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">timeSpent</span><span style="color: #000000"> + </span><span style="color: #098658">1e-10</span><span style="color: #000000"> &lt; </span><span style="color: #001080">delay</span><span style="color: #000000">) &lt;  </span><span style="color: #008000">// account for floating point accuracy</span>
+<span style="color: #000000">            ? </span><span style="color: #A31515">&#039;signal received&#039;</span>
+<span style="color: #000000">            : </span><span style="color: #A31515">&#039;time elapsed&#039;</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
@@ -379,7 +379,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#dispose">dispose</a></p>
 								<ul>
-									<li>Defined in entity.ts:387</li>
+									<li>Defined in entity.ts:377</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -463,7 +463,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#enterqueueimmediately">enterQueueImmediately</a></p>
 								<ul>
-									<li>Defined in entity.ts:248</li>
+									<li>Defined in entity.ts:238</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -527,7 +527,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#getanimationposition">getAnimationPosition</a></p>
 								<ul>
-									<li>Defined in entity.ts:380</li>
+									<li>Defined in entity.ts:370</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -604,7 +604,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#leavequeue">leaveQueue</a></p>
 								<ul>
-									<li>Defined in entity.ts:257</li>
+									<li>Defined in entity.ts:247</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -637,7 +637,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="entity.html">Entity</a>.<a href="entity.html#script">script</a></p>
 								<ul>
-									<li>Defined in entity.ts:475</li>
+									<li>Defined in entity.ts:465</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -660,7 +660,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#sendsignal">sendSignal</a></p>
 								<ul>
-									<li>Defined in entity.ts:322</li>
+									<li>Defined in entity.ts:312</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -701,7 +701,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#tostring">toString</a></p>
 								<ul>
-									<li>Defined in entity.ts:401</li>
+									<li>Defined in entity.ts:391</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -726,7 +726,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="entity.html">Entity</a>.<a href="entity.html#waitsignal">waitSignal</a></p>
 								<ul>
-									<li>Defined in entity.ts:308</li>
+									<li>Defined in entity.ts:298</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

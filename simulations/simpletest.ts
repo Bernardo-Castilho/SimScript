@@ -236,14 +236,22 @@ class PreemptEntity extends Entity {
      * @param queues Queues to enter/leave while the resource is seized.
      */
     async preempt(resource: Queue, delay: number, queues: Queue[] = []) {
+
+        // while we have a delay
         while (delay >= 1e-3) {
+
+            // send signal to interrupt lower-priority entities
             this.sendSignal(resource);
+
+            // seize the resource
             queues.forEach(q => this.enterQueueImmediately(q));
             await this.enterQueue(resource);
             queues.forEach(q => this.leaveQueue(q));
-            //this.log('entered');
+
+            // apply interruptible delay and update delay value
             delay -= await this.delay(delay, null, resource);
-            //this.log('left');
+
+            // release the resource (time-out or signal)
             this.leaveQueue(resource);
         }
     }

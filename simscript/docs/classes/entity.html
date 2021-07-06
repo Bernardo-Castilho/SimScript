@@ -325,9 +325,9 @@
 <span style="color: #000000">            </span><span style="color: #0070C1">sim</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">Interrupt</span><span style="color: #000000">,</span>
 <span style="color: #000000">            </span><span style="color: #0070C1">delay</span><span style="color: #000000"> = </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">delay</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">(),</span>
 <span style="color: #000000">            </span><span style="color: #0070C1">timeSpent</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #001080">delay</span><span style="color: #000000">, </span><span style="color: #0000FF">null</span><span style="color: #000000">, </span><span style="color: #001080">sim</span><span style="color: #000000">);</span>
-<span style="color: #000000">        </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #267F99">Math</span><span style="color: #000000">.</span><span style="color: #795E26">abs</span><span style="color: #000000">(</span><span style="color: #001080">timeSpent</span><span style="color: #000000"> - </span><span style="color: #001080">delay</span><span style="color: #000000">) &lt; </span><span style="color: #098658">1e-10</span><span style="color: #000000"> </span><span style="color: #008000">// account for floating point accuracy</span>
-<span style="color: #000000">            ? </span><span style="color: #A31515">&#039;time elapsed&#039;</span>
-<span style="color: #000000">            : </span><span style="color: #A31515">&#039;signal received&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">timeSpent</span><span style="color: #000000"> + </span><span style="color: #098658">1e-10</span><span style="color: #000000"> &lt; </span><span style="color: #001080">delay</span><span style="color: #000000">) &lt;  </span><span style="color: #008000">// account for floating point accuracy</span>
+<span style="color: #000000">            ? </span><span style="color: #A31515">&#039;signal received&#039;</span>
+<span style="color: #000000">            : </span><span style="color: #A31515">&#039;time elapsed&#039;</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
@@ -369,7 +369,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:387</li>
+									<li>Defined in entity.ts:377</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -451,7 +451,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:248</li>
+									<li>Defined in entity.ts:238</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -514,7 +514,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:380</li>
+									<li>Defined in entity.ts:370</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -590,7 +590,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:257</li>
+									<li>Defined in entity.ts:247</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -622,7 +622,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:433</li>
+									<li>Defined in entity.ts:423</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -664,7 +664,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:322</li>
+									<li>Defined in entity.ts:312</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -704,7 +704,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:401</li>
+									<li>Defined in entity.ts:391</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -728,7 +728,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:308</li>
+									<li>Defined in entity.ts:298</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
