@@ -334,6 +334,15 @@ export class Queue {
 
     // ** implementation
 
+    // called by the simulation when finishing up
+    /** internal */ _updateTallies() {
+        this._updatePopTallies();
+        for (let item of this.items.values()) {
+            this._updateDwellTallies(item.timeIn);
+        }        
+    }
+
+    // update population tallies
     protected _updatePopTallies() {
         const
             value = this._inUse,
@@ -347,9 +356,10 @@ export class Queue {
         this._tmLastChange = timeNow;
     }
 
+    // update dwell time tallies
     protected _updateDwellTallies(timeIn: number) {
         const dwell = this._sim.timeNow - timeIn;
-        assert(dwell >= 0, 'Dwell cannot be negative');
+        assert(dwell >= 0, 'Dwell time cannot be negative');
         this._grossDwell.add(dwell, 1);
         if (dwell > 0) {
             this._netDwell.add(dwell, 1);

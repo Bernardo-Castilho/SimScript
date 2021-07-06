@@ -2,7 +2,7 @@ import { Simulation, FecItem } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Uniform, Exponential } from '../simscript/random';
-import { assert } from '../simscript/util';
+import { assert, setOptions } from '../simscript/util';
 
 // Simple Test
 export class SimpleTest extends Simulation {
@@ -190,5 +190,96 @@ class Interruptor extends Entity {
         this.sendSignal(sim);
         await this.delay(sim.delay.sample());
         this.sendSignal(sim);
+    }
+}
+
+// test pre-empting enterQueue
+export class Preempt extends Simulation {
+    resource = new Queue('resource', 1);
+    q0 = new Queue('Prty 0');
+    q1 = new Queue('Prty 1');
+    q2 = new Queue('Prty 2');
+    onStarting() {
+        super.onStarting();
+        this.activate(new Prty0({
+            priority: 0,
+            start: 0,
+            duration: 100
+        }));
+        this.activate(new Prty1({
+            priority: 1,
+            start: 10,
+            duration: 10
+        }));
+        this.activate(new Prty2({
+            priority: 2,
+            start: 12,
+            duration: 5
+        }));
+    }
+}
+class PreemptEntity extends Entity {
+    start = 0;
+    duration = 0;
+
+    // constructor with extra options
+    constructor(options?: any) {
+        super(null);
+        setOptions(this, options);
+    }
+    
+    /**
+     * Seizes a resource for a specified time, allowing entities with
+     * higher priorities to pre-empt.
+     * @param resource Resource to seize.
+     * @param delay Amount of time to spend in the resource.
+     * @param queues Queues to enter/leave while the resource is seized.
+     */
+    async preempt(resource: Queue, delay: number, queues: Queue[] = []) {
+        while (delay >= 1e-3) {
+            this.sendSignal(resource);
+            queues.forEach(q => this.enterQueueImmediately(q));
+            await this.enterQueue(resource);
+            queues.forEach(q => this.leaveQueue(q));
+            //this.log('entered');
+            delay -= await this.delay(delay, null, resource);
+            //this.log('left');
+            this.leaveQueue(resource);
+        }
+    }
+
+    // log a message from an entity
+    log(msg: string) {
+        console.log(`${this.constructor.name} ${msg} at ${this.simulation.timeNow}`);
+    }
+}
+class Prty0 extends PreemptEntity {
+    async script() {
+        const sim = this.simulation as Preempt;
+        this.log('arrived');
+        await this.delay(this.start);
+        await this.preempt(sim.resource, this.duration, [sim.q0]);
+        assert(sim.timeNow == 115, 'should finish at 115');
+        this.log('done (@115)');
+    }
+}
+class Prty1 extends PreemptEntity {
+    async script() {
+        const sim = this.simulation as Preempt;
+        this.log('arrived');
+        await this.delay(this.start);
+        await this.preempt(sim.resource, this.duration, [sim.q1]);
+        assert(sim.timeNow == 25, 'should finish at 25');
+        this.log('done (@25)');
+    }
+}
+class Prty2 extends PreemptEntity {
+    async script() {
+        const sim = this.simulation as Preempt;
+        this.log('arrived');
+        await this.delay(this.start);
+        await this.preempt(sim.resource, this.duration, [sim.q2]);
+        assert(sim.timeNow == 17, 'should finish at 17');
+        this.log('done (@17)');
     }
 }

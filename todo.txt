@@ -5,7 +5,7 @@
     https://stackblitz.com/edit/typescript-mapmna?file=index.html
         1 * phone
         2 * periodic inventory
-        3 * tv repair (**PREEMPT**)
+        3 * tv repair
         4 * quality control system
         5 * order point inventory
         6 * electronics manufacturing

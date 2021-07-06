@@ -296,16 +296,16 @@ export class Simulation {
      * }
      * ```
      * 
-     * @param type Type of {@link Entity} to generate.
+     * @param entityType Type of {@link Entity} to generate.
      * @param interArrival {@link RandomVar} that returns the inter-arrival time, 
-     * or a number that represents a fixed interval, or **null** to generate a single 
-     * entity.
+     * or a number that represents a fixed interval, or **null** to generate 
+     * a single entity.
      * @param max Maximum number of entities to generate.
      * @param startTime Time to start generating entities.
      * @param endTime Time to stop generating entities.
      */
-    generateEntities(type, interArrival?: RandomVar | number, max?: number, startTime?: number, endTime?: number) {
-        const gen = new EntityGenerator(type, interArrival, max, startTime, endTime);
+    generateEntities(entityType: any, interArrival?: RandomVar | number, max?: number, startTime?: number, endTime?: number) {
+        const gen = new EntityGenerator(entityType, interArrival, max, startTime, endTime);
         this.activate(gen);
     }
     /**
@@ -485,6 +485,7 @@ export class Simulation {
             (nextTime < 0)) { // out of things to do
             this._fec = [];
             this._tmElapsed = Date.now() - this._tmStart;
+            this.queues.forEach(q => q._updateTallies());
             this.onFinishing();
             this._setState(SimulationState.Finished);
             this.onFinished();
@@ -527,7 +528,7 @@ export class Simulation {
             nextTime: number | null = null;
 
         // scan the fec list and dispatch anyone who's ready
-        for (var i = 0; i < fec.length; i++) {
+        for (let i = 0; i < fec.length; i++) {
             let item = fec[i],
                 ready = item.ready;
 

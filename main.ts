@@ -8,7 +8,7 @@ import { Queue } from './simscript/queue';
 import { Exponential } from './simscript/random';
 import { format, bind, assert } from './simscript/util';
 
-import { SimpleTest, SimplestSimulation, Interrupt } from './simulations/simpletest';
+import { SimpleTest, SimplestSimulation, Interrupt, Preempt } from './simulations/simpletest';
 import { Generator } from './simulations/simpletest';
 import { RandomVarTest } from './simulations/randomvartest';
 import { BarberShop } from './simulations/barbershop';
@@ -91,6 +91,9 @@ showSimulation(
     </p>`,
     (sim: Inventory, log: HTMLElement) => {
         setText('#gpss-inv-stockout', format(sim.stockOuts, 0));
+        log.innerHTML = getLineChart('Stock',
+            { data: sim.stockHistory, color: 'green' }
+        );
     }    
 )
 
@@ -122,7 +125,8 @@ showSimulation(
     </ul>
     <p>
         Normal service of television sets has a higher priority than the 
-        overhaul of company owned, rented sets.
+        overhaul of company owned, rented sets; on-the-spot repairs have
+        the highest priority.
     </p>
     <p>
         After 50 days of operation, determine the following:
@@ -135,20 +139,13 @@ showSimulation(
         <li>
             The average waiting times for each type of job.<br/>
             GPSS says <b>12</b> min overall, <b>25</b> for overhaul jobs,
-            <b>51</b> for customer jobs, and <b>zero</b> for on-the-spot jobs;
+            <b>51</b> for customer jobs, and <b>zero</b> for on-the-spot jobs;<br/>
             SimScript says <b><span id='tv-wait'>?</span></b> min overall,
             <b><span id='tv-wait-overhaul'>?</span></b> for overhaul jobs,
             <b><span id='tv-wait-customer'>?</span></b> for customer jobs, and
             <b><span id='tv-wait-ots'>?</span></b> for on-the-spot jobs.
         </li>
-    </ol>
-    <p>
-        Simscript shows significantly higher delays. This can be partly
-        explained because it does not support pre-empting jobs.
-        But the GPSS values do seem too small.
-    <p>
-
-    `,
+    </ol>`,
     (sim: TVRepairShop, log: HTMLElement) => {
         log.innerHTML = sim.getStatsTable();
         setText('#tv-utz', format(sim.qRepairMan.utilization * 100, 0));
@@ -482,6 +479,21 @@ showSimulation(
         sim.getStatsTable();
     }
 )
+
+//----------------------------------------------------------
+// Preempt on seize
+showSimulation(
+    new Preempt(),
+    'Preempt',
+    `<p>
+        Shows how to use interruptible delays to simulate pre-empting
+        resources.
+    </p>
+    <p>
+        The sample has three entity types, each with a different
+        priority, all competing for a single resource.
+    </p>`
+);
 
 //----------------------------------------------------------
 // RandomVarTest
@@ -2319,7 +2331,7 @@ interface IChartSeries {
     name?: string,
     /** The series color (defaults to black). */
     color?: string,
-    /** The series line width (defaults to 1). */
+    /** The series line width (defaults to 2). */
     width?: string,
     /** An array containing the series data. */
     data: number[]
@@ -2359,7 +2371,7 @@ function getLineChart(title: string, ...series: IChartSeries[]): string {
     // add each series
     series.forEach((s: IChartSeries) => {
         if (s.data.length > 1) {
-            svg += `<g stroke='${s.color || 'black'}' stroke-width='${s.width || '1'}'>`;
+            svg += `<g stroke='${s.color || 'black'}' stroke-width='${s.width || '2'}'>`;
             if (s.name) {
                 svg += `<title>${s.name}</title>`;
             }

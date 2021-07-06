@@ -127,7 +127,9 @@ The links below show some samples of **SimScript** simulations:
 ## New Samples
 
 - [GPSS-inspired samples](https://stackblitz.com/edit/typescript-mapmna?file=index.html)\
-    Shows several samples inspired by traditional GPSS samples published by Minuteman software.
+    Shows several samples inspired by traditional 
+    (GPSS samples)[http://www.minutemansoftware.com/tutorial/tutorial_manual.htm]
+    published by Minuteman software.
     The samples show how you can use SimScript to simulate a wide range of practical applications
     and allow you to compare results obtained by GPSS and SimScript.
 

@@ -32,7 +32,6 @@ export class Telephone extends Simulation {
         this.generateEntities(Call, this.callArrival, 200);
     }
 }
-
 class Call extends Entity {
     async script() {
         const sim = this.simulation as Telephone;
@@ -56,9 +55,9 @@ class Call extends Entity {
 // Inventory
 //-------------------------------------------------------------------------
 // A finished product inventory is controlled by means of a weekly periodic
-// review system. The initial stock is 1000 units. The daily demand varies 
+// review system. The initial stock is 1,000 units. The daily demand varies 
 // between 40 and 63 units with equal probability.
-// The target inventory is 1000 units, that is, the order is placed for the 
+// The target inventory is 1,000 units, that is, the order is placed for the 
 // difference between the current stock and 1000 units.
 // If the current stock is 800 or more, no order is placed for that week.
 // The company operates a five-day week.
@@ -66,19 +65,21 @@ class Call extends Entity {
 // Simulate the inventory system for 200 days and determine if any stockouts 
 // occur.
 //-------------------------------------------------------------------------
-const INITIAL_STOCK = 10000;
 export class Inventory extends Simulation {
-    stock = INITIAL_STOCK;
+    stock = 1000;
     reorder = 800; // reorder level
     target = 1000; // target inventory
     stockOuts = 0; // instances where we ran out of stock
     demand = new RandomInt(23);
+    stockHistory: number[];
+
     onStarting(e?: EventArgs) {
         super.onStarting(e);
 
         // initialize variables
-        this.stock = INITIAL_STOCK;
+        this.stock = 1000;
         this.stockOuts = 0;
+        this.stockHistory = [];
 
         // generate demand entities once a day
         const cnt = 200;
@@ -91,7 +92,6 @@ export class Inventory extends Simulation {
         return 40 + this.demand.sample(); // 40 to 63
     }
 }
-
 class Demand extends Entity {
     async script() {
         const sim = this.simulation as Inventory;
@@ -101,9 +101,9 @@ class Demand extends Entity {
         } else {
             sim.stock -= demand; // remove demand from stock
         }
+        sim.stockHistory.push(sim.stock);
     }
 }
-
 class Reorder extends Entity {
     async script() {
         const sim = this.simulation as Inventory;
@@ -134,8 +134,6 @@ class Reorder extends Entity {
 // 2. Determine the utilization of the repairman and the delays in the
 // service to customers.
 //-------------------------------------------------------------------------
-// Note: GPSS can pre-empt when seizing, SimScript cannot.
-//-------------------------------------------------------------------------
 export class TVRepairShop extends Simulation {
 
     // queues
@@ -148,64 +146,75 @@ export class TVRepairShop extends Simulation {
     // delays
     interArrOverhaul = new Uniform((40 - 8) * 60, (40 + 8) * 60); // 40+-8 hours
     serviceOverhaul = new Uniform((10 - 1) * 60, (10 + 1) * 60); // 10+-1 hours
-
     interArrOnTheSpot = new Uniform(90 - 10, 90 + 10); // 90+-10 min
     serviceOnTheSpot = new Uniform(15 - 5, 15 + 5); // 15+-5 min
-
     interArrCustomer = new Uniform((5 - 1) * 60, (5 + 1) * 60); // 5+-1 hours
     serviceCustomer = new Uniform(120 - 30, 120 + 30); // 120+-30 minutes
 
     // initialization
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeEnd = 50 * 24 * 60; // simulate 50 days
+        this.timeEnd = 50 * 8 * 60; // simulate 50 8-hour days
         this.generateEntities(TVOverhaulEntity, this.interArrOverhaul);
         this.generateEntities(TVOnTheSpotEntity, this.interArrOnTheSpot);
         this.generateEntities(TVCustomerEntity, this.interArrCustomer);
     }
 }
-class TVOverhaulEntity extends Entity {
-    async script() {
-        const sim = this.simulation as TVRepairShop;
-        this.enterQueueImmediately(sim.qAllJobs);
-        this.enterQueueImmediately(sim.qOverhaulJobs);
-        await this.enterQueue(sim.qRepairMan);
-        this.leaveQueue(sim.qOverhaulJobs);
-        this.leaveQueue(sim.qAllJobs);
-        await this.delay(sim.serviceOverhaul.sample());
-        this.leaveQueue(sim.qRepairMan);
+class TVEntity extends Entity {
+
+    /**
+     * Seizes a resource for a specified time, allowing entities with
+     * higher priorities to pre-empt the job, which is re-started later
+     * until the whole delay has been applied.
+     * @param resource Resource to seize.
+     * @param delay Amount of time to spend in the resource.
+     * @param queues Queues to enter/leave while the resource is seized.
+     */
+    async preempt(resource: Queue, delay: number, queues: Queue[] = []) {
+        while (delay >= 1e-3) {
+            this.sendSignal(resource);
+            queues.forEach(q => this.enterQueueImmediately(q));
+            await this.enterQueue(resource);
+            queues.forEach(q => this.leaveQueue(q));
+            delay -= await this.delay(delay, null, resource);
+            this.leaveQueue(resource);
+        }
     }
 }
-class TVOnTheSpotEntity extends Entity {
-    constructor(options?: any) {
-        super(options);
-        this.priority = 3;
-    }
+class TVOverhaulEntity extends TVEntity {
     async script() {
         const sim = this.simulation as TVRepairShop;
-        this.enterQueueImmediately(sim.qAllJobs);
-        this.enterQueueImmediately(sim.qOnTheSpotJobs);
-        await this.enterQueue(sim.qRepairMan);
-        this.leaveQueue(sim.qOnTheSpotJobs);
-        this.leaveQueue(sim.qAllJobs);
-        await this.delay(sim.serviceOnTheSpot.sample());
-        this.leaveQueue(sim.qRepairMan);
+        this.priority = 1;
+
+        // use repairman for TV overhauling (preemptively)
+        await this.preempt(
+            sim.qRepairMan,
+            sim.serviceOverhaul.sample(),
+            [sim.qAllJobs, sim.qOverhaulJobs]);
     }
 }
-class TVCustomerEntity extends Entity {
-    constructor(options?: any) {
-        super(options);
+class TVCustomerEntity extends TVEntity {
+    async script() {
+        const sim = this.simulation as TVRepairShop;
         this.priority = 2;
+
+        // use repairman for a customer job (preemptively)
+        await this.preempt(
+            sim.qRepairMan,
+            sim.serviceCustomer.sample(),
+            [sim.qAllJobs, sim.qCustomerJobs]);
     }
+}
+class TVOnTheSpotEntity extends TVEntity {
     async script() {
         const sim = this.simulation as TVRepairShop;
-        this.enterQueueImmediately(sim.qAllJobs);
-        this.enterQueueImmediately(sim.qCustomerJobs);
-        await this.enterQueue(sim.qRepairMan);
-        this.leaveQueue(sim.qCustomerJobs);
-        this.leaveQueue(sim.qAllJobs);
-        await this.delay(sim.serviceCustomer.sample());
-        this.leaveQueue(sim.qRepairMan);
+        this.priority = 3;
+        
+        // use repairman for an on-the-spot job (preemptively)
+        await this.preempt(
+            sim.qRepairMan,
+            sim.serviceOnTheSpot.sample(),
+            [sim.qAllJobs, sim.qOnTheSpotJobs]);
     }
 }
 

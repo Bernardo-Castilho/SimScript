@@ -181,7 +181,7 @@ export class Tally {
     getHistogramChart(title = '', scale = 1): string {
 
         // get the histogram
-        let histo = this.getHistogram();
+        const histo = this.getHistogram();
 
         // sanity
         if (!histo || !histo.length) {

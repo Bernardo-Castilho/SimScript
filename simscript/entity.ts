@@ -1,7 +1,7 @@
 import { Simulation, FecItem, IMovePath } from './simulation';
 import { Queue } from './queue';
 import { RandomVar } from './random';
-import { assert, setOptions, isNumber, IPoint } from './util';
+import { assert, setOptions, IPoint } from './util';
 
 /**
  * Defines parameters for animating entities in queues.
@@ -137,9 +137,9 @@ export class Entity {
      *             sim = this.simulation as Interrupt,
      *             delay = sim.delay.sample(),
      *             timeSpent = await this.delay(delay, null, sim);
-     *         console.log(Math.abs(timeSpent - delay) < 1e-10 // account for floating point accuracy
-     *             ? 'time elapsed'
-     *             : 'signal received');
+     *         console.log(timeSpent + 1e-10 < delay) <  // account for floating point accuracy
+     *             ? 'signal received'
+     *             : 'time elapsed');
      *     }
      * }
      * ```
@@ -193,16 +193,6 @@ export class Entity {
      * @returns The amount of simulated time elapsed since the method was invoked.
      */
     async enterQueue(queue: Queue, units = 1): Promise<number> {
-
-        // enter immediately if possible
-        if (queue.canEnter(units)) {
-            queue.add(this, units);
-            return new FecItem(this, {
-                ready: true
-            }).promise;
-        }
-
-        // wait until the queue has enough capacity
         return new FecItem(this, {
             queue: queue,
             units: units
@@ -504,6 +494,7 @@ export class EntityGenerator extends Entity {
 
             // create and activate an entity
             const e = new this._type;
+            assert(e instanceof Entity, 'Entity expected');
             this.simulation.activate(e);
 
             // wait for the given interval or break if no interval
