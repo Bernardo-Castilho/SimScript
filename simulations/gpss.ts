@@ -168,9 +168,9 @@ class TVEntity extends Entity {
      * until the whole delay has been applied.
      * @param resource Resource to seize.
      * @param delay Amount of time to spend in the resource.
-     * @param queues Queues to enter/leave while the resource is seized.
+     * @param trackingQueues Queues to enter/leave while the resource is seized.
      */
-    async preempt(resource: Queue, delay: number, queues: Queue[] = []) {
+    async preempt(resource: Queue, delay: number, trackingQueues: Queue[] = []) {
 
         // while we have a delay
         while (delay >= 1e-3) {
@@ -179,9 +179,9 @@ class TVEntity extends Entity {
             this.sendSignal(resource);
 
             // seize the resource
-            queues.forEach(q => this.enterQueueImmediately(q));
+            trackingQueues.forEach(q => this.enterQueueImmediately(q));
             await this.enterQueue(resource);
-            queues.forEach(q => this.leaveQueue(q));
+            trackingQueues.forEach(q => this.leaveQueue(q));
 
             // apply interruptible delay and update delay value
             delay -= await this.delay(delay, null, resource);

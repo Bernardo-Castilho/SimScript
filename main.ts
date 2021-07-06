@@ -102,8 +102,7 @@ showSimulation(
 showSimulation(
     new TVRepairShop(),
     'TV Repair Shop (GPSS)',
-    `
-    <p>
+    `<p>
         A television shop employs a single repairman to overhaul its
         rented television sets, service customers’ sets and do
         on-the-spot repairs.

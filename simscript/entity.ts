@@ -126,20 +126,34 @@ export class Entity {
      * 
      * If you use the **signal** parameter to create an interruptible delay,
      * the call to **delay** may return when the specified **delay** has elapsed
-     * or when the specified **signal** has been received. You can differentiate
-     * between the two by comparing the value returned with the delay that was
-     * specified. For example:
+     * or when the specified **signal** has been received. 
+     * You can use this feature to implement preempting services.
+     * For example, the code below shows a preemt method:
      * 
      * ```typescript
-     * class Interruptible extends Entity {
-     *     async script() {
-     *         const
-     *             sim = this.simulation as Interrupt,
-     *             delay = sim.delay.sample(),
-     *             timeSpent = await this.delay(delay, null, sim);
-     *         console.log(timeSpent + 1e-10 < delay) <  // account for floating point accuracy
-     *             ? 'signal received'
-     *             : 'time elapsed');
+     * class Preempt extends Entity {
+     * 
+     *     // seizes a resource and applies an interruptible delay to allow
+     *     // higher-priority entities to preempt the service.
+     *     async preempt(resource: Queue, delay: number, trackingQueues: Queue[] = []) {
+     * 
+     *         // while we have a delay
+     *         while (delay >= 1e-3) {
+     * 
+     *             // send signal to interrupt lower-priority entities
+     *             this.sendSignal(resource);
+     * 
+     *             // seize the resource
+     *             trackingQueues.forEach(q => this.enterQueueImmediately(q));
+     *             await this.enterQueue(resource);
+     *             trackingQueues.forEach(q => this.leaveQueue(q));
+     * 
+     *             // apply interruptible delay and update delay value
+     *             delay -= await this.delay(delay, null, resource);
+     * 
+     *             // release the resource (time-out or signal)
+     *             this.leaveQueue(resource);
+     *         }
      *     }
      * }
      * ```
