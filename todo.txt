@@ -1,4 +1,6 @@
 # Todo
+- Entity<Simulation>
+- Promise.all
 - autonomous vehicles
 - more docs/examples
     - more GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
@@ -12,8 +14,8 @@
         7 * textile
         8 * oil storage
         9 * pump assembly
-        10 - robot FMS -------------------------------------------
-        11 - bicycle factory
+        10 * robot FMS
+        11 - bicycle factory -------------------------------------------
         12 - warehouse/branch inventory
         13 - canal and lock
         14 - foundry

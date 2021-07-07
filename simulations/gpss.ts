@@ -826,3 +826,84 @@ class BaseplatePart extends Entity {
         this.sendSignal(this.owner);
     }
 }
+
+//-------------------------------------------------------------------------
+// RobotFMS
+//-------------------------------------------------------------------------
+// An experimental, robot operated, flexible manufacturing system has two
+// computer numerical control machine tools, an arrival area, and a
+// finished parts area.
+// Components arrive every 150 seconds, exponentially distributed, and are
+// machined on both machines in sequence.
+// The robot takes 8±1 seconds to grip or release components, and 6 seconds
+// to move components from the arrival area to the first machine.
+// Processing time on the first machine is normally distributed, with a
+// mean of 60 seconds and a standard deviation of 10 seconds.
+// The robot takes 7 seconds to move from the first machine to the second
+// machine.
+// Machining time on the second machine is 100 seconds, exponentially 
+// distributed.
+// Finally, the robot takes 5 seconds to move components from the second
+// machine, to the finished parts storage area.
+// Simulate the manufacturing cell operation, for 75 completed parts.
+// 1. Find the distribution of transit times of jobs.
+// 2. Find the utilization of the robot, and the machine tools.
+// 3. Find the maximum storage areas required in the cell.
+//-------------------------------------------------------------------------
+export class RobotFMS extends Simulation {
+    componentArrivalInterval = new Exponential(150);
+    gripRelease = new Uniform(8 - 1, 8 + 1);
+    machine1Process = new Normal(60, 10);
+    machine2Process = new Exponential(100);
+    moveRobotDelay = 6;
+
+    qJobs = new Queue('Jobs');
+    qRobot = new Queue('Robot', 1);
+    qMachine1 = new Queue('Machine 1', 1);
+    qMachine2 = new Queue('Machine 2', 1);
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.generateEntities(FMSComponent, this.componentArrivalInterval, 75)
+    }
+}
+class FMSComponent extends Entity {
+    async script() {
+        const sim = this.simulation as RobotFMS;
+        this.enterQueueImmediately(sim.qJobs);
+
+        // robot grabs component, moves to machine 1
+        await this.enterQueue(sim.qRobot);
+        await this.delay(sim.gripRelease.sample());
+        await this.delay(6);
+        await this.delay(sim.gripRelease.sample());
+        this.leaveQueue(sim.qRobot);
+        
+        // first machine process
+        await this.enterQueue(sim.qMachine1);
+        await this.delay(sim.machine1Process.sample());
+        this.leaveQueue(sim.qMachine1);
+
+        // robot grabs component, moves to machine 2
+        await this.enterQueue(sim.qRobot);
+        await this.delay(sim.gripRelease.sample());
+        await this.delay(7);
+        await this.delay(sim.gripRelease.sample());
+        this.leaveQueue(sim.qRobot);
+
+        // second machine process
+        await this.enterQueue(sim.qMachine2);
+        await this.delay(sim.machine2Process.sample());
+        this.leaveQueue(sim.qMachine2);
+
+        // robot grabs component, moves to storage area
+        await this.enterQueue(sim.qRobot);
+        await this.delay(sim.gripRelease.sample());
+        await this.delay(5);
+        await this.delay(sim.gripRelease.sample());
+        this.leaveQueue(sim.qRobot);
+
+        // done
+        this.leaveQueue(sim.qJobs);
+    }
+}

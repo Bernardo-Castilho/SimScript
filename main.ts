@@ -22,7 +22,7 @@ import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint,
-    Manufacturing, Textile, OilDepot, PumpAssembly
+    Manufacturing, Textile, OilDepot, PumpAssembly, RobotFMS
 } from './simulations/gpss';
 
 
@@ -435,6 +435,65 @@ showSimulation(
         log.innerHTML = sim.getStatsTable();
     }
 );
+
+//-------------------------------------------------------------------------
+// RobotFMS
+showSimulation(
+    new RobotFMS(),
+    'Robot FMS (GPSS)',
+    `<p>
+        An experimental, robot operated, flexible manufacturing system has
+        two computer numerical control machine tools, an arrival area, and
+        a finished parts area.</p>
+    <p>
+        Components arrive every 150 seconds, exponentially distributed, and
+        are machined on both machines in sequence.</p>
+    <p>
+        The robot takes 8±1 seconds to grip or release components, and 6
+        seconds to move components from the arrival area to the first machine.
+        Processing time on the first machine is normally distributed, with a
+        mean of 60 seconds and a standard deviation of 10 seconds.</p>
+    <p>
+        The robot takes 7 seconds to move from the first machine to the second
+        machine. Machining time on the second machine is 100 seconds,
+        exponentially distributed.</p>
+    <p>
+        Finally, the robot takes 5 seconds to move components from the second
+        machine to the finished parts storage area.</p>
+    <p>
+        Simulate the manufacturing cell operation, for 75 completed parts,
+        and find:</p>
+    <ol>
+        <li>
+            The distribution of transit times of jobs.<br/>
+            GPSS says the mean time was <b>452</b> seconds, with a
+            standard deviation of around <b>251</b> seconds;<br/>
+            SimScript says <b><span id='fms-tm-mean'>?</span></b> and
+            <b><span id='fms-tm-std'>?</span></b> seconds.</li>
+        <li>
+            The utilization of the robot and the machine tools.<br/>
+            GPSS says the Robot, Machine 1, and Machine 2 had utilizations
+            of <b>36%</b>, <b>33%</b> and <b>64%</b>;<br/>
+            SimScript says
+            <b><span id='fms-utz-robot'>?</span>%</b>,
+            <b><span id='fms-utz-m1'>?</span>%</b>, and
+            <b><span id='fms-utz-m2'>?</span>%</b>.</li>
+        <li>
+            The maximum storage areas required in the cell.<br/>
+            GPSS says the maximum storage required totals <b>13</b>;<br/>
+            SimScript says <b><span id='fms-stg'>?</span></b>.</li>
+    </ol>`,
+    (sim: RobotFMS, log: HTMLElement) => {
+        setText('#fms-tm-mean', format(sim.qJobs.grossDwell.avg, 0));
+        setText('#fms-tm-std', format(sim.qJobs.grossDwell.stdev, 0));
+        setText('#fms-utz-robot', format(sim.qRobot.utilization * 100, 0));
+        setText('#fms-utz-m1', format(sim.qMachine1.utilization * 100, 0));
+        setText('#fms-utz-m2', format(sim.qMachine2.utilization * 100, 0));
+        setText('#fms-stg', format(sim.qJobs.grossPop.max, 0));
+        log.innerHTML = sim.getStatsTable();
+    }
+
+)
 
 //----------------------------------------------------------
 // Generator
