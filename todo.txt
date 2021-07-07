@@ -11,7 +11,7 @@
         6 * electronics manufacturing
         7 * textile
         8 * oil storage
-        9 - pump assembly
+        9 * pump assembly
         10 - robot FMS -------------------------------------------
         11 - bicycle factory
         12 - warehouse/branch inventory

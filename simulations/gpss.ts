@@ -685,3 +685,144 @@ class OilArrival extends RandomVar {
         return this._r1.sample() / this._r2.sample();
     }
 }
+
+//-------------------------------------------------------------------------
+// PumpAssembly
+//-------------------------------------------------------------------------
+// A manufacturer makes centrifugal pump units which are assembled to 
+// customer orders. The orders arrive on average, every 5 hours, 
+// exponentially distributed.
+// When the order arrives, two copies are made.
+// The original order is used to obtain a motor from stock and prepare it
+// for assembly (200±100 minutes).
+// The first copy is used to order and adapt a pump (180±120 minutes),
+// and the second copy is used to initiate the manufacture of the
+// baseplate (80±20 minutes).
+// When the pump and the baseplate are ready, a test fitting is carried
+// out (50±10 minutes).
+// All three components are assembled, when they are available.
+// The unit is then dismantled, and the pump and motor are painted, and
+// the baseplate is galvanized.
+// Final assembly then takes place (150±30 minutes).
+// 1. Investigate the utilization of the manufacturing facilities.
+// 2. Determine the transit times and delays, of customers’ orders.
+// 3. What Facility will be a bottleneck, if orders increase significantly?
+// 4. Simulate the assembly of 50 motor-pump units.
+//-------------------------------------------------------------------------
+export class PumpAssembly extends Simulation {
+    qOrders = new Queue('Orders');
+    qBaseStation = new Queue('Base Station', 1);
+    qPumps = new Queue('Pumps', 1);
+    qBaseplate = new Queue('Baseplate', 1);
+    qPaintMotor = new Queue('Paint Motor', 1);
+    qPaintPump = new Queue('Paint Pump', 1);
+    qGalvanize = new Queue('Galvanize', 1);
+    
+    orderArrivalInterval = new Exponential(5 * 60); // 5 hours
+    obtainMotorDelay = new Uniform(200 - 100, 200 + 100);
+    orderPumpDelay = new Uniform(180 - 120, 180 + 120);
+    makeBaseplateDelay = new Uniform(80 - 20, 80 + 20);
+    testFittingDelay = new Uniform(50 - 10, 50 + 10);
+    trialAssemblyDelay = 60;
+    finalAssemblyDelay = new Uniform(150 - 30, 150 + 30);
+    paintMotorDelay = new Uniform(100 - 20, 100 + 20);
+    paintPumpDelay = new Uniform(120 - 30, 120 + 30);
+    galvanizeDelay = new Uniform(120 - 30, 120 + 30);
+
+    onStarting(e: EventArgs) {
+        super.onStarting(e);
+        this.generateEntities(PumpOrder, this.orderArrivalInterval, 50); // 50 units
+    }
+}
+class PumpOrder extends Entity {
+    pumpReady = false;
+    baseplateReady = false;
+
+    async script() {
+        const sim = this.simulation as PumpAssembly;
+
+        // track assembly time
+        this.enterQueueImmediately(sim.qOrders);
+
+        // create two copies to handle pump and baseplate
+        const partPump = new PumpPart(this);
+        sim.activate(partPump);
+        const partBaseplate = new BaseplatePart(this);
+        sim.activate(partBaseplate);
+
+        // obtain a motor
+        await this.enterQueue(sim.qBaseStation);
+        await this.delay(sim.obtainMotorDelay.sample());
+        this.leaveQueue(sim.qBaseStation);
+
+        // paint the motor, prepare for assembly
+        await this.enterQueue(sim.qPaintMotor);
+        await this.delay(sim.paintMotorDelay.sample());
+        this.leaveQueue(sim.qPaintMotor);
+
+        // wait until the pump and baseplate are ready
+        while (!this.pumpReady || !this.baseplateReady) {
+            await this.waitSignal(this);
+        }
+     
+        // perform test fitting, trial and final assembly
+        await this.delay(sim.testFittingDelay.sample());
+        await this.delay(sim.trialAssemblyDelay);
+        await this.delay(sim.finalAssemblyDelay.sample());
+
+        // done
+        this.leaveQueue(sim.qOrders);
+    }
+}
+
+// first copy orders and adapts a pump
+class PumpPart extends Entity {
+    owner: PumpOrder;
+    constructor(owner: PumpOrder) {
+        super();
+        this.owner = owner;
+    }
+    async script() {
+        const sim = this.simulation as PumpAssembly;
+
+        // order the pump
+        await this.enterQueue(sim.qPumps);
+        await this.delay(sim.orderPumpDelay.sample());
+        this.leaveQueue(sim.qPumps);
+
+        // paint the pump
+        await this.enterQueue(sim.qPaintPump);
+        await this.delay(sim.paintPumpDelay.sample());
+        this.leaveQueue(sim.qPaintPump);
+
+        // part is ready
+        this.owner.pumpReady = true;
+        this.sendSignal(this.owner);
+    }
+}
+
+// second copy initiates the manufacture of the baseplate
+class BaseplatePart extends Entity {
+    owner: PumpOrder;
+    constructor(owner: PumpOrder) {
+        super();
+        this.owner = owner;
+    }
+    async script() {
+        const sim = this.simulation as PumpAssembly;
+
+        // make the baseplate
+        await this.enterQueue(sim.qBaseplate);
+        await this.delay(sim.makeBaseplateDelay.sample());
+        this.leaveQueue(sim.qBaseplate);
+
+        // galvanize the baseplate
+        await this.enterQueue(sim.qGalvanize);
+        await this.delay(sim.galvanizeDelay.sample());
+        this.leaveQueue(sim.qGalvanize);
+
+        // part is ready
+        this.owner.baseplateReady = true;
+        this.sendSignal(this.owner);
+    }
+}
