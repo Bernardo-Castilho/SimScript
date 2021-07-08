@@ -594,18 +594,26 @@ export class Simulation {
                 <th>Avg</th>
                 <th>Max</th>
                 <th>StDev</th>
-                <th>${isPop ? '' : 'Cnt'}</th>
+                <th>${isPop ? 'Capy' : 'Cnt'}</th>
+                <th>${isPop ? 'Utz' : ''}</th>
             </tr>`;
         this.queues.forEach((q: Queue) => {
             if (q.name && q.grossDwell.cnt) {
-                let tally = q[tallyName] as Tally;
+                const
+                    capy = q.capacity,
+                    tally = q[tallyName] as Tally;
                 html += `<tr>
                     <th>${q.name}</th>
                     <td>${format(tally.min)}</td>
                     <td>${format(tally.avg)}</td>
                     <td>${format(tally.max)}</td>
                     <td>${format(tally.stdev)}</td>
-                    <td>${isPop ? '' : format(tally.cnt, 0)}</td>
+                    <td>${isPop
+                        ? (capy != null ? (format(capy, 0)) : '*')
+                        : format(tally.cnt, 0)}</td>
+                    <td>${isPop
+                        ? (capy != null ? format(q.utilization * 100, 0) + '%' : '')
+                        : ''}</td>
                 </tr>`;
             }
         });

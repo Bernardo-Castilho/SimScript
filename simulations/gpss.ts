@@ -907,3 +907,177 @@ class FMSComponent extends Entity {
         this.leaveQueue(sim.qJobs);
     }
 }
+
+//-------------------------------------------------------------------------
+// Bicycle Factory
+//-------------------------------------------------------------------------
+// A factory assembles bicycles employing the following staff: 2 clerks,
+// 3 framers, 1 saddler, 1 handler, 1 wheeler, 1 pedaler, 4 assemblers,
+// and 3 packers.
+// The company commences to assemble a bicycle every 50±10 minutes.
+// The clerical department prepares the delivery documents, instructions, 
+// toolkit and invoice.
+// Each department withdraws the component required for a particular order 
+// from stock, inspects (3±1 minutes) and prepares it for assembly.
+// The frame is manufactured and takes 65 minutes, exponentially distributed.
+// When the components are available, they are assembled.
+// This takes on average 90 minutes, with a standard deviation of 10 minutes.
+// When the delivery documents, toolkit, and the assembled bicycle are ready,
+// they are packed (40±5 minutes) in preparation for delivery.
+// 1. Find the utilization of the staff in each department.
+// 2. Determine the transit times of customers’ orders.
+// 3. Should the number of staff be changed in any department?
+// 4. Simulate the bicycle factory assembly operation for 5 days.
+//-------------------------------------------------------------------------
+export class BicycleFactory extends Simulation {
+    qTransit = new Queue('Transit');
+    qClerks = new Queue('Clerks', 2);
+    qFramers = new Queue('Framers', 3);
+    qSaddlers = new Queue('Saddlers', 1);
+    qHandlers = new Queue('Handlers', 1);
+    qWheelers = new Queue('Wheelers', 1);
+    qPedalers = new Queue('Pedalers', 1);
+    qAssemblers = new Queue('Assemblers', 4);
+    qPackers = new Queue('Packers', 3);
+
+    prepareInvoiceDelay = new Uniform(80 - 10, 80 + 10);
+    makeFrameDelay = new Exponential(65);
+    getSaddleDelay = new Uniform(6 - 3, 6 + 3);
+    getHandleDelay = new Uniform(4 - 2, 4 + 2);
+    getWheelsDelay = new Uniform(3 - 1, 3 + 1);
+    getPedalsDelay = new Uniform(5 - 1, 5 + 1);
+    inspectPartDelay = new Uniform(3 - 1, 3 + 1);
+    inspectAssemblyDelay = new Uniform(35 - 5, 35 + 5);
+    assembleDelay = new Normal(90, 10);
+    packDelay = new Uniform(40 - 5, 40 + 5);
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.timeEnd = 5 * 8 * 60; // 5 8-hour days, in minutes
+        this.generateEntities(Bicycle, new Uniform(50 - 10, 50 + 10));
+    }
+}
+
+class Bicycle extends Entity {
+
+    // paperwork and parts
+    paperwork = false;
+    frame = false;
+    saddle = false;
+    handle = false;
+    wheel = false;
+    pedal = false;
+
+    async script() {
+        const sim = this.simulation as BicycleFactory;
+
+        // start cycle
+        this.enterQueueImmediately(sim.qTransit);
+
+        // start sub-tasks
+        sim.activate(new BicycleFrame(this));
+        sim.activate(new BicycleSaddle(this));
+        sim.activate(new BicycleHandle(this));
+        sim.activate(new BicycleWheel(this));
+        sim.activate(new BicyclePedal(this));
+        sim.activate(new BicyclePaperwork(this));
+
+        // wait until all parts are ready
+        while (!this.frame || !this.saddle || !this.handle || !this.wheel || !this.pedal) {
+            await this.waitSignal(this);
+        }
+
+        // When the components are available, they are assembled.
+        // This takes on average 90 minutes, with a standard deviation of 10 minutes.
+        await this.enterQueue(sim.qAssemblers);
+        await this.delay(sim.assembleDelay.sample());
+        await this.delay(sim.inspectAssemblyDelay.sample());
+        this.leaveQueue(sim.qAssemblers);
+
+        // wait for paperwork
+        while (!this.paperwork) {
+            await this.waitSignal(this);
+        }
+
+        // When the delivery documents, toolkit, and the assembled
+        // bicycle are ready, they are packed (40±5 minutes) in preparation 
+        // for delivery.
+        await this.enterQueue(sim.qPackers);
+        await this.delay(sim.packDelay.sample());
+        this.leaveQueue(sim.qPackers);
+
+        // finish cycle
+        this.leaveQueue(sim.qTransit);
+    }
+}
+class BicyclePart extends Entity {
+    owner: Bicycle;
+    constructor(owner: Bicycle) {
+        super();
+        this.owner = owner;
+    }
+}
+class BicycleFrame extends BicyclePart {
+    async script() {
+        const sim = this.simulation as BicycleFactory;
+        await this.enterQueue(sim.qFramers);
+        await this.delay(sim.makeFrameDelay.sample());
+        this.leaveQueue(sim.qFramers);
+        this.owner.frame = true;
+        this.sendSignal(this.owner);
+    }
+}
+class BicycleSaddle extends BicyclePart {
+    async script() {
+        const sim = this.simulation as BicycleFactory;
+        await this.enterQueue(sim.qSaddlers);
+        await this.delay(sim.getSaddleDelay.sample());
+        await this.delay(sim.inspectPartDelay.sample());
+        this.leaveQueue(sim.qSaddlers);
+        this.owner.saddle = true;
+        this.sendSignal(this.owner);
+    }
+}
+class BicycleHandle extends BicyclePart {
+    async script() {
+        const sim = this.simulation as BicycleFactory;
+        await this.enterQueue(sim.qHandlers);
+        await this.delay(sim.getHandleDelay.sample());
+        await this.delay(sim.inspectPartDelay.sample());
+        this.leaveQueue(sim.qHandlers);
+        this.owner.handle = true;
+        this.sendSignal(this.owner);
+    }
+}
+class BicycleWheel extends BicyclePart {
+    async script() {
+        const sim = this.simulation as BicycleFactory;
+        await this.enterQueue(sim.qWheelers);
+        await this.delay(sim.getWheelsDelay.sample());
+        await this.delay(sim.inspectPartDelay.sample());
+        this.leaveQueue(sim.qWheelers);
+        this.owner.wheel = true;
+        this.sendSignal(this.owner);
+    }
+}
+class BicyclePedal extends BicyclePart {
+    async script() {
+        const sim = this.simulation as BicycleFactory;
+        await this.enterQueue(sim.qPedalers);
+        await this.delay(sim.getPedalsDelay.sample());
+        await this.delay(sim.inspectPartDelay.sample());
+        this.leaveQueue(sim.qPedalers);
+        this.owner.pedal = true;
+        this.sendSignal(this.owner);
+    }
+}
+class BicyclePaperwork extends BicyclePart {
+    async script() {
+        const sim = this.simulation as BicycleFactory;
+        await this.enterQueue(sim.qClerks);
+        await this.delay(sim.prepareInvoiceDelay.sample());
+        this.leaveQueue(sim.qClerks);
+        this.owner.paperwork = true;
+        this.sendSignal(this.owner);
+    }
+}

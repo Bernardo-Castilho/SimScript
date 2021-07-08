@@ -15,7 +15,7 @@
         8 * oil storage
         9 * pump assembly
         10 * robot FMS
-        11 - bicycle factory -------------------------------------------
+        11 * bicycle factory
         12 - warehouse/branch inventory
         13 - canal and lock
         14 - foundry

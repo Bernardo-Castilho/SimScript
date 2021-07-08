@@ -21,8 +21,8 @@ import { CarFollow } from './simulations/car-follow';
 import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
-    Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint,
-    Manufacturing, Textile, OilDepot, PumpAssembly, RobotFMS
+    Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
+    Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory
 } from './simulations/gpss';
 
 
@@ -302,7 +302,7 @@ showSimulation(
 )
 
 //----------------------------------------------------------
-// OilDepot
+// Oil Depot
 showSimulation(
     new OilDepot(),
     'Oil Depot (GPSS)',
@@ -363,10 +363,10 @@ showSimulation(
 )
 
 //-------------------------------------------------------------------------
-// PumpAssembly
+// Pump Assembly
 showSimulation(
     new PumpAssembly(),
-    'PumpAssembly (GPSS)',
+    'Pump Assembly (GPSS)',
     `<p>
         A manufacturer makes centrifugal pump units which are assembled to
         customer orders. The orders arrive on average, every 5 hours,
@@ -492,8 +492,51 @@ showSimulation(
         setText('#fms-stg', format(sim.qJobs.grossPop.max, 0));
         log.innerHTML = sim.getStatsTable();
     }
-
 )
+
+//-------------------------------------------------------------------------
+// Bicycle Factory
+showSimulation(
+    new BicycleFactory(),
+    'Bicycle Factory (GPSS)',
+    `<p>
+        A factory assembles bicycles employing the following staff: 2 clerks,
+        3 framers, 1 saddler, 1 handler, 1 wheeler, 1 pedaler, 4 assemblers,
+        and 3 packers.</p>
+    <p>
+        The company commences to assemble a bicycle every 50±10 minutes.
+        The clerical department prepares the delivery documents, instructions, 
+        toolkit and invoice.</p>
+    <p>
+        Each department withdraws the component required for a particular order
+        from stock, inspects (3±1 minutes) and prepares it for assembly.
+        The frame is manufactured and takes 65 minutes, exponentially distributed.
+        When the components are available, they are assembled.
+        This takes on average 90 minutes, with a standard deviation of
+        10 minutes.</p>
+    <p>
+        When the delivery documents, toolkit, and the assembled bicycle are
+        ready, they are packed (40±5 minutes) in preparation for delivery.</p>
+    <p>
+        Simulate the bicycle factory assembly operation for 5 days and find:</p>
+    <ol>
+        <li>
+            The utilization of the staff in each department.<br/>
+            GPSS says the Clerks are busiest with a utilization of <b>78%</b>.<br/>
+            SimScript says their utilization is <b><span id='bike-clerk-utz'>?</span>%</b>.</li>
+        <li>
+            The transit times of customers’ orders.<br/>
+            GPSS says the average was <b>236</b> min with a standard deviation of <b>51</b> min.<br/>
+            SimScript says the average was <b><span id='bike-tm-mean'>?</span></b> min with a
+            <b><span id='bike-tm-std'>?</span></b> min standard deviation.</li>
+    </ol>`,
+    (sim: BicycleFactory, log: HTMLElement) => {
+        setText('#bike-clerk-utz', format(sim.qClerks.utilization * 100, 0));
+        setText('#bike-tm-mean', format(sim.qTransit.grossDwell.avg, 0));
+        setText('#bike-tm-std', format(sim.qTransit.grossDwell.stdev, 0));
+        log.innerHTML = sim.getStatsTable();
+    }
+);
 
 //----------------------------------------------------------
 // Generator

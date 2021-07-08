@@ -387,8 +387,7 @@ export class LogNormal extends RandomVar {
         return this._max;
     }
     /**
-     * Gets a random value that follows a lognormal distribution with
-     * a given {@link mean} and standard deviation ({@link std}).
+     * Gets a random integer between zero and {@link max}.
      */
     sample(): number {
         return Math.floor(super.sample() * (this._max + 1));
