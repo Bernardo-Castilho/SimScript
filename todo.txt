@@ -1,3 +1,9 @@
+# Changes
+
+- Added Erlang and Gamma random vars.
+- Improved the format of the tables created by the Simulation.getStatsTable method.
+
+
 # Todo
 - Entity<Simulation>
 - Promise.all

@@ -686,7 +686,7 @@ showSimulation(
         
         // parameters
         bind('rand-type', sim.randomVarIndex, v => sim.randomVarIndex = v);
-        bind('rand-size', sim.sampleSize, v => sim.sampleSize = v, ' samples');
+        bind('rand-size', sim.sampleSize, v => sim.sampleSize = v, ' samples', 0);
         bind('rand-seeded', sim.seeded, v => sim.seeded = v);
     }
 );
@@ -908,9 +908,9 @@ showSimulation(
             ${sim.qWait.grossDwell.getHistogramChart('Wait times (minutes)')}`;
 
         // parameters
-        bind('mmc-capy', sim.qService.capacity, v => sim.qService.capacity = v);
-        bind('mmc-inter-arr', sim.interArrival.mean, v => sim.interArrival = new Exponential(v));
-        bind('mmc-service', sim.service.mean, v => sim.service = new Exponential(v));
+        bind('mmc-capy', sim.qService.capacity, v => sim.qService.capacity = v, ' servers', 0);
+        bind('mmc-inter-arr', sim.interArrival.mean, v => sim.interArrival = new Exponential(v), ' seconds', 0);
+        bind('mmc-service', sim.service.mean, v => sim.service = new Exponential(v), ' seconds', 0);
 
         // helpers
         function sum(rho1: number, c: number): number {
@@ -991,9 +991,9 @@ showSimulation(
             sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross');
         
         // parameters
-        bind('xwalk-red', sim.cycle.red, v => sim.cycle.red = v, ' seconds');
-        bind('xwalk-yellow', sim.cycle.yellow, v => sim.cycle.yellow = v, ' seconds');
-        bind('xwalk-green', sim.cycle.green, v => sim.cycle.green = v, ' seconds');
+        bind('xwalk-red', sim.cycle.red, v => sim.cycle.red = v, ' seconds', 0);
+        bind('xwalk-yellow', sim.cycle.yellow, v => sim.cycle.yellow = v, ' seconds', 0);
+        bind('xwalk-green', sim.cycle.green, v => sim.cycle.green = v, ' seconds', 0);
     }
 );
 
@@ -1413,8 +1413,8 @@ showSimulation(
         });
         bind('rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
         bind('tension', sim.splineTension, v => sim.splineTension = v);
-        bind('max-step', sim.maxTimeStep, v => sim.maxTimeStep = v);
-        bind('frame-delay', sim.frameDelay, v => sim.frameDelay = v);
+        bind('max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units', 0);
+        bind('frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms', 0);
     }
 );
 
@@ -1540,11 +1540,11 @@ showSimulation(
             let q = anim.queues;
             q[0].angle = v;
             anim.queues = q;
-        }, ' degrees');
+        }, ' degrees', 0);
         bind('af-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
         bind('af-tension', sim.splineTension, v => sim.splineTension = v);
-        bind('af-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
-        bind('af-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
+        bind('af-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units', 0);
+        bind('af-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms', 0);
     }
 );
 
@@ -1668,11 +1668,11 @@ showSimulation(
             let q = anim.queues;
             q[0].angle = v;
             anim.queues = q;
-        }, ' degrees');
+        }, ' degrees', 0);
         bind('x3-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
         bind('x3-tension', sim.splineTension, v => sim.splineTension = v);
-        bind('x3-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
-        bind('x3-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
+        bind('x3-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units', 0);
+        bind('x3-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms', 0);
     }
 );
 function createX3Queue(name: string, x: number, y: number, z = 0): string {

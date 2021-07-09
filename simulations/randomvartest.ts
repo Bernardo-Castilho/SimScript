@@ -2,7 +2,9 @@ import { Simulation } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Tally } from '../simscript/tally';
 import {
-    RandomVar, Uniform, Triangular, Empirical, Exponential, Normal, LogNormal, RandomInt
+    RandomVar, Uniform, Triangular, Empirical,
+    Exponential, Erlang, Gamma,
+    Normal, LogNormal, RandomInt
 } from '../simscript/random';
 
 //
@@ -65,6 +67,22 @@ export class RandomVarTest extends Simulation {
             { var: new LogNormal(10, 2, seed), name: 'LogNormal(10, 2)', binSize: 2 },
             { var: new RandomInt(10, seed), name: 'RandomInt(10)', binSize: 1 },
             { var: new EightEighty(seed), name: 'EightEighty()', binSize: 10 },
+
+            { var: new Erlang(1, 2, seed), name: 'Erlang(1, 2)', binSize: 1 },
+            { var: new Erlang(2, 2, seed), name: 'Erlang(2, 2)', binSize: 1 },
+            { var: new Erlang(3, 2, seed), name: 'Erlang(3, 2)', binSize: 1 },
+            { var: new Erlang(5, 1, seed), name: 'Erlang(5, 1)', binSize: 1 },
+            { var: new Erlang(7, 0.5, seed), name: 'Erlang(7, 0.5)', binSize: 1 },
+            { var: new Erlang(9, 1, seed), name: 'Erlang(9, 1)', binSize: 1 },
+            { var: new Erlang(1, 1, seed), name: 'Erlang(1, 1)', binSize: 1 },
+
+            { var: new Gamma(1, 2, seed), name: 'Gamma(1, 2)', binSize: 1 },
+            { var: new Gamma(2, 2, seed), name: 'Gamma(2, 2)', binSize: 1 },
+            { var: new Gamma(3, 2, seed), name: 'Gamma(3, 2)', binSize: 1 },
+            { var: new Gamma(5, 1, seed), name: 'Gamma(5, 1)', binSize: 1 },
+            { var: new Gamma(9, 0.5, seed), name: 'Gamma(9, 0.5)', binSize: 1 },
+            { var: new Gamma(7.5, 1, seed), name: 'Gamma(7.5, 1)', binSize: 1 },
+            { var: new Gamma(0.5, 1, seed), name: 'Gamma(0.5, 1)', binSize: 1 },
         ];
     }
     onStarting() {

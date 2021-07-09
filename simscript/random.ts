@@ -86,7 +86,7 @@ export class Uniform extends RandomVar {
 
 /**
  * Represents a random variable with a triangular distribution
- * based on given min, peak, and max values.
+ * based on given **min**, **peak**, and **max** values.
  * 
  * For more information on triangular distributions see 
  * [triangular distribution](https://en.wikipedia.org/wiki/Triangular_distribution).
@@ -148,6 +148,9 @@ export class Triangular extends RandomVar {
  * Represents a random variable with an empirical distribution defined
  * by two vectors containing X and Y values.
  * 
+ * The X and Y value arrays must have the same size. The X and Y values
+ * must be in ascending order, and the Y values must range from zero to one.
+ * 
  * For more information on empirical distributions see 
  * [empirical distribution](https://en.wikipedia.org/wiki/Empirical_distribution_function).
  */
@@ -208,7 +211,11 @@ export class Empirical extends RandomVar {
 
 /**
  * Represents a random variable with an exponential distribution 
- * with a given mean value.
+ * with a given **mean** value.
+ * 
+ * The **mean** value is the inverse of the distribution's **rate**.
+ * For example, an Exponential distribution with mean of 2 hours,
+ * can be used to model a process with 0.5 arrivals per hour.
  * 
  * For more information on exponential distributions see 
  * [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution).
@@ -243,8 +250,146 @@ export class Exponential extends RandomVar {
 }
 
 /**
+ * Represents a random variable with an Erlang distribution 
+ * with given **shape** and **scale** parameters.
+ * 
+ * The Erlang distribution corresponds to the sum of **shape**
+ * independent Exponential variables.
+ * 
+ * For more information on exponential distributions see 
+ * [exponential distribution](https://en.wikipedia.org/wiki/Erlang_distribution).
+ */
+export class Erlang extends Exponential {
+    protected _shape: number;
+
+    /**
+     * Initializes a new instance of the {@link Erlang} class.
+     * 
+     * @param shape Shape parameter (integer, greater than zero).
+     * @param scale Scale parameter (mean value of the Exponential distribution).
+     * @param seed Optional value used to initialize the random sequence.
+     */
+    constructor(shape: number, scale: number, seed?: number) {
+        assert(shape > 0, 'shape parameter must be an integer > 0.');
+        super(scale, seed);
+        this._shape = shape;
+    }
+    /**
+     * Gets the value of the **shape** parameter.
+     */
+    get shape(): number {
+        return this._shape;
+    }
+    /**
+     * Gets the value of the **scale** parameter.
+     */
+    get scale(): number {
+        return this._mean;
+    }
+    /**
+     * Gets a random value that follows an exponential distribution with
+     * a given {@link mean}.
+     */
+    sample(): number {
+        let val = 0;
+        for (let i = 0; i < this._shape; i++) {
+            val += super.sample();
+        }
+        return val;
+    }
+}
+
+/**
+ * Represents a random variable with a Gamma distribution with
+ * given **shape** and **scale** parameters.
+ * 
+ * The Gamma distribution is a generalization of the Erlang distribution
+ * where the shape parameter doesn't have to be an integer.
+ * 
+ * For more information on Gamma distributions see 
+ * [Gamma distribution](https://en.wikipedia.org/wiki/Gamma_distribution).
+ */
+ export class Gamma extends RandomVar {
+    _shape: number;
+    _scale: number;
+
+    /**
+     * Initializes a new instance of the {@link Gamma} class.
+     * 
+     * @param shape Shape parameter.
+     * @param scale Scale parameter.
+     * @param seed Optional value used to initialize the random sequence.
+     */
+    constructor(shape: number, scale: number, seed?: number) {
+        super(seed);
+        assert(shape > 0, 'shape parameter must be > 0.');
+        this._shape = shape;
+        this._scale = scale;
+    }
+    /**
+     * Gets the value of the shape parameter.
+     */
+    get shape(): number {
+        return this._shape;
+    }
+    /**
+     * Gets the value of the scale parameter.
+     */
+    get scale(): number {
+        return this._scale;
+    }
+    /**
+     * Gets a random value that follows a Gamma distribution with
+     * the given {@link shape} and {@link scale} parameters.
+     */
+    sample(): number {
+        const
+            shape = this._shape,
+            scale = this._scale;
+        if (shape > 0 && shape < 1) {
+            const b = (Math.E + shape) / Math.E;
+            for (let i = 0; i < 1000; i++) {
+                const p = b * super.sample();
+                if (p <= 1) {
+                    const y = Math.pow(p, (1 / shape));
+                    if (super.sample() <= Math.exp(-y)) {
+                        return scale * y;
+                    }
+                } else {
+                    const y = -Math.log((b - p) / shape);
+                    if (super.sample() <= Math.pow(y, shape - 1)) {
+                        return scale * y;
+                    }
+                }
+            }
+            assert(false, 'Possible infinite loop generating Gamma variable');
+        } else if (shape == 1) {
+            return -scale * Math.log(super.sample());
+        } else if (shape > 1) {
+            for (let i = 0; ; i++) {
+                const
+                    a = 1 / Math.sqrt(2 * shape - 1),
+                    b = shape - Math.log(4),
+                    q = shape + 1 / a,
+                    t = 4.5,
+                    d = 1 + Math.log(t),
+                    u1 = super.sample(),
+                    u2 = super.sample(),
+                    v = a * Math.log(u1 / (1 - u1)),
+                    y = shape * Math.exp(v),
+                    z = u1 * u1 * u2,
+                    w = b + q * v - y;
+                if (w + d - t * z >= 0 || w >= Math.log(z)) {
+                    return scale * y;
+                }
+            }
+        }
+    }
+}
+
+/**
  * Represents a random variable with a Normal distribution with
- * given mean and standard deviation values.
+ * given **mean** and **standard deviation** values.
  * 
  * For more information on the Normal distribution see 
  * [Normal distribution](https://en.wikipedia.org/wiki/Normal_distribution).

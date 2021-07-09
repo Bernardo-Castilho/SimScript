@@ -47,12 +47,20 @@ function _getNumberFormat(decimals: number): Intl.NumberFormat {
  * @param initialValue Initial value applied to the input element.
  * @param onInput Function called when the input value changes.
  * @param suffix String appended to the span element after input range elements.
+ * @param decimals Number of decimal places to show for numeric values.
  */
-export function bind(id: string, initialValue: any, onInput: Function, suffix = '') {
+export function bind(id: string, initialValue: any, onInput: Function, suffix = '', decimals?: number) {
     const input = document.getElementById(id) as any;
     const isCheck = input.type == 'checkbox';
     const isNumber = input.type == 'range' || input.type == 'number';
     const isSelect = input instanceof HTMLSelectElement;
+
+    // format value for display
+    const fmt = (value) => {
+        return decimals != null
+            ? ` ${format(value, decimals)}${suffix}`
+            : ` ${value}${suffix}`;
+    }
 
     // set initial value
     if (isCheck) {
@@ -70,13 +78,13 @@ export function bind(id: string, initialValue: any, onInput: Function, suffix = 
         ? input.insertAdjacentElement('afterend', document.createElement('span'))
         : null;
     if (span) {
-        span.textContent = ` ${input.value}${suffix}`;
+        span.textContent = fmt(input.value);
     }
     
     // apply changes
     input.addEventListener('input', e => {
         if (span) {
-            span.textContent = ` ${input.value}${suffix}`;
+            span.textContent = fmt(input.value);
         }
         const value = isCheck ? input.checked :
             isSelect ? input.selectedIndex :
