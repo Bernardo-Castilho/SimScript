@@ -464,10 +464,9 @@ export class Normal extends RandomVar {
  * For more information on log-normal distributions see 
  * [log-normal distribution](https://en.wikipedia.org/wiki/LogNormal_distribution).
  */
-export class LogNormal extends RandomVar {
-    protected _mean: number;
-    protected _std: number;
-    protected _normal: Normal;
+export class LogNormal extends Normal {
+    protected _lnMean: number;
+    protected _lnStd: number;
 
     /**
      * Initializes a new instance of the {@link LogNormal} class.
@@ -477,34 +476,35 @@ export class LogNormal extends RandomVar {
      * @param seed Optional value used to initialize the random sequence.
      */
     constructor(mean: number, std: number, seed?: number) {
-        super(seed);
-        assert(std >= 0, 'std >= 0');
-        this._mean = mean;
-        this._std = std;
-        let sq_mean = mean * mean,
+        const
+            sq_mean = mean * mean,
             sq_stddev = std * std,
             m = Math.log(sq_mean / Math.sqrt(sq_mean + sq_stddev)),
             s = Math.sqrt(Math.log((sq_mean + sq_stddev) / sq_mean));
-        this._normal = new Normal(m, s, false, seed); // inner normal
+        super(m, s, false, seed);
+        this._lnMean = mean;
+        this._lnStd = std;
     }
     /**
      * Gets the mean value of the generated values.
      */
     get mean(): number {
-        return this._mean;
+        return this._lnMean;
     }
     /**
      * Gets the standard deviation of the generated values.
      */
     get std(): number {
-        return this._std;
+        return this._lnStd;
     }
     /**
      * Gets a random value that follows a lognormal distribution with
      * a given {@link mean} and standard deviation ({@link std}).
      */
     sample(): number {
-        return this._mean == 0 ? 0 : Math.pow(Math.E, this._normal.sample());
+        return this._lnMean == 0
+            ? 0
+            : Math.pow(Math.E, super.sample());
     }
 }
 

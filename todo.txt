@@ -6,9 +6,7 @@
 - Improved bind method with a decimals parameter.
 - Added Erlang and Gamma random vars.
 
-
 # Todo
-- Entity<Simulation>
 - Promise.all
 - autonomous vehicles
 - more docs/examples
