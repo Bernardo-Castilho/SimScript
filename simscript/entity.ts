@@ -33,10 +33,10 @@ export interface IAnimationPosition {
  * For example:
  * 
  * ```typescript
- * class Customer extends Entity {
+ * class Customer extends Entity<BarberShop> {
  *     service = new Uniform(15 - 3, 15 + 3);
  *     async script() {
- *         const shop = this.simulation as BarberShop;
+ *         const shop = this.simulation;
  *         await this.enterQueue(shop.qWait); // enter the line
  *         await this.enterQueue(shop.qJoe); // seize Joe the barber
  *         this.leaveQueue(shop.qWait); // leave the line
@@ -46,8 +46,8 @@ export interface IAnimationPosition {
  * }
  * ```
  */
-export class Entity {
-    /** @internal */ _sim: Simulation | null = null;
+export class Entity<S extends Simulation = Simulation> {
+    /** @internal */ _sim: S | null = null;
     /** @internal */ _queues = new Map();
     private _serial = 0;
     private _prty = 0;
@@ -73,7 +73,7 @@ export class Entity {
      * Gets a reference to the {@link Simulation} object that this entity
      * is part of.
      */
-    get simulation(): Simulation {
+    get simulation(): S {
         return this._sim;
     }
     /**
@@ -108,10 +108,10 @@ export class Entity {
      * a **service** random variable, then leave the service queue:
      * 
      * ```typescript
-     * class Customer extends Entity {
+     * class Customer extends Entity<BarberShop> {
      *     service = new Uniform(15 - 3, 15 + 3);
      *     async script() {
-     *         const shop = this.simulation as BarberShop;
+     *         const shop = this.simulation;
      *         await this.enterQueue(shop.qWait); // enter the line
      *         await this.enterQueue(shop.qJoe); // seize Joe the barber
      *         this.leaveQueue(shop.qWait); // leave the line
@@ -186,10 +186,10 @@ export class Entity {
      * a **service** random variable, then leave the service queue:
      * 
      * ```typescript
-     * class Customer extends Entity {
+     * class Customer extends Entity<BarberShop> {
      *     service = new Uniform(15 - 3, 15 + 3);
      *     async script() {
-     *         const shop = this.simulation as BarberShop;
+     *         const shop = this.simulation;
      *         await this.enterQueue(shop.qWait); // enter the line
      *         await this.enterQueue(shop.qJoe); // seize Joe the barber
      *         this.leaveQueue(shop.qWait); // leave the line
@@ -421,10 +421,10 @@ export class Entity {
      * 
      * For example:
      * ```typescript
-     * class Customer extends Entity {
+     * class Customer extends Entity<BarberShop> {
      *     service = new Uniform(15 - 3, 15 + 3);
      *     async script() {
-     *         const shop = this.simulation as BarberShop;
+     *         const shop = this.simulation;
      *         await this.enterQueue(shop.qWait); // enter the line
      *         await this.enterQueue(shop.qJoe); // seize Joe the barber
      *         this.leaveQueue(shop.qWait); // leave the line

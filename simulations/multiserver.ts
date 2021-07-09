@@ -42,9 +42,9 @@ export class MultiServer extends Simulation {
 }
 
 // entities that use multiple single-server resources
-export class MultiServerResource extends Entity {
+export class MultiServerResource extends Entity<MultiServer> {
     async script() {
-        const sim = this.simulation as MultiServer;
+        const sim = this.simulation;
 
         // enter
         await this.enterQueue(sim.qMultiWait);
@@ -60,9 +60,9 @@ export class MultiServerResource extends Entity {
 }
 
 // entities that use n single-server resources and pick a server that is available
-export class SingleServerResources extends Entity {
+export class SingleServerResources extends Entity<MultiServer> {
     async script() {
-        const sim = this.simulation as MultiServer;
+        const sim = this.simulation;
         await this.enterQueue(sim.qSingleWait);
 
         // select queue that is not busy
@@ -94,9 +94,9 @@ export class SingleServerResources extends Entity {
 }
 
 // entities that use n single-server resources and pick the server at random
-export class SingleServerResourcesNoChoice extends Entity {
+export class SingleServerResourcesNoChoice extends Entity<MultiServer> {
     async script() {
-        const sim = this.simulation as MultiServer;
+        const sim = this.simulation;
         await this.enterQueue(sim.qSingleWaitNC);
 
         // select a random service queue

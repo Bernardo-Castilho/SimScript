@@ -72,12 +72,14 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class"><a href="classes/animation.html" class="tsd-kind-icon">Animation</a></li>
 								<li class="tsd-kind-class"><a href="classes/empirical.html" class="tsd-kind-icon">Empirical</a></li>
-								<li class="tsd-kind-class"><a href="classes/entity.html" class="tsd-kind-icon">Entity</a></li>
+								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/entity.html" class="tsd-kind-icon">Entity</a></li>
 								<li class="tsd-kind-class"><a href="classes/entitygenerator.html" class="tsd-kind-icon">Entity<wbr>Generator</a></li>
+								<li class="tsd-kind-class"><a href="classes/erlang.html" class="tsd-kind-icon">Erlang</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/event.html" class="tsd-kind-icon">Event</a></li>
 								<li class="tsd-kind-class"><a href="classes/eventargs.html" class="tsd-kind-icon">Event<wbr>Args</a></li>
 								<li class="tsd-kind-class"><a href="classes/exponential.html" class="tsd-kind-icon">Exponential</a></li>
 								<li class="tsd-kind-class"><a href="classes/fecitem.html" class="tsd-kind-icon">Fec<wbr>Item</a></li>
+								<li class="tsd-kind-class"><a href="classes/gamma.html" class="tsd-kind-icon">Gamma</a></li>
 								<li class="tsd-kind-class"><a href="classes/lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a></li>
 								<li class="tsd-kind-class"><a href="classes/network.html" class="tsd-kind-icon">Network</a></li>
 								<li class="tsd-kind-class"><a href="classes/normal.html" class="tsd-kind-icon">Normal</a></li>
@@ -164,13 +166,13 @@
 					<a name="bind" class="tsd-anchor"></a>
 					<h3>bind</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, initialValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, onInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, suffix<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, initialValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, onInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, suffix<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, decimals<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:51</li>
+									<li>Defined in util.ts:52</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -204,6 +206,12 @@
 										<p>String appended to the span element after input range elements.</p>
 									</div>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> decimals: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of decimal places to show for numeric values.</p>
+									</div>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -219,7 +227,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:129</li>
+									<li>Defined in util.ts:137</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -301,7 +309,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:113</li>
+									<li>Defined in util.ts:121</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -332,7 +340,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:140</li>
+									<li>Defined in util.ts:148</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -364,7 +372,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util.ts:95</li>
+									<li>Defined in util.ts:103</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -412,11 +420,14 @@
 					<li class=" tsd-kind-class">
 						<a href="classes/empirical.html" class="tsd-kind-icon">Empirical</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/entity.html" class="tsd-kind-icon">Entity</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/entitygenerator.html" class="tsd-kind-icon">Entity<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/erlang.html" class="tsd-kind-icon">Erlang</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/event.html" class="tsd-kind-icon">Event</a>
@@ -429,6 +440,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/fecitem.html" class="tsd-kind-icon">Fec<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/gamma.html" class="tsd-kind-icon">Gamma</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>LogNormal | simscript</title>
+	<title>Gamma | simscript</title>
 	<meta name="description" content="Documentation for simscript">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">simscript</a>
 				</li>
 				<li>
-					<a href="lognormal.html">LogNormal</a>
+					<a href="gamma.html">Gamma</a>
 				</li>
 			</ul>
-			<h1>Class LogNormal</h1>
+			<h1>Class Gamma</h1>
 		</div>
 	</div>
 </header>
@@ -68,11 +68,13 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Represents a random variable with a log-normal distribution with
-						given mean and standard deviation values.</p>
+						<p>Represents a random variable with a Gamma distribution with
+						given <strong>shape</strong> and <strong>scale</strong> parameters.</p>
 					</div>
-					<p>For more information on log-normal distributions see
-					<a href="https://en.wikipedia.org/wiki/LogNormal_distribution">log-normal distribution</a>.</p>
+					<p>The Gamma distribution is a generalization of the Erlang distribution
+					where the shape parameter doesn&#39;t have to be an integer.</p>
+					<p>For more information on Gamma distributions see
+					<a href="https://en.wikipedia.org/wiki/Gamma_distribution">Gamma distribution</a>.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -82,7 +84,7 @@
 						<a href="randomvar.html" class="tsd-signature-type" data-tsd-kind="Class">RandomVar</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">LogNormal</span>
+								<span class="target">Gamma</span>
 							</li>
 						</ul>
 					</li>
@@ -95,20 +97,27 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="lognormal.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="gamma.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="gamma.html#_scale" class="tsd-kind-icon">_scale</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="gamma.html#_shape" class="tsd-kind-icon">_shape</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="lognormal.html#mean" class="tsd-kind-icon">mean</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="lognormal.html#std" class="tsd-kind-icon">std</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="gamma.html#scale" class="tsd-kind-icon">scale</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="gamma.html#shape" class="tsd-kind-icon">shape</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="lognormal.html#sample" class="tsd-kind-icon">sample</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="gamma.html#sample" class="tsd-kind-icon">sample</a></li>
 							</ul>
 						</section>
 					</div>
@@ -120,33 +129,33 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Log<wbr>Normal<span class="tsd-signature-symbol">(</span>mean<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, std<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, seed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="lognormal.html" class="tsd-signature-type" data-tsd-kind="Class">LogNormal</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Gamma<span class="tsd-signature-symbol">(</span>shape<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, scale<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, seed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="gamma.html" class="tsd-signature-type" data-tsd-kind="Class">Gamma</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="randomvar.html">RandomVar</a>.<a href="randomvar.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in random.ts:470</li>
+									<li>Defined in random.ts:314</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Initializes a new instance of the <a href="lognormal.html">LogNormal</a> class.</p>
+									<p>Initializes a new instance of the <a href="gamma.html">Gamma</a> class.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>mean: <span class="tsd-signature-type">number</span></h5>
+									<h5>shape: <span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Mean generated value.</p>
+										<p>Shape parameter.</p>
 									</div>
 								</li>
 								<li>
-									<h5>std: <span class="tsd-signature-type">number</span></h5>
+									<h5>scale: <span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Standard deviation of the generated values.</p>
+										<p>Scale parameter.</p>
 									</div>
 								</li>
 								<li>
@@ -156,29 +165,52 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="lognormal.html" class="tsd-signature-type" data-tsd-kind="Class">LogNormal</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="gamma.html" class="tsd-signature-type" data-tsd-kind="Class">Gamma</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="_scale" class="tsd-anchor"></a>
+					<h3>_scale</h3>
+					<div class="tsd-signature tsd-kind-icon">_scale<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in random.ts:314</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="_shape" class="tsd-anchor"></a>
+					<h3>_shape</h3>
+					<div class="tsd-signature tsd-kind-icon">_shape<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in random.ts:313</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="mean" class="tsd-anchor"></a>
-					<h3>mean</h3>
+					<a name="scale" class="tsd-anchor"></a>
+					<h3>scale</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> mean<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> scale<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in random.ts:493</li>
+									<li>Defined in random.ts:338</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets the mean value of the generated values.</p>
+									<p>Gets the value of the scale parameter.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -186,21 +218,21 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="std" class="tsd-anchor"></a>
-					<h3>std</h3>
+					<a name="shape" class="tsd-anchor"></a>
+					<h3>shape</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> std<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> shape<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in random.ts:499</li>
+									<li>Defined in random.ts:332</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets the standard deviation of the generated values.</p>
+									<p>Gets the value of the shape parameter.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -221,13 +253,13 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="randomvar.html">RandomVar</a>.<a href="randomvar.html#sample">sample</a></p>
 								<ul>
-									<li>Defined in random.ts:506</li>
+									<li>Defined in random.ts:345</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets a random value that follows a lognormal distribution with
-									a given <a href="lognormal.html#mean">mean</a> and standard deviation (<a href="lognormal.html#std">std</a>).</p>
+									<p>Gets a random value that follows a Gamma distribution with
+									the given <a href="gamma.html#shape">shape</a> and <a href="gamma.html#scale">scale</a> parameters.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -276,30 +308,36 @@
 					<li class=" tsd-kind-class">
 						<a href="fecitem.html" class="tsd-kind-icon">Fec<wbr>Item</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="gamma.html" class="tsd-kind-icon">Gamma</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>
+						<a href="gamma.html" class="tsd-kind-icon">Gamma</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="lognormal.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="gamma.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="gamma.html#_scale" class="tsd-kind-icon">_scale</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="gamma.html#_shape" class="tsd-kind-icon">_shape</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="lognormal.html#mean" class="tsd-kind-icon">mean</a>
+								<a href="gamma.html#scale" class="tsd-kind-icon">scale</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="lognormal.html#std" class="tsd-kind-icon">std</a>
+								<a href="gamma.html#shape" class="tsd-kind-icon">shape</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="lognormal.html#sample" class="tsd-kind-icon">sample</a>
+								<a href="gamma.html#sample" class="tsd-kind-icon">sample</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class">
+						<a href="lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>
+					</li>
 					<li class=" tsd-kind-class">
 						<a href="network.html" class="tsd-kind-icon">Network</a>
 					</li>

@@ -108,10 +108,10 @@
 <span style="color: #000000">}</span>
 
 <span style="color: #008000">// define the Customer entity used by the Barbershop simulation</span>
-<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000"> {</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">BarberShop</span><span style="color: #000000">&gt; {</span>
 <span style="color: #000000">    </span><span style="color: #001080">service</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">15</span><span style="color: #000000"> - </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000"> + </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">shop</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">BarberShop</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">shop</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000">;</span>
 <span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// enter the line</span>
 <span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qJoe</span><span style="color: #000000">); </span><span style="color: #008000">// seize Joe the barber</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// leave the line</span>
@@ -666,7 +666,7 @@
 					<a name="activate" class="tsd-anchor"></a>
 					<h3>activate</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">activate<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">activate<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -684,7 +684,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>e: <a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a></h5>
+									<h5>e: <a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p><a href="entity.html">Entity</a> to activate.</p>
 									</div>
@@ -727,7 +727,7 @@
 <span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">generateEntities</span><span style="color: #000000">(</span><span style="color: #001080">Customer</span><span style="color: #000000">, </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">18</span><span style="color: #000000"> - </span><span style="color: #098658">6</span><span style="color: #000000">, </span><span style="color: #098658">18</span><span style="color: #000000"> + </span><span style="color: #098658">6</span><span style="color: #000000">));</span>
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
-<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000"> {</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">BarberShop</span><span style="color: #000000">&gt; {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
 <span style="color: #000000">        </span><span style="color: #008000">// do what the customers do...</span>
 <span style="color: #000000">    }</span>
@@ -1124,11 +1124,14 @@
 					<li class=" tsd-kind-class">
 						<a href="empirical.html" class="tsd-kind-icon">Empirical</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="entity.html" class="tsd-kind-icon">Entity</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="entitygenerator.html" class="tsd-kind-icon">Entity<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="erlang.html" class="tsd-kind-icon">Erlang</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="event.html" class="tsd-kind-icon">Event</a>
@@ -1141,6 +1144,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="fecitem.html" class="tsd-kind-icon">Fec<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="gamma.html" class="tsd-kind-icon">Gamma</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>

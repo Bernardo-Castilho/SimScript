@@ -38,15 +38,14 @@ export class AnimationOptions extends Simulation {
     }
 }
 
-export class RotatingEntity extends Entity {
+export class RotatingEntity extends Entity<AnimationOptions> {
     async script() {
-        let sim = this.simulation as AnimationOptions;
-        this.enterQueueImmediately(sim.qRotate);
+        this.enterQueueImmediately(this.simulation.qRotate);
         await this.waitSignal(null); // wait forever
     }
 }
 
-export class RoamEntity extends Entity {
+export class RoamEntity extends Entity<AnimationOptions> {
     fast = false;
 
     constructor(options?: any) {
@@ -56,7 +55,7 @@ export class RoamEntity extends Entity {
     }
 
     async script() {
-        let sim = this.simulation as AnimationOptions;
+        let sim = this.simulation;
         for (; ;) {
             const moveDelay = this.fast
                 ? sim.moveDelayShort // fast entity

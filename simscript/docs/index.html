@@ -86,7 +86,9 @@
 					Typical actions include entering and leaving <strong>queues</strong>, going through
 				<strong>delays</strong>, and sending or waiting for <strong>signals</strong>.</p>
 				<p>The <strong>Entity</strong> class is abstract. In most cases, you will create one of more
-				classes that extend it to perform the actions required by your simulations.</p>
+					classes that extend it to perform the actions required by your simulations.
+					The <strong>Entity</strong> class has an optional generic parameter that contains the
+				type of <strong>Simulation</strong> it refers to.</p>
 				<a href="#queue-class" id="queue-class" style="color: inherit; text-decoration: none;">
 					<h2>Queue Class</h2>
 				</a>
@@ -151,10 +153,10 @@
 <span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">generateEntities</span><span style="color: #000000">(</span><span style="color: #001080">Customer</span><span style="color: #000000">, </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">18</span><span style="color: #000000"> - </span><span style="color: #098658">6</span><span style="color: #000000">, </span><span style="color: #098658">18</span><span style="color: #000000"> + </span><span style="color: #098658">6</span><span style="color: #000000">));</span>
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
-<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000"> {</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">BarberShop</span><span style="color: #000000">&gt; {</span>
 <span style="color: #000000">    </span><span style="color: #001080">service</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">15</span><span style="color: #000000"> - </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000"> + </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">shop</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">BarberShop</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">shop</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000">;</span>
 <span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// enter the line</span>
 <span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qJoe</span><span style="color: #000000">); </span><span style="color: #008000">// seize Joe the barber</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// leave the line</span>
@@ -237,11 +239,14 @@
 					<li class=" tsd-kind-class">
 						<a href="classes/empirical.html" class="tsd-kind-icon">Empirical</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/entity.html" class="tsd-kind-icon">Entity</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/entitygenerator.html" class="tsd-kind-icon">Entity<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/erlang.html" class="tsd-kind-icon">Erlang</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/event.html" class="tsd-kind-icon">Event</a>
@@ -254,6 +259,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/fecitem.html" class="tsd-kind-icon">Fec<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/gamma.html" class="tsd-kind-icon">Gamma</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>

@@ -59,9 +59,9 @@ export class Crosswalk extends Simulation {
 
 
 // pedestrians
-export class Pedestrian extends Entity {
+export class Pedestrian extends Entity<Crosswalk> {
     async script() {
-        let sim = this.simulation as Crosswalk;
+        let sim = this.simulation;
 
         // walk to crosswalk
         await this.delay(sim.walkToXing.sample(), {
@@ -90,9 +90,9 @@ export class Pedestrian extends Entity {
 }
 
 // cars
-export class Car extends Entity {
+export class Car extends Entity<Crosswalk> {
     async script() {
-        let sim = this.simulation as Crosswalk;
+        let sim = this.simulation;
 
         // drive to crosswalk
         await this.delay(sim.driveToXing.sample(), {
@@ -118,9 +118,9 @@ export class Car extends Entity {
 }
 
 // traffic light
-class TrafficLight extends Entity {
+class TrafficLight extends Entity<Crosswalk> {
     async script() {
-        let sim = this.simulation as Crosswalk;
+        let sim = this.simulation;
         while (true) {
 
             // turn green to allow pedestrians to cross
@@ -137,9 +137,7 @@ class TrafficLight extends Entity {
         }
     }
     setLight(value: Signal) {
-        let sim = this.simulation as Crosswalk;
-        sim.light = value;
-        let released = this.sendSignal(value);
-        //console.log('light is', Signal[sim.light], released, 'entities released at', sim.timeNow);
+        this.simulation.light = value;
+        this.sendSignal(value);
     }
 }

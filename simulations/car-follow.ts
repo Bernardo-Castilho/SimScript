@@ -31,14 +31,14 @@ export class CarFollow extends Simulation {
     }
 }
 
-export class Car extends Entity implements ICar {
+export class Car extends Entity<CarFollow> implements ICar {
     speed = 0; // starting speed
     accel = 10; // acceleration/deceleration
     position = 0; // current position
     maxSpeed = 0; // random value from simulation
 
     async script() {
-        const sim = this.simulation as CarFollow;
+        const sim = this.simulation;
         const dt = sim.timeIncrement;
         this.maxSpeed = sim.carSpeeds.sample();
 
@@ -60,7 +60,7 @@ export class Car extends Entity implements ICar {
     // gets the car's animation position
     getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
         const
-            sim = this.simulation as CarFollow,
+            sim = this.simulation,
             pt = Point.interpolate(start, end, this.position / sim.stripLength);
         return {
             position: pt,
@@ -88,7 +88,7 @@ export class Car extends Entity implements ICar {
         let speed = this.maxSpeed;
         
         // get vehicle ahead of us (or end of the road)
-        const vAhead = this.getCarAhead() as ICar;
+        const vAhead = this.getCarAhead();
         if (vAhead != null) {
 
             // calculate vehicle ahead's breaking distance
@@ -112,7 +112,7 @@ export class Car extends Entity implements ICar {
     // gets the car that is ahead of this one
     getCarAhead(): ICar {
         const
-            sim = this.simulation as CarFollow,
+            sim = this.simulation,
             strip = sim.qStrip.entities;
 
         // index 0 is the first car

@@ -14,7 +14,7 @@ interface IRandomVar {
     binSize: number;
 }
 
-//
+// RandomVarTest simulation
 export class RandomVarTest extends Simulation {
     _tally = new Tally();
     _sampleSize = 1000;
@@ -53,7 +53,10 @@ export class RandomVarTest extends Simulation {
         return this._index;
     }
     set randomVarIndex(value: number) {
-        this._index = value;
+        if (value != this._index) {
+            this._index = value;
+            this.start(); // show the new random var
+        }
     }
     createRandomVars() {
         const seed = this._seeded ? 1 : null;
@@ -92,10 +95,10 @@ export class RandomVarTest extends Simulation {
     }
 }
 
-//
-export class RandomVarTester extends Entity {
+// tester entity
+export class RandomVarTester extends Entity<RandomVarTest> {
     async script() {
-        const sim = this.simulation as RandomVarTest,
+        const sim = this.simulation,
             rv = sim.randomVar,
             tally = sim.tally;
         tally.reset();

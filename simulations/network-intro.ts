@@ -72,12 +72,12 @@ export class NetworkIntro extends Simulation {
  * Entity that represent service requests at specific
  * places on the network.
  */
-export class ServiceRequest extends Entity {
+export class ServiceRequest extends Entity<NetworkIntro> {
     node: INode; // service location
     assigned: number; // not assigned to any servers yet
 
     async script() {
-        const sim = this.simulation as NetworkIntro;
+        const sim = this.simulation;
 
         // select a free node
         this.node = sim.getRandomFreeNode();
@@ -112,13 +112,13 @@ export class ServiceRequest extends Entity {
  * Entity that represents service vehicles that scan the network
  * for requests, travel to them, and perform the service.
  */
-export class ServiceVehicle extends Entity {
+export class ServiceVehicle extends Entity<NetworkIntro> {
     node: INode;
     request: ServiceRequest;
     busy = false;
 
     async script() {
-        const sim = this.simulation as NetworkIntro;
+        const sim = this.simulation;
 
         // enter server list
         sim.servers.push(this);
@@ -193,7 +193,7 @@ export class ServiceVehicle extends Entity {
 
     // gets the closest request to this server
     getClosestRequestQuick(): ServiceRequest {
-        const sim = this.simulation as NetworkIntro;
+        const sim = this.simulation;
         assert(!this.busy, 'should not be looking for service while busy');
         let
             closestRequest: ServiceRequest = null,
@@ -213,7 +213,7 @@ export class ServiceVehicle extends Entity {
     // gets the closest request to this server
     // taking into account the position of other idle service vehicles.
     getClosestRequest(): ServiceRequest {
-        const sim = this.simulation as NetworkIntro;
+        const sim = this.simulation;
         assert(!this.busy, 'should not be looking for service while busy');
 
         // get unassigned vehicles and requests

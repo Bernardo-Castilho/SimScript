@@ -18,10 +18,9 @@ export class SimpleTest extends Simulation {
         this.generateEntities(SimplerEntity, new Uniform(5, 10), 1000);
     }
 }
-
-class SimpleEntity extends Entity {
+class SimpleEntity extends Entity<SimpleTest> {
     async script() {
-        const sim = this.simulation as SimpleTest;
+        const sim = this.simulation;
 
         // call a separate async method
         console.log('started at', sim.timeNow);
@@ -66,10 +65,10 @@ class SimpleEntity extends Entity {
 
 }
 
-class SimplerEntity extends Entity {
+class SimplerEntity extends Entity<SimpleTest> {
     service = new Uniform(5, 10);
     async script() {
-        let sim = this.simulation as SimpleTest;
+        let sim = this.simulation;
         await this.enterQueue(sim.qWait);
         await this.enterQueue(sim.qService);
         this.leaveQueue(sim.qWait);
@@ -78,8 +77,6 @@ class SimplerEntity extends Entity {
     }
 }
 
-
-
 export class SimplestSimulation extends Simulation {
     q = new Queue('simple');
     onStarting() {
@@ -87,10 +84,9 @@ export class SimplestSimulation extends Simulation {
         this.activate(new SimplestReally());
     }
 }
-
-class SimplestReally extends Entity {
+class SimplestReally extends Entity<SimplestSimulation> {
     async script() {
-        const sim = this.simulation as SimplestSimulation;
+        const sim = this.simulation;
 
         console.log('calling enterLeave', sim.timeNow, 'fec', sim._fec.length);
         await this.enterLeave();
@@ -133,7 +129,6 @@ class SimplestReally extends Entity {
     }    
 }
 
-
 export class Generator extends Simulation {
     cnt = 0;
     onStarting() {
@@ -146,11 +141,10 @@ export class Generator extends Simulation {
         console.log('elapsed', this.timeElapsed);
     }
 }
-class GeneratorEntity extends Entity {
+class GeneratorEntity extends Entity<Generator> {
     async script() {
-        const sim = this.simulation as Generator;
-        sim.cnt++;
-        console.log(' at', sim.timeNow);
+        this.simulation.cnt++;
+        console.log(' at', this.simulation.timeNow);
     }
 }
 
@@ -169,9 +163,9 @@ export class Interrupt extends Simulation {
         this.generateEntities(Interruptor, new Exponential(10));
     }
 }
-class Interruptible extends Entity {
+class Interruptible extends Entity<Interrupt> {
     async script() {
-        const sim = this.simulation as Interrupt;
+        const sim = this.simulation;
         this.enterQueueImmediately(sim.q);
         const
             delay = sim.delay.sample(),
@@ -184,9 +178,9 @@ class Interruptible extends Entity {
         this.leaveQueue(sim.q);
     }
 }
-class Interruptor extends Entity {
+class Interruptor extends Entity<Interrupt> {
     async script() {
-        const sim = this.simulation as Interrupt;
+        const sim = this.simulation;
         this.sendSignal(sim);
         await this.delay(sim.delay.sample());
         this.sendSignal(sim);
@@ -218,7 +212,7 @@ export class Preempt extends Simulation {
         }));
     }
 }
-class PreemptEntity extends Entity {
+class PreemptEntity extends Entity<Preempt> {
     start = 0;
     duration = 0;
 
@@ -263,7 +257,7 @@ class PreemptEntity extends Entity {
 }
 class Prty0 extends PreemptEntity {
     async script() {
-        const sim = this.simulation as Preempt;
+        const sim = this.simulation;
         this.log('arrived');
         await this.delay(this.start);
         await this.preempt(sim.resource, this.duration, [sim.q0]);
@@ -273,7 +267,7 @@ class Prty0 extends PreemptEntity {
 }
 class Prty1 extends PreemptEntity {
     async script() {
-        const sim = this.simulation as Preempt;
+        const sim = this.simulation;
         this.log('arrived');
         await this.delay(this.start);
         await this.preempt(sim.resource, this.duration, [sim.q1]);
@@ -283,7 +277,7 @@ class Prty1 extends PreemptEntity {
 }
 class Prty2 extends PreemptEntity {
     async script() {
-        const sim = this.simulation as Preempt;
+        const sim = this.simulation;
         this.log('arrived');
         await this.delay(this.start);
         await this.preempt(sim.resource, this.duration, [sim.q2]);

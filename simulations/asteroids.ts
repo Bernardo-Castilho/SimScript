@@ -149,7 +149,7 @@ export class Asteroids extends Simulation {
 /**
  * Base class for entities that have a position, and angle, and a speed.
  */
-class Flyer extends Entity {
+class Flyer extends Entity<Asteroids> {
     radius = 0;
     pos: IPoint;
     spd: IPoint = new Point();
@@ -255,7 +255,7 @@ export class Ship extends Flyer {
 
     async script() {
         const
-            sim = this.simulation as Asteroids,
+            sim = this.simulation,
             dt = sim.timeIncrement;
 
         // initialize ship radius
@@ -280,7 +280,7 @@ export class Ship extends Flyer {
     // handle keyboard commands
     keydown(e: KeyboardEvent) {
         if (!this.done) { // the ship may have been destroyed...
-            const sim = this.simulation as Asteroids;
+            const sim = this.simulation;
             switch (e.key) {
 
                 // left/right arrows turn the ship
@@ -354,7 +354,7 @@ export class Missile extends Flyer {
 
     async script() {
         const
-            sim = this.simulation as Asteroids,
+            sim = this.simulation,
             dt = sim.timeIncrement;
 
         // play missile sound
@@ -387,7 +387,7 @@ export class Asteroid extends Flyer {
 
     async script() {
         const
-            sim = this.simulation as Asteroids,
+            sim = this.simulation,
             ship = sim.ship,
             allEntities = sim.q.entities,
             dt = sim.timeIncrement,

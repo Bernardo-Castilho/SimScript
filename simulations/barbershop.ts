@@ -16,10 +16,10 @@ export class BarberShop extends Simulation {
         this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6)); // arrivals every ~18min
     }
 }
-class Customer extends Entity {
+class Customer extends Entity<BarberShop> {
     service = new Uniform(15 - 3, 15 + 3); // service takes ~15min
     async script() {
-        const sim = this.simulation as BarberShop;
+        const sim = this.simulation;
         await this.enterQueue(sim.qWait); // enter the line
         await this.enterQueue(sim.qJoe); // seize Joe the barber
         this.leaveQueue(sim.qWait); // leave the line

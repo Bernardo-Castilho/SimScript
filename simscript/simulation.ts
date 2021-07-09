@@ -70,10 +70,10 @@ export enum SimulationState {
  * }
  * 
  * // define the Customer entity used by the Barbershop simulation
- * class Customer extends Entity {
+ * class Customer extends Entity<BarberShop> {
  *     service = new Uniform(15 - 3, 15 + 3);
  *     async script() {
- *         const shop = this.simulation as BarberShop;
+ *         const shop = this.simulation;
  *         await this.enterQueue(shop.qWait); // enter the line
  *         await this.enterQueue(shop.qJoe); // seize Joe the barber
  *         this.leaveQueue(shop.qWait); // leave the line
@@ -289,7 +289,7 @@ export class Simulation {
      *         this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6));
      *     }
      * }
-     * class Customer extends Entity {
+     * class Customer extends Entity<BarberShop> {
      *     async script() {
      *         // do what the customers do...
      *     }

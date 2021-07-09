@@ -41,7 +41,7 @@ export class CarFollowNetwork extends Simulation {
     }
 }
 
-export class Car extends Entity implements ICar {
+export class Car extends Entity<CarFollowNetwork> implements ICar {
     speed = 0; // starting speed
     accel = 10; // acceleration/deceleration
     position = 0; // current position
@@ -52,7 +52,7 @@ export class Car extends Entity implements ICar {
 
     async script() {
         const
-            sim = this.simulation as CarFollowNetwork,
+            sim = this.simulation,
             network = sim.network,
             nodes = network.nodes,
             dt = sim.timeIncrement;
@@ -110,7 +110,7 @@ export class Car extends Entity implements ICar {
     // gets the car's animation position and angle
     getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
         const
-            sim = this.simulation as CarFollowNetwork,
+            sim = this.simulation,
             len = sim.network.getLinkDistance(this.path[0]),
             pos = this.position + (sim.timeNow - this.delayStart) * this.speed,
             pt = Point.interpolate(start, end, pos / len);
@@ -164,7 +164,7 @@ export class Car extends Entity implements ICar {
     // gets the car that is ahead of this one
     getCarAhead(): ICar {
         const
-            sim = this.simulation as CarFollowNetwork,
+            sim = this.simulation,
             link = this.path[0],
             q = link.queue;
 

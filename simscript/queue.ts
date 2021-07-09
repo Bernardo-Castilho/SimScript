@@ -18,10 +18,10 @@ import { assert, setOptions } from './util';
  * server:
  * 
  * ```typescript
- * class Customer extends Entity {
+ * class Customer extends Entity<BarberShop> {
  *     service = new Uniform(15 - 3, 15 + 3);
  *     async script() {
- *         const shop = this.simulation as BarberShop;
+ *         const shop = this.simulation;
  *         await this.enterQueue(shop.qWait); // enter the line (unlimited capacity)
  *         await this.enterQueue(shop.qJoe); // seize Joe the barber (capacity == 1)
  *         this.leaveQueue(shop.qWait); // leave the line
@@ -41,23 +41,23 @@ import { assert, setOptions } from './util';
  * For example, here is the table generated after running the example
  * shown above:
  * 
- *      BarberShop
- *      **Finish Time**	3,380.37
- *      **Elapsed Time** (s)	0.01
- *      **Populations**
- *      **Queue	Min	Avg	Max	StDev**
- *      **Wait Area**	0.00	0.03	1.00	0.17	
- *      **Joe**	0.00	0.82	1.00	0.38	
- *      **Dwell Times**
- *      **Queue	Min	Avg	Max	StDev	Cnt**
- *      **Wait Area**	0.00	0.54	6.81	1.30	185
- *      **Joe**	12.11	14.91	17.99	1.76	185
- * ```
+ * | **BarberShop**  |          |          |          |          |          |          |
+ * | --------------- | --------:| --------:| --------:| --------:| --------:| --------:|
+ * | **Finish Time**            |          | 3,380.37 |
+ * | **Elapsed Time (s)**       |          |     0.01 |
+ * | **Populations** |
+ * |   **Queue**     |  **Min** |  **Avg** |  **Max** | **StDev** | **Capy** | **Utz** |
+ * |   **Joe**       |     0.00 |     0.82 |     1.00 |      0.38 |        1 |     82% |
+ * |   **Wait Area** |     0.00 |     0.03 |     1.00 |      0.17 |        * |
+ * | **Dwell Times** |
+ * |   **Queue**     |  **Min** |  **Avg** |  **Max** | **StDev** |  **Cnt** |
+ * |   **Joe**       |    12.11 |    14.91 |    17.99 |      1.76 |      185 |
+ * |   **Wait Area** |     0.00 |     0.54 |     6.81 |      1.30 |      185 |
  * 
- * Notice how the table shows the server utilization
- * (average population for the **Joe** queue is **82%**)
- * as well as the waiting times (average **0.54** min,
- * longest **6.81** min).
+ * The table shows the simulated finish time, the actual elapsed time, and a list
+ * of the **Queue** objects used in the simulation, along with their population 
+ * (number of entities in the queue) and dwell time (time they spent in the queue)
+ * statistics.
  */
 export class Queue {
     private _sim: Simulation | null = null;

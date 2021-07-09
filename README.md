@@ -32,6 +32,8 @@ Typical actions include entering and leaving **queues**, going through
 
 The **Entity** class is abstract. In most cases, you will create one of more 
 classes that extend it to perform the actions required by your simulations.
+The **Entity** class has an optional generic parameter that contains the
+type of **Simulation** it refers to.
 
 ## Queue Class
 
@@ -107,10 +109,10 @@ export class BarberShop extends Simulation {
         this.generateEntities(Customer, new Uniform(18 - 6, 18 + 6));
     }
 }
-class Customer extends Entity {
+class Customer extends Entity<BarberShop> {
     service = new Uniform(15 - 3, 15 + 3);
     async script() {
-        const shop = this.simulation as BarberShop;
+        const shop = this.simulation;
         await this.enterQueue(shop.qWait); // enter the line
         await this.enterQueue(shop.qJoe); // seize Joe the barber
         this.leaveQueue(shop.qWait); // leave the line

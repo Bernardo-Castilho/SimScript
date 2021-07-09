@@ -32,9 +32,9 @@ export class MMC extends Simulation {
 }
 
 // customer
-class Customer extends Entity {
+class Customer extends Entity<MMC> {
     async script() {
-        let sim = this.simulation as MMC;
+        let sim = this.simulation;
 
         if (sim.qWait.canEnter()) {
             this.enterQueueImmediately(sim.qWait); // faster (no await)
