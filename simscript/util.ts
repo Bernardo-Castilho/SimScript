@@ -56,10 +56,11 @@ export function bind(id: string, initialValue: any, onInput: Function, suffix = 
     const isSelect = input instanceof HTMLSelectElement;
 
     // format value for display
-    const fmt = (value) => {
-        return decimals != null
-            ? ` ${format(value, decimals)}${suffix}`
-            : ` ${value}${suffix}`;
+    const fmt = (value: number) => {
+        const dec = decimals != null
+            ? decimals
+            : value == Math.round(value) ? 0 : 2;
+        return ` ${format(value, dec)}${suffix}`;
     }
 
     // set initial value
@@ -78,13 +79,13 @@ export function bind(id: string, initialValue: any, onInput: Function, suffix = 
         ? input.insertAdjacentElement('afterend', document.createElement('span'))
         : null;
     if (span) {
-        span.textContent = fmt(input.value);
+        span.textContent = fmt(input.valueAsNumber);
     }
     
     // apply changes
     input.addEventListener('input', e => {
         if (span) {
-            span.textContent = fmt(input.value);
+            span.textContent = fmt(input.valueAsNumber);
         }
         const value = isCheck ? input.checked :
             isSelect ? input.selectedIndex :

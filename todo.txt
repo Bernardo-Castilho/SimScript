@@ -1,11 +1,3 @@
-# Change Log
-
-7/9/21
-- Added generic Simulation parameter to Entity class.
-- Improved the format of the tables created by the Simulation.getStatsTable method.
-- Improved bind method with a decimals parameter.
-- Added Erlang and Gamma random vars.
-
 # Todo
 - Promise.all
 - autonomous vehicles
@@ -50,3 +42,11 @@
     - rail (one lane, one direction)
     - road (multi-lane, one direction)
     - canals?
+
+# Change Log
+
+SimScript 1.0.27    (7/9/21)
+- Improved the format of the tables created by the **Simulation.getStatsTable** method.
+- Added **Erlang** and **Gamma** random vars.
+- Added generic **Simulation** parameter to **Entity** class (e.g. class MyEnt extends Entity<MySim>).
+- Improved **bind** method to format labels more clearly.

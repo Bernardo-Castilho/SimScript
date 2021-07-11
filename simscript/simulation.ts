@@ -317,6 +317,28 @@ export class Simulation {
     /**
      * Creates a table with the {@link Simulation} statistics.
      * 
+     * For example, here is the table generated after running the 
+     * **BarberShop** sample simulation:
+     * 
+     * ```html
+     *  BarberShop
+     *  Finish Time           3,380.37
+     *  Elapsed Time (s)          0.01
+     *  Populations
+     *    Queue           Min      Avg      Max    StDev   Capy     Utz
+     *    Joe            0.00     0.82     1.00     0.38      1     82%
+     *    Wait Area      0.00     0.03     1.00     0.17      *
+     *  Dwell Times
+     *    Queue           Min      Avg      Max    StDev    Cnt
+     *    Joe           12.11    14.91    17.99     1.76    185
+     *    Wait Area      0.00     0.54     6.81     1.30    185
+     * ```
+     * 
+     * The table shows the simulated finish time, the actual elapsed time, and a list
+     * of the **Queue** objects used in the simulation, along with their population 
+     * (number of entities in the queue) and dwell time (time they spent in the queue)
+     * statistics.
+     * 
      * @param showNetValues Whether to include net statistics (non-zero {@link Queue} 
      * dwell times and populations).
      * @returns An HTML string defining a table with statistics for all {@link Queue} 
