@@ -7,7 +7,7 @@ import {
     Normal, LogNormal, RandomInt
 } from '../simscript/random';
 
-//
+// items in drop-down
 interface IRandomVar {
     var: RandomVar;
     name: string;
