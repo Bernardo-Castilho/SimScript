@@ -128,57 +128,57 @@ The links below show some samples of **SimScript** simulations:
 
 ## New Samples
 
-- [GPSS-inspired samples](https://stackblitz.com/edit/typescript-mapmna?file=index.html)\
+- [GPSS-inspired samples](https://stackblitz.com/edit/typescript-mapmna)\
     Shows several samples inspired by traditional 
     [GPSS samples](http://www.minutemansoftware.com/tutorial/tutorial_manual.htm)
     published by Minuteman software.
     The samples show how you can use SimScript to simulate a wide range of practical applications
     and allow you to compare results obtained by GPSS and SimScript.
 
-- [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt?file=index.ts)\
+- [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt)\
     Shows how you can customize the behavior of a SimScript **Network** to use a
     car-following model and to account for network congestion.
 
-- [Asteroids (SVG animation)](https://stackblitz.com/edit/typescript-mcoqyz?file=index.ts)\
+- [Asteroids (SVG animation)](https://stackblitz.com/edit/typescript-mcoqyz)\
     Shows how you can use Simscript to implement a simple arcade game with
     support for keyboard/touch events, sounds, and collision detection.
 
 ## Other Samples
 
-- [Barbershop](https://stackblitz.com/edit/typescript-efht9t?file=index.ts)\
+- [Barbershop](https://stackblitz.com/edit/typescript-efht9t)\
     Classic GPSS simulation example:
     customers arrive at a barbershop, wait until the barber is available, get serviced, and leave.
 
-- [M/M/C](https://stackblitz.com/edit/typescript-xbntrv?file=index.ts)\
+- [M/M/C](https://stackblitz.com/edit/typescript-xbntrv)\
     Classic M/M/C queueing system. Entities arrive, are served by one of C servers, and leave.
 
-- [RandomVar](https://stackblitz.com/edit/typescript-nwknjs?file=index.ts)\
+- [RandomVar](https://stackblitz.com/edit/typescript-nwknjs)\
     Demonstrates some of the random variables implemented in **SimScript**.
 
-- [Crosswalk](https://stackblitz.com/edit/typescript-nq3vvd?file=index.ts)\
+- [Crosswalk](https://stackblitz.com/edit/typescript-nq3vvd)\
     Uses the **waitSignal** and **sendSignal** methods to simulate a crosswalk.
 
-- [Animated Crosswalk (SVG animation)](https://stackblitz.com/edit/typescript-395kik?file=index.ts)\
+- [Animated Crosswalk (SVG animation)](https://stackblitz.com/edit/typescript-395kik)\
     Uses the **Animation** class to show an SVG-based animated version of the **Crosswalk** simulation.
 
-- [Animated Crosswalk (X3DOM animation)](https://stackblitz.com/edit/typescript-ehhn4e?file=index.ts)\
+- [Animated Crosswalk (X3DOM animation)](https://stackblitz.com/edit/typescript-ehhn4e)\
     Uses the **Animation** class to show an X3DOM-based animated version of the **Crosswalk** simulation.
 
-- [Animation Options (SVG animation)](https://stackblitz.com/edit/typescript-3zcuw1?file=animation-options.ts)\
+- [Animation Options (SVG animation)](https://stackblitz.com/edit/typescript-3zcuw1)\
     Uses an SVG-based 2D animation to show the effect of some
     **Animation** and **Simulation** properties.
 
-- [Animation Options (A-Frame animation)](https://stackblitz.com/edit/typescript-pmkehn?file=animation-options.ts)\
+- [Animation Options (A-Frame animation)](https://stackblitz.com/edit/typescript-pmkehn)\
     Uses an [A-Frame](https://aframe.io)-based 3D animation to show the effect of some
     **Animation** and **Simulation** properties.
 
-- [Animation Options (X3DOM animation)](https://stackblitz.com/edit/typescript-oncuqe?file=animation-options.ts)\
+- [Animation Options (X3DOM animation)](https://stackblitz.com/edit/typescript-oncuqe)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show the effect of some
     **Animation** and **Simulation** properties.
 
-- [Network Intro (SVG animation)](https://stackblitz.com/edit/typescript-zfm9hz?file=index.ts)\
+- [Network Intro (SVG animation)](https://stackblitz.com/edit/typescript-zfm9hz)\
     Uses an SVG-based 2D animation to show how to use SimScript's **Network** class.
 
-- [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya?file=index.ts)\
+- [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show how to use SimScript's
     **Network** class.
