@@ -9,6 +9,7 @@ import { Exponential } from './simscript/random';
 import { format, bind, assert } from './simscript/util';
 
 import { SimpleTest, SimplestSimulation, Interrupt, Preempt } from './simulations/simpletest';
+import { PromiseAll } from './simulations/promise-all';
 import { Generator } from './simulations/simpletest';
 import { RandomVarTest } from './simulations/randomvartest';
 import { BarberShop } from './simulations/barbershop';
@@ -22,7 +23,7 @@ import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
-    Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory
+    Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl
 } from './simulations/gpss';
 
 
@@ -536,6 +537,91 @@ showSimulation(
         setText('#bike-tm-std', format(sim.qTransit.grossDwell.stdev, 0));
         log.innerHTML = sim.getStatsTable();
     }
+);
+
+//-------------------------------------------------------------------------
+// Stock Control
+showSimulation(
+    new StockControl(),
+    'Stock Control (GPSS)',
+    `<p>
+        A manufacturing company makes waste disposal units, which it sells for
+        $200 each. Total annual demand is for 20,000 units. Distribution is
+        through three branches from a factory warehouse.</p>
+    <p>
+        The lead-time for delivery of an order from the manufacturing plant to
+        the factory warehouse is 4 weeks. The lead-time for delivery of an order
+        from the factory warehouse to the branches is 1 week.</p>
+    <p>
+        The proposed inventory control method is by an economic order quantity 
+        and order point system. The initial stocks, order points, economic order
+        quantities, weekly demand and standard deviation are shown in the table
+        below:</p>
+    <table class='params'>
+        <tr>
+            <th>Location</th> <th>Initial Stock</th> <th>Order Point</th>
+            <th>Order Qty</th> <th>Demand Avg</th> <th>Demand Stdev</th>
+        </tr>
+        <tr>
+            <th>Warehouse</th> <td>3,400</td> <td>2,100</td> <td>2,300</td>
+        </tr>
+        <tr>
+            <th>Branch 1</th>  <td>430</td>  <td>240</td>  <td>115</td>  <td>64</td>  <td>24</td>
+        </tr>
+        <tr>
+            <th>Branch 2</th>  <td>600</td>  <td>430</td>  <td>165</td>  <td>128</td>  <td>32</td>
+        </tr>
+        <tr>
+            <th>Branch 3</th>  <td>1,000</td>  <td>630</td>  <td>200</td> <td>192</td>  <td>48</td>
+        </tr>
+    </table>
+    <p>
+        Simulate the inventory control system for 75 weeks and determine:</p>
+    <ol>
+        <li>
+            The distribution of inventories at the three branches and the warehouse.</li>
+        <li>
+            The distribution of actual monthly sales.<br/>
+            GPSS says the monthly sales average was about <b>1,542</b>.<br/>
+            SimScript says <b><span id='ctl-sales-avg'>?</span></b>.</li>
+        <li>
+            The average value of the inventories at the branches and at the warehouse.<br/>
+            GPSS says the inventories were about <b>172</b>, <b>269</b>, <b>183</b>, and <b>1,831</b>.<br/>
+            SimScript says
+            <b><span id='ctl-stock1-avg'>?</span></b>,
+            <b><span id='ctl-stock2-avg'>?</span></b>,
+            <b><span id='ctl-stock3-avg'>?</span></b>, and
+            <b><span id='ctl-stock0-avg'>?</span></b>.
+            </li>
+        <li>
+            Does the system meet the company’s service policy of one stockout in eight years?<br/>
+            GPSS says there were some stockouts at Branch 3 during the 75-week simulated period.<br/>
+            SimScript detected <b><span id='ctl-stockouts'>?</span></b> stockouts.
+    </ol>`,
+    (sim: StockControl, log: HTMLElement) => {
+        setText('#ctl-sales-avg', format(sim.salesTally.avg * 4, 0)); // one month ~ 4 weeks
+        setText('#ctl-stock1-avg', format(sim.stockTallies[1].avg, 0));
+        setText('#ctl-stock2-avg', format(sim.stockTallies[2].avg, 0));
+        setText('#ctl-stock3-avg', format(sim.stockTallies[3].avg, 0));
+        setText('#ctl-stock0-avg', format(sim.stockTallies[0].avg, 0));
+        setText('#ctl-stockouts', format(sim.stockouts, 0));
+        log.innerHTML = getLineChart('Inventory Distribution',
+            { data: sim.stockHistory[0], name: 'Warehouse', color: 'black' },
+            { data: sim.stockHistory[1], name: 'Branch 1', color: 'red' },
+            { data: sim.stockHistory[2], name: 'Branch 2', color: 'green' },
+            { data: sim.stockHistory[3], name: 'Branch 3', color: 'blue' },
+        );
+    }    
+)
+
+//----------------------------------------------------------
+// PromiseAll
+showSimulation(
+    new PromiseAll(),
+    'PromiseAll',
+    `<p>
+        Shows how an Entity may span multiple sub-entities and
+        execute them all using a <b>Promise.all</b> call.</p>`
 );
 
 //----------------------------------------------------------
@@ -2532,4 +2618,3 @@ function getLineChart(title: string, ...series: IChartSeries[]): string {
     svg += `</svg>`;
     return svg;
 }
-

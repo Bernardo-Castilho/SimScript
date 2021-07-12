@@ -258,15 +258,19 @@ export class Simulation {
         // activate only once!
         assert(e.simulation == null, () => 'Entity ' + e.toString() + ' is already active');
 
-        // initialize entity
-        e._sim = this;
+        // measure execution time
+        const start = this.timeNow;
 
-        // execute the entity's script
+        // initialize entity and execute its script
+        e._sim = this;
         await e.script();
 
         // call dispose to indicate the entity is done
         e.dispose();
         e._sim = null;
+
+        // return entity lifespan
+        return this.timeNow - start;
     }
     /**
      * Generates and activates {@link Entity} objects of a given type

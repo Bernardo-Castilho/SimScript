@@ -1081,3 +1081,138 @@ class BicyclePaperwork extends BicyclePart {
         this.sendSignal(this.owner);
     }
 }
+
+//-------------------------------------------------------------------------
+// Stock Control
+//-------------------------------------------------------------------------
+// A manufacturing company makes waste disposal units, which it sells for
+// $200 each.
+// Total annual demand is for 20,000 units.
+// Distribution is through three branches from a factory warehouse.
+// The lead-time for delivery of an order, from the manufacturing plant to
+// the factory warehouse, is 4 weeks.
+// The lead-time for delivery of an order from the factory warehouse to 
+// the branches is 1 week.
+// The proposed inventory control method is by an economic order quantity 
+// and order point system.
+// The initial stocks, order points, economic order quantities, weekly
+// demand and standard deviation are shown in the table below, for the 
+// factory warehouse and each of the branches.
+//
+// Location   Initial    Order  Economic   Weekly   Weekly
+//             Stock     Point  Quantity   Demand   Std Dev
+// Warehouse    3400     2100     2300
+// Branch 1      430      240      115       64       24
+// Branch 2      600      430      165      128       32
+// Branch 3     1000      630      200      192       48
+//
+// Simulate the inventory control system for 75 weeks and determine:
+// 1. The distribution of inventories at the three branches and the warehouse.
+// 2. The distribution of actual monthly sales.
+//    GPSS says the monthly sales average was about 1,542.
+// 3. The average value of the inventories at the branches and at the warehouse.
+//    GPSS says the inventories were about 172, 269, 183, and 1,831.
+// 4. Does the system meet the company’s service policy of one stockout, in eight years?
+//-------------------------------------------------------------------------
+export class StockControl extends Simulation {
+    stock = [3400, 430, 600, 1000];
+    orderPoint = [2100, 240, 430, 630];
+    orderQty = [2300, 115, 165, 200];
+    weeklyDemand = [null, new Normal(64, 24), new Normal(128, 32), new Normal(192, 48)];
+    leadTime = [4, 1, 1, 1]; // weeks
+    stockHistory = [[], [], [], [], []]; // stock records for warehouse and branches
+    stockTallies: Tally[] = [];
+    salesTally = new Tally();
+    stockouts = 0;
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+
+        // initialize stock, records
+        this.stock = [3400, 430, 600, 1000];
+        this.stockHistory = [[], [], [], [], []];
+        this.stockTallies = [new Tally(), new Tally(), new Tally(), new Tally()];
+        this.salesTally = new Tally();
+        this.stockouts = 0;
+
+        // simulate for 75 weeks
+        this.timeEnd = 75;
+
+        // initialize entities
+        this.activate(new StockRecorder());
+        this.activate(new OrderPointWarehouse());
+        for (let branch = 1; branch <= 3; branch++) {
+            this.activate(new OrderPointBranch(branch));
+        }
+    }
+}
+class StockRecorder extends Entity<StockControl> {
+    async script() {
+        const sim = this.simulation;
+        for (; ;) {
+            await this.delay(1); // wait for a week
+
+            // handle weekly demand at each branch
+            let sales = 0;
+            for (let i = 1; i <= 3; i++) {
+                let qty = sim.weeklyDemand[i].sample();
+                if (qty > sim.stock[i]) {
+                    console.log(`stockout at branch ${i}`);
+                    sim.stockouts++;
+                    qty = sim.stock[i];
+                }
+                sim.stock[i] -= qty; // udpate stock
+                sales += qty;
+            }
+
+            // tally sales
+            sim.salesTally.add(sales);
+
+            // tally stocks
+            for (let i = 0; i <= 3; i++) {
+                sim.stockTallies[i].add(sim.stock[i]); // tally stock levels
+                sim.stockHistory[i].push(sim.stock[i]); // save current stock levels
+            }
+        }
+    }
+}
+class OrderPointWarehouse extends Entity<StockControl> {
+    async script() {
+        const sim = this.simulation;
+        for (; ;) {
+            if (sim.stock[0] < sim.orderPoint[0]) {
+                await this.delay(sim.leadTime[0]);
+                sim.stock[0] += sim.orderQty[0]; // add to warehouse
+            } else {
+                await this.delay(1); // wait till next week
+            }
+        }
+    }
+}
+class OrderPointBranch extends Entity<StockControl> {
+    branch: number;
+
+    constructor(branch: number) {
+        super();
+        this.branch = branch;
+    }
+
+    async script() {
+        const sim = this.simulation;
+        for (; ;) {
+            if (sim.stock[this.branch] < sim.orderPoint[this.branch]) {
+                await this.delay(sim.leadTime[this.branch]);
+                let qty = sim.orderQty[this.branch];
+                if (qty > sim.stock[0]) {
+                    sim.stockouts++;
+                    console.log(`warehouse stockout supplying branch ${this.branch}`);
+                    qty = sim.stock[0];
+                }
+                sim.stock[0] -= qty; // take from warehouse
+                sim.stock[this.branch] += qty; // add to local
+            } else {
+                await this.delay(1); // wait till next week
+            }
+        }
+    }
+}

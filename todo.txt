@@ -15,7 +15,7 @@
         9 * pump assembly
         10 * robot FMS
         11 * bicycle factory
-        12 - warehouse/branch inventory
+        12 * warehouse/branch inventory
         13 - canal and lock
         14 - foundry
         15 - NC tape preparation
@@ -23,7 +23,7 @@
         17 - customer brand loyalty
         18 - solvable queueing network
         19 - supermarket
-        20 - port ------------------------------------------------
+        20 - port
         21 - PBX
         22 - flexible manufacturing system
         23 - Ethernet network
