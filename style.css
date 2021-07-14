@@ -273,3 +273,20 @@ svg.ss-anim .crosswalk {
     width: 80%;
     margin: auto auto;
 }
+
+table.params td,
+table.params th {
+    padding-left: 2em;
+    font-size: 90%;
+    text-align: right;
+}
+
+table.params .gpss {
+    color: darkgreen;
+}
+
+table.params .ss {
+    color: darkblue;
+    display: inline-block;
+    margin-bottom: 0.5em;
+}

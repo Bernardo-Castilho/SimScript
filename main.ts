@@ -23,7 +23,8 @@ import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
-    Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl
+    Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl, QTheory,
+    Traffic
 } from './simulations/gpss';
 
 
@@ -613,6 +614,135 @@ showSimulation(
         );
     }    
 )
+
+//-------------------------------------------------------------------------
+// QTheory
+showSimulation(
+    new QTheory(),
+    'Queueing Theory (GPSS)',
+    `<p>
+        When feasible, an analytical solution to queuing systems provides a 
+        useful means of estimating the performance of simple systems.</p>
+    <p>
+        This program simulates a system for which the queuing parameters are
+        calculated using the appropriate Pollaczek and Khintchin (P-K) equations.
+        The objective is to verify the results obtained by simulation using GPSS
+        and SimScript.</p>
+    <p>
+        The program simulates an interarrival time of 5 seconds (500 time units),
+        exponentially distributed, and a single service channel.
+        The mean service time is 3 seconds (300 time units).
+        The average utilization of the server is consequently 60%.</p>
+    <p>
+        Three modes of service times are investigated:</p>
+    <ol>
+        <li>Constant service time.</li>
+        <li>Exponentially distributed service time.</li>
+        <li>Erlang (k=2) service time.</li>
+    </ol>
+    <p>
+        Run the simulation for 5,000 minutes and compare the simulation
+        results with the predictions of queuing theory.</p>
+    <table class='params'>
+        <tr>
+            <th>Service</th> <th>Constant</th> <th>Exp</th> <th>Erlang</th>
+        </tr>
+        <tr>
+            <th>Mean Queue Time<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td>525.0<br/><span class='gpss'>526.7</span><br/><span class='ss' id='qt-wait-ct'>?</span></td>
+                <td>750.0<br/><span class='gpss'>757.5</span><br/><span class='ss' id='qt-wait-exp'>?</span></td>
+                <td>637.5<br/><span class='gpss'>649.4</span><br/><span class='ss' id='qt-wait-erl'>?</span></td>
+        <tr>
+            <th>Mean Queue Length<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td>1.05<br/><span class='gpss'>1.05</span><br/><span class='ss' id='qt-len-ct'>?</span></td>
+                <td>1.50<br/><span class='gpss'>1.50</span><br/><span class='ss' id='qt-len-exp'>?</span></td>
+                <td>1.28<br/><span class='gpss'>1.05</span><br/><span class='ss' id='qt-len-erl'>?</span></td>
+        </tr>
+        <tr>
+            <th>StDev Queue Time<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td>319<br/><span class='gpss'>278</span><br/><span class='ss' id='qt-tdev-ct'>?</span></td>
+                <td>750<br/><span class='gpss'>740</span><br/><span class='ss' id='qt-tdev-exp'>?</span></td>
+                <td>415<br/><span class='gpss'>595</span><br/><span class='ss' id='qt-tdev-erl'>?</span></td>
+        </tr>
+        <tr>
+            <th>StDev Queue Length<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td><br/><span class='gpss'>1.43</span><br/><span class='ss' id='qt-ldev-ct'>?</span></td>
+                <td><br/><span class='gpss'>1.94</span><br/><span class='ss' id='qt-ldev-exp'>?</span></td>
+                <td><br/><span class='gpss'>1.57</span><br/><span class='ss' id='qt-ldev-erl'>?</span></td>
+        </tr>
+    </table>`,
+    (sim: QTheory, log: HTMLElement) => {
+        setText('#qt-wait-ct', format(sim.qCt.averageDwell, 1));
+        setText('#qt-wait-exp', format(sim.qExp.averageDwell, 1));
+        setText('#qt-wait-erl', format(sim.qErl.averageDwell, 1));
+
+        setText('#qt-len-ct', format(sim.qCt.averageLength, 2));
+        setText('#qt-len-exp', format(sim.qExp.averageLength, 2));
+        setText('#qt-len-erl', format(sim.qErl.averageLength, 2));
+
+        setText('#qt-tdev-ct', format(sim.qCt.grossDwell.stdev, 0));
+        setText('#qt-tdev-exp', format(sim.qExp.grossDwell.stdev, 0));
+        setText('#qt-tdev-erl', format(sim.qErl.grossDwell.stdev, 0));
+        
+        setText('#qt-ldev-ct', format(sim.qCt.grossPop.stdev, 2));
+        setText('#qt-ldev-exp', format(sim.qExp.grossPop.stdev, 2));
+        setText('#qt-ldev-erl', format(sim.qErl.grossPop.stdev, 2));
+    }
+);
+
+//-------------------------------------------------------------------------
+// Traffic
+showSimulation(
+    new Traffic(),
+    'Traffic (GPSS)',
+    `<p>
+        Cars arrive at a T-junction every 6.28 seconds hyperexponentially
+        distributed. The cars then make a left turn northbound onto a
+        highway.</p>
+    <p>
+        When cars cross the southbound lanes, they must wait in a center
+        aisle which can accommodate a maximum of 8 cars.
+        Each car takes 3.6 seconds (Erlang k=4) to cross the traffic lanes.
+        It takes 4 seconds (Erlang k=5) to merge with northbound traffic.</p>
+    <p>
+        Southbound traffic arrives every 55±5 seconds and takes 15±5 seconds
+        to pass the T-junction.
+        Northbound traffic arrives every 60±5 seconds and takes 15±5 seconds
+        to pass.</p>
+    <p>
+        Simulate the traffic at the T-junction for 10 minutes and find:</p>
+    <ol>
+        <li>
+            The transit time of northbound cars turning at the T-junction.<br/>
+            GPSS says the transit time is nearly <b>25</b> seconds.<br/>
+            SimScript says the transit  time is
+            <b><span id='traffic-transit-time'>?</span></b> seconds.</li>
+        <li>
+            The actual Erlang service times.<br/>
+            GPSS says the times were <b>3.6</b> seconds to cross and <b>4.1</b>
+            seconds to merge.<br/>
+            SimScript says the times were <b><span id='traffic-cross-time'>?</span></b>
+            seconds to cross and <b><span id='traffic-merge-time'>?</span></b>
+            seconds to merge.</li>
+        <li>
+            The maximum number of cars queuing in the lane waiting to make a
+            left turn.<br/>
+            GPSS says the maximum number of cars was <b>8</b> cars, and the
+            mean wait to turn was <b>11.5</b> seconds.<br/>
+            SimScript says the maximum number of cars was
+            <b><span id='traffic-turn-cnt'>?</span></b>
+            cars, and the mean wait to turn was
+            <b><span id='traffic-turn-cross'>?</span></b> seconds.<br/>
+            </li>
+    </ol>`,
+    (sim: Traffic, log: HTMLElement) => {
+        setText('#traffic-transit-time', format(sim.qTransit.averageDwell / 100, 0));
+        setText('#traffic-cross-time', format(sim.tCross.avg / 100, 1));
+        setText('#traffic-merge-time', format(sim.tMerge.avg / 100, 1));
+        setText('#traffic-turn-cnt', format(sim.qAisle.grossPop.max, 0));
+        setText('#traffic-turn-cross', format(sim.qCross.averageDwell / 100, 1));
+        log.innerHTML = sim.getStatsTable();
+    });
 
 //----------------------------------------------------------
 // PromiseAll
@@ -2618,3 +2748,4 @@ function getLineChart(title: string, ...series: IChartSeries[]): string {
     svg += `</svg>`;
     return svg;
 }
+

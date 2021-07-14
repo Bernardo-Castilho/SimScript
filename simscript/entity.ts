@@ -27,7 +27,7 @@ export interface IAnimationPosition {
  * actions carried out by the entity within the simulation.
  * 
  * These actions typically include asyncronous methods such as 
- * {@link delay}, {@link enterQueue}, and {@link waitSignal}. 
+ * {@link delay}, {@link enterQueue}, {@link seize}, and {@link waitSignal}. 
  * Calls to asynchonous methods should include the **await** keyword.
  * 
  * For example:
@@ -121,8 +121,9 @@ export class Entity<S extends Simulation = Simulation> {
      * }
      * ```
      * 
-     * Note that calls to async methods such as {@link enterQueue}, {@link waitSignal},
-     * and {@link delay} should be preceded by the **await** keyword.
+     * Note that calls to async methods such as {@link delay}, {@link enterQueue},
+     * {@link seize}, and {@link waitSignal} should be preceded by the **await** 
+     * keyword.
      * 
      * If you use the **signal** parameter to create an interruptible delay,
      * the call to **delay** may return when the specified **delay** has elapsed
@@ -199,8 +200,9 @@ export class Entity<S extends Simulation = Simulation> {
      * }
      * ```
      * 
-     * Note that calls to async methods such as {@link enterQueue}, {@link waitSignal},
-     * and {@link delay} should be preceded by the **await** keyword.
+     * Note that calls to async methods such as {@link delay}, {@link enterQueue},
+     * {@link seize}, and {@link waitSignal} should be preceded by the **await** 
+     * keyword.
      * 
      * @param queue {@link Queue} that the {@link Entity} will enter.
      * @param units Number of {@link Queue} capacity units to seize.
@@ -251,6 +253,84 @@ export class Entity<S extends Simulation = Simulation> {
      */
     enterQueueImmediately(queue: Queue, units = 1) {
         queue.add(this, units);
+    }
+    /**
+     * Seizes a resource (possibly preempting it), enters one or more
+     * waiting queues, performs a delay, and leaves the waiting queues
+     * and the resource.
+     * 
+     * This method provides a short way of telling an entity to enter
+     * one or more waiting queues, seize a resource, use the resource 
+     * for a while, and then leave the waiting queues and the resource. 
+     * For example:
+     * 
+     * ```typescript
+     * async script() {
+     * 
+     *     // this call
+     *     await this.seize(sim.qResource, sim.delay.sample(), sim.qWait);
+     * 
+     *     // does the same as this
+     *     this.enterQueueImmediately(sim.qWait);
+     *     await this.enterQueue(sim.qResource);
+     *     this.leaveQueue(sim.qWait);
+     *     await this.delay(sim.delay.sample());
+     *     this.leaveQueue(sim.qResource);
+     * }
+     * ```
+     * 
+     * The **seize** method also allows you to specify a **preempt** signal,
+     * which is used to provide preemptive behavior. If used, entities with
+     * higher **priority** will be able to temporarily stop lower-priority
+     * entities, perform their work, and restore the suspended entities when
+     * done. For example:
+     * 
+     * ```typescript
+     * async script() {
+     * 
+     *     // execute some work allowing higher-priority entities to 
+     *     // temporarily suspend the transaction and resume it later.
+     *     // (this example uses sim.qResource as a preempt signal)
+     *     await this.seize(sim.qResource, sim.delay.sample(), sim.qWait, sim.qResource);
+     * }
+     * ```
+     * 
+     * @param resource Resource to seize.
+     * @param delay Amount of time required to perform the work.
+     * @param waitingQueues Waiting queues. Waiting queues should have unlimited capacity.
+     * @param preemptSignal Signal used to pre-empt the resource (defaults to none).
+     * @param units Number of {@link Queue} capacity units to seize.
+     */
+    async seize(resource: Queue, delay: number, waitingQueues: Queue[] | Queue | null = null, preemptSignal: any = null, units = 1) {
+
+        // handle a single waiting queue
+        if (waitingQueues instanceof Queue) {
+            waitingQueues = [waitingQueues];
+        }
+    
+        // while we have a delay
+        while (delay >= 1e-3) {
+    
+            // send signal to interrupt lower-priority entities
+            if (preemptSignal != null) {
+                this.sendSignal(preemptSignal);
+            }
+    
+            // enter waiting queues, seize the resource
+            if (waitingQueues != null) {
+                waitingQueues.forEach(q => this.enterQueueImmediately(q, units));
+            }
+            await this.enterQueue(resource, units);
+            if (waitingQueues != null) {
+                waitingQueues.forEach(q => this.leaveQueue(q));
+            }
+    
+            // apply interruptible delay and update delay value
+            delay -= await this.delay(delay, null, preemptSignal);
+    
+            // release the resource (time-out or signal)
+            this.leaveQueue(resource);
+        }
     }
     /**
      * Causes the {@link Entity} to leave a {@link Queue} it has previously
@@ -306,6 +386,10 @@ export class Entity<S extends Simulation = Simulation> {
      * }
      * ```
      * 
+     * Note that calls to async methods such as {@link delay}, {@link enterQueue},
+     * {@link seize}, and {@link waitSignal} should be preceded by the **await** 
+     * keyword.
+     * 
      * @param signal Value of the the signal to wait for.
      * @returns The amount of simulated time elapsed since the method was invoked.
      */
@@ -315,8 +399,8 @@ export class Entity<S extends Simulation = Simulation> {
         }).promise;
     }
     /**
-     * Sends a signal that releases entities that are currently waiting
-     * for the signal.
+     * Sends a signal that releases entities currently waiting for
+     * the signal.
      * 
      * @param signal Signal value.
      * @param releaseMax Maximum number of entities to release.
@@ -416,8 +500,8 @@ export class Entity<S extends Simulation = Simulation> {
      * logic. It typically contains of sequences of calls to methods
      * that cause the entity to 
      * enter or leave queues ({@link enterQueue}/{@link leaveQueue}),
-     * undergo delays ({@link delay}), or
-     * wait for and send signals ({@link waitSignal}/{@link sendSignal}).
+     * undergo delays ({@link delay}), or wait for and send signals
+     * ({@link waitSignal}/{@link sendSignal}).
      * 
      * For example:
      * ```typescript

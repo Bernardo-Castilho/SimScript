@@ -20,10 +20,14 @@ class Customer extends Entity<BarberShop> {
     service = new Uniform(15 - 3, 15 + 3); // service takes ~15min
     async script() {
         const sim = this.simulation;
-        await this.enterQueue(sim.qWait); // enter the line
-        await this.enterQueue(sim.qJoe); // seize Joe the barber
-        this.leaveQueue(sim.qWait); // leave the line
-        await this.delay(this.service.sample()); // get a haircut
-        this.leaveQueue(sim.qJoe); // free Joe        
+        if (true) { // compact version: using seize
+            await this.seize(sim.qJoe, this.service.sample(), sim.qWait);
+        } else { // explicit version: using enterQueue/delay/leaveQueue
+            await this.enterQueue(sim.qWait); // enter the line
+            await this.enterQueue(sim.qJoe); // seize Joe the barber
+            this.leaveQueue(sim.qWait); // leave the line
+            await this.delay(this.service.sample()); // get a haircut
+            this.leaveQueue(sim.qJoe); // free Joe        
+        }
     }
 }

@@ -1,6 +1,8 @@
 # Todo
-- Promise.all
-- autonomous vehicles
+* Promise.all
+* Entity.seize method
+
+- steering behaviors / pedestrians (http://www.red3d.com/cwr/steer/)
 - more docs/examples
     - more GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
     https://stackblitz.com/edit/typescript-mapmna?file=index.html
@@ -16,18 +18,10 @@
         10 * robot FMS
         11 * bicycle factory
         12 * warehouse/branch inventory
-        13 - canal and lock
-        14 - foundry
-        15 - NC tape preparation
-        16 - T-junction traffic
-        17 - customer brand loyalty
-        18 - solvable queueing network
-        19 - supermarket
-        20 - port
-        21 - PBX
-        22 - flexible manufacturing system
-        23 - Ethernet network
-        24 - Predator/Prey populations
+        13 * queuing theory (solvable queueing network)
+        14 * T-junction traffic
+        15 - supermarket ***
+        16 - port ***
     - pac-man
     - elevators
     - robot/warehouse (3d)
@@ -44,6 +38,9 @@
     - canals?
 
 # Change Log
+
+SimScript 1.0.29    (7/9/21)
+- Added **Entity.seize** method (condenses enterQueue/delay/leaveQueue and provides preemptive behavior).
 
 SimScript 1.0.27    (7/9/21)
 - Improved the format of the tables created by the **Simulation.getStatsTable** method.

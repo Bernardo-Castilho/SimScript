@@ -221,34 +221,6 @@ class PreemptEntity extends Entity<Preempt> {
         super(null);
         setOptions(this, options);
     }
-    
-    /**
-     * Seizes a resource for a specified time, allowing entities with
-     * higher priorities to pre-empt.
-     * @param resource Resource to seize.
-     * @param delay Amount of time to spend in the resource.
-     * @param queues Queues to enter/leave while the resource is seized.
-     */
-    async preempt(resource: Queue, delay: number, queues: Queue[] = []) {
-
-        // while we have a delay
-        while (delay >= 1e-3) {
-
-            // send signal to interrupt lower-priority entities
-            this.sendSignal(resource);
-
-            // seize the resource
-            queues.forEach(q => this.enterQueueImmediately(q));
-            await this.enterQueue(resource);
-            queues.forEach(q => this.leaveQueue(q));
-
-            // apply interruptible delay and update delay value
-            delay -= await this.delay(delay, null, resource);
-
-            // release the resource (time-out or signal)
-            this.leaveQueue(resource);
-        }
-    }
 
     // log a message from an entity
     log(msg: string) {
@@ -260,7 +232,7 @@ class Prty0 extends PreemptEntity {
         const sim = this.simulation;
         this.log('arrived');
         await this.delay(this.start);
-        await this.preempt(sim.resource, this.duration, [sim.q0]);
+        await this.seize(sim.resource, this.duration, sim.q0, sim.resource);
         assert(sim.timeNow == 115, 'should finish at 115');
         this.log('done (@115)');
     }
@@ -270,7 +242,7 @@ class Prty1 extends PreemptEntity {
         const sim = this.simulation;
         this.log('arrived');
         await this.delay(this.start);
-        await this.preempt(sim.resource, this.duration, [sim.q1]);
+        await this.seize(sim.resource, this.duration, sim.q1, sim.resource);
         assert(sim.timeNow == 25, 'should finish at 25');
         this.log('done (@25)');
     }
@@ -280,7 +252,7 @@ class Prty2 extends PreemptEntity {
         const sim = this.simulation;
         this.log('arrived');
         await this.delay(this.start);
-        await this.preempt(sim.resource, this.duration, [sim.q2]);
+        await this.seize(sim.resource, this.duration, sim.q2, sim.resource);
         assert(sim.timeNow == 17, 'should finish at 17');
         this.log('done (@17)');
     }

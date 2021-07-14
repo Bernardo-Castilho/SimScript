@@ -270,7 +270,7 @@ export class Erlang extends Exponential {
      * @param seed Optional value used to initialize the random sequence.
      */
     constructor(shape: number, scale: number, seed?: number) {
-        assert(shape > 0, 'shape parameter must be an integer > 0.');
+        assert(Number.isInteger(shape) && shape > 0, 'shape parameter must be an integer > 0.');
         super(scale, seed);
         this._shape = shape;
     }

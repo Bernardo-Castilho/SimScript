@@ -3,7 +3,7 @@ import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Tally } from '../simscript/tally';
 import { EventArgs } from '../simscript/event';
-import { Exponential, Uniform, Normal, Empirical, RandomInt, RandomVar } from '../simscript/random';
+import { Exponential, Erlang, Uniform, Normal, Empirical, RandomInt, RandomVar } from '../simscript/random';
 
 /*
     GPSS samples from http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
@@ -160,71 +160,43 @@ export class TVRepairShop extends Simulation {
         this.generateEntities(TVCustomerEntity, this.interArrCustomer);
     }
 }
-class TVEntity extends Entity {
-
-    /**
-     * Seizes a resource for a specified time, allowing entities with
-     * higher priorities to pre-empt the job, which is re-started later
-     * until the whole delay has been applied.
-     * @param resource Resource to seize.
-     * @param delay Amount of time to spend in the resource.
-     * @param trackingQueues Queues to enter/leave while the resource is seized.
-     */
-    async preempt(resource: Queue, delay: number, trackingQueues: Queue[] = []) {
-
-        // while we have a delay
-        while (delay >= 1e-3) {
-
-            // send signal to interrupt lower-priority entities
-            this.sendSignal(resource);
-
-            // seize the resource
-            trackingQueues.forEach(q => this.enterQueueImmediately(q));
-            await this.enterQueue(resource);
-            trackingQueues.forEach(q => this.leaveQueue(q));
-
-            // apply interruptible delay and update delay value
-            delay -= await this.delay(delay, null, resource);
-
-            // release the resource (time-out or signal)
-            this.leaveQueue(resource);
-        }
-    }
-}
-class TVOverhaulEntity extends TVEntity {
+class TVOverhaulEntity extends Entity<TVRepairShop> {
     async script() {
-        const sim = this.simulation as TVRepairShop;
+        const sim = this.simulation;
         this.priority = 1;
 
         // use repairman for TV overhauling (preemptively)
-        await this.preempt(
+        await this.seize(
             sim.qRepairMan,
             sim.serviceOverhaul.sample(),
-            [sim.qAllJobs, sim.qOverhaulJobs]);
+            [sim.qAllJobs, sim.qOverhaulJobs],
+            sim.qRepairMan);
     }
 }
-class TVCustomerEntity extends TVEntity {
+class TVCustomerEntity extends Entity<TVRepairShop> {
     async script() {
-        const sim = this.simulation as TVRepairShop;
+        const sim = this.simulation;
         this.priority = 2;
 
         // use repairman for a customer job (preemptively)
-        await this.preempt(
+        await this.seize(
             sim.qRepairMan,
             sim.serviceCustomer.sample(),
-            [sim.qAllJobs, sim.qCustomerJobs]);
+            [sim.qAllJobs, sim.qCustomerJobs],
+            sim.qRepairMan);
     }
 }
-class TVOnTheSpotEntity extends TVEntity {
+class TVOnTheSpotEntity extends Entity<TVRepairShop> {
     async script() {
-        const sim = this.simulation as TVRepairShop;
+        const sim = this.simulation;
         this.priority = 3;
-        
+
         // use repairman for an on-the-spot job (preemptively)
-        await this.preempt(
+        await this.seize(
             sim.qRepairMan,
             sim.serviceOnTheSpot.sample(),
-            [sim.qAllJobs, sim.qOnTheSpotJobs]);
+            [sim.qAllJobs, sim.qOnTheSpotJobs],
+            sim.qRepairMan);
     }
 }
 
@@ -452,7 +424,7 @@ class WatchOrder extends Entity {
 
             // get items from storage
             sim.stock -= sz;
-            
+
             // enter packing wait area, seize packing machine
             this.enterQueueImmediately(sim.qPacking);
             await this.enterQueue(sim.qMachine);
@@ -468,7 +440,7 @@ class WatchOrder extends Entity {
             sim.dispatched += sz;
 
         } else {
-            
+
             // log stock-out
             sim.stockOut += sz;
         }
@@ -519,7 +491,7 @@ export class Textile extends Simulation {
     timeReduce = new Uniform(38 - 2, 38 + 2);
     timeSpin = new Uniform(320 - 20, 320 + 20);
     timeWind = new Uniform(64 - 4, 64 + 4);
-    
+
     // stock
     reduced = 50;
     spun = 25;
@@ -540,7 +512,7 @@ export class Textile extends Simulation {
         this.recReduced = [];
         this.recWound = [];
         this.recSpun = [];
-    
+
         // simulate 5 8-hour days
         this.timeEnd = 5 * 8 * 60;
 
@@ -582,7 +554,7 @@ class TextileTransaction extends Entity {
 class TextileDispatcher extends Entity {
     async script() {
         const sim = this.simulation as Textile;
-        
+
         // one unit of production is 10 kilograms of yarn
         for (; ;) {
             await this.delay(16 * 60); // every two 8-hour days
@@ -604,7 +576,7 @@ class TextileRecorder extends Entity {
             sim.recReduced.push(sim.reduced);
             sim.recWound.push(sim.wound);
             sim.recSpun.push(sim.spun);
-            
+
             // record once a day
             await this.delay(8 * 60);
         }
@@ -717,7 +689,7 @@ export class PumpAssembly extends Simulation {
     qPaintMotor = new Queue('Paint Motor', 1);
     qPaintPump = new Queue('Paint Pump', 1);
     qGalvanize = new Queue('Galvanize', 1);
-    
+
     orderArrivalInterval = new Exponential(5 * 60); // 5 hours
     obtainMotorDelay = new Uniform(200 - 100, 200 + 100);
     orderPumpDelay = new Uniform(180 - 120, 180 + 120);
@@ -764,7 +736,7 @@ class PumpOrder extends Entity {
         while (!this.pumpReady || !this.baseplateReady) {
             await this.waitSignal(this);
         }
-     
+
         // perform test fitting, trial and final assembly
         await this.delay(sim.testFittingDelay.sample());
         await this.delay(sim.trialAssemblyDelay);
@@ -878,7 +850,7 @@ class FMSComponent extends Entity {
         await this.delay(6);
         await this.delay(sim.gripRelease.sample());
         this.leaveQueue(sim.qRobot);
-        
+
         // first machine process
         await this.enterQueue(sim.qMachine1);
         await this.delay(sim.machine1Process.sample());
@@ -1214,5 +1186,184 @@ class OrderPointBranch extends Entity<StockControl> {
                 await this.delay(1); // wait till next week
             }
         }
+    }
+}
+
+//-------------------------------------------------------------------------
+// QTheory
+//-------------------------------------------------------------------------
+// When feasible, an analytical solution to queuing systems provides a 
+// useful means of estimating the performance of simple systems.
+// This program simulates a system for which the queuing parameters are
+// calculated using the appropriate Pollaczek and Khintchin (P - K) equations.
+// The objective is to verify the results obtained by simulation using GPSS
+// and SimScript.
+// The program simulates an interarrival time of 5 seconds (500 time units),
+// exponentially distributed, and a single service channel.
+// The mean service time is 3 seconds (300 time units).
+// The average utilization of the server is consequently 60%.
+// Three modes of service times are investigated.
+// 1. Constant service time.
+// 2. Exponentially distributed service time.
+// 3. Erlang (k=2) service time.
+// Run the simulation for 5,000 minutes and compare the simulation results
+// with the predictions of queuing theory.
+//-------------------------------------------------------------------------
+export class QTheory extends Simulation {
+    interArrival = new Exponential(500); // 5 seconds
+
+    rCt = new Queue('Res Ct', 1);
+    qCt = new Queue('Queue Ct');
+    delayCt = 300; // 3 minutes
+
+    rExp = new Queue('Res Exp', 1);
+    qExp = new Queue('Queue Exp');
+    delayExp = new Exponential(300); // 3 seconds
+
+    rErl = new Queue('Res Erlang', 1);
+    qErl = new Queue('Queue Erlang');
+    delayErl = new Erlang(2, 300 / 2); // 3 seconds
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.timeEnd = 5000 * 60 * 100; // 5,000 minutes of simulated time
+        this.generateEntities(QTheoryCt, this.interArrival);
+        this.generateEntities(QTheoryExp, this.interArrival);
+        this.generateEntities(QTheoryErl, this.interArrival);
+    }
+}
+class QTheoryCt extends Entity<QTheory> {
+    async script() {
+        const sim = this.simulation;
+        this.enterQueueImmediately(sim.qCt);
+        await this.enterQueue(sim.rCt);
+        await this.delay(sim.delayCt);
+        this.leaveQueue(sim.rCt);
+        this.leaveQueue(sim.qCt);
+    }
+}
+class QTheoryExp extends Entity<QTheory> {
+    async script() {
+        const sim = this.simulation;
+        this.enterQueueImmediately(sim.qExp);
+        await this.enterQueue(sim.rExp);
+        await this.delay(sim.delayExp.sample());
+        this.leaveQueue(sim.rExp);
+        this.leaveQueue(sim.qExp);
+    }
+}
+class QTheoryErl extends Entity<QTheory> {
+    async script() {
+        const sim = this.simulation;
+        this.enterQueueImmediately(sim.qErl);
+        await this.enterQueue(sim.rErl);
+        await this.delay(sim.delayErl.sample());
+        this.leaveQueue(sim.rErl);
+        this.leaveQueue(sim.qErl);
+    }
+}
+
+//-------------------------------------------------------------------------
+// Traffic
+//-------------------------------------------------------------------------
+// Cars arrive at a T-junction every 6.28 seconds hyperexponentially 
+// distributed.
+// The cars then make a left turn northbound onto a highway.
+// When cars cross the southbound lanes, they must wait in a center aisle
+// which can accommodate a maximum of 8 cars.
+// Each car takes 3.6 seconds (Erlang k = 4) to cross the traffic lanes.
+// It takes 4 seconds (Erlang k = 5) to merge with northbound traffic.
+// Southbound traffic arrives every 55±5 seconds and takes 15±5 seconds
+// to pass the T-junction.
+// Northbound traffic arrives every 60±5 seconds and takes 15±5 seconds to pass.
+// Simulate the traffic at the T-junction for 10 minutes and find:
+// 1. The transit time of northbound cars turning at the T-junction.
+// 2. The actual Erlang service times.
+// 3. The maximum number of cars queuing in the lane waiting to make a left turn.
+//-------------------------------------------------------------------------
+export class Traffic extends Simulation {
+
+    // delays
+    //arrivalRateJunction = new Exponential(628); // mean = 6.28 sec (not hyperexponential...)
+    arrivalRateJunction = new Hyperexponential(); // mean = 6.28, stdev = 8.4 sec
+    arrivalRateNorth = new Uniform(6000 - 500, 6000 + 500); // 60+-5 sec
+    arrivalRateSouth = new Uniform(5500 - 500, 5500 + 500); // 55+-5 sec
+    crossJunction = new Uniform(1200 - 300, 1200 + 300); // 12+-3 sec
+    crossTraffic = new Erlang(4, 360 / 4); // 3.6 seconds avg
+    mergeTraffic = new Erlang(5, 400 / 5); // 4 seconds avg
+
+    // queues
+    qTransit = new Queue('Transit');
+    qCross = new Queue('Cross');
+    qAisle = new Queue('Aisle', 8);
+    qNorthLane = new Queue('N Lane', 1);
+    qSouthLane = new Queue('S Lane', 1);
+
+    // tallies
+    tCross = new Tally();
+    tMerge = new Tally();
+
+    // setup
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+
+        this.timeEnd = 10 * 60 * 100; // simulate 10 minutes
+        this.tCross.reset();
+        this.tMerge.reset();
+
+        this.generateEntities(JunctionCar, this.arrivalRateJunction);
+        this.generateEntities(NorthboundCar, this.arrivalRateNorth);
+        this.generateEntities(SouthboundCar, this.arrivalRateSouth);
+    }
+}
+class JunctionCar extends Entity<Traffic> {
+    async script() {
+        const sim = this.simulation;
+        
+        // enter aisle
+        await this.enterQueue(sim.qCross);
+        await this.enterQueue(sim.qAisle);
+        await this.enterQueue(sim.qTransit);
+
+        // cross southbound traffic
+        const crossDelay = sim.crossTraffic.sample();
+        sim.tCross.add(crossDelay);
+        await this.seize(sim.qSouthLane, crossDelay);
+
+        // done crossing
+        this.leaveQueue(sim.qCross);
+
+        // merge with northbound traffic
+        const mergeDelay = sim.mergeTraffic.sample();
+        sim.tMerge.add(mergeDelay);
+        await this.seize(sim.qNorthLane, mergeDelay);
+
+        // leave aisle
+        this.leaveQueue(sim.qTransit);
+        this.leaveQueue(sim.qAisle);
+    }
+}
+class NorthboundCar extends Entity<Traffic> {
+    async script() {
+        const sim = this.simulation;
+        await this.seize(sim.qNorthLane, sim.crossJunction.sample());
+    }
+}
+class SouthboundCar extends Entity<Traffic> {
+    async script() {
+        const sim = this.simulation;
+        await this.seize(sim.qSouthLane, sim.crossJunction.sample());
+    }
+}
+
+// hyperexponential variable
+// https://en.wikipedia.org/wiki/Hyperexponential_distribution
+class Hyperexponential extends RandomVar {
+    e1 = new Exponential(410);
+    e2 = new Exponential(1343);
+    sample() {
+        return super.sample() < .766
+            ? this.e1.sample()
+            : this.e2.sample();
     }
 }
