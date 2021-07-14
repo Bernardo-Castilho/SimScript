@@ -24,7 +24,7 @@ import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
     Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl, QTheory,
-    Traffic
+    Traffic, Supermarket
 } from './simulations/gpss';
 
 
@@ -743,6 +743,82 @@ showSimulation(
         setText('#traffic-turn-cross', format(sim.qCross.averageDwell / 100, 1));
         log.innerHTML = sim.getStatsTable();
     });
+
+//----------------------------------------------------------
+// Supermarket
+showSimulation(
+    new Supermarket(),
+    'Supermarket (GPSS)',
+    `<p>
+        Customers arrive by car to shop at a supermarket.</p>
+    <p>
+        The parking lot has space for 650 parked cars.
+        If a customer fails to find a parking space, that customer leaves 
+        immediately without shopping.</p>
+    <p>
+        On average a customer can walk to the supermarket from the parking lot
+        in 60 seconds.
+        Shoppers purchase between 5 and 100 items, uniformly distributed.
+        Customers buying 10 items or less will generally use a basket (70 provided).
+        Customers buying more than 10 items will generally use a cart (650 provided).</p>
+    <p>
+        Shopping time per customer depends on the number of items purchased 
+        (10 seconds per item).
+        Customers select items and then join the shortest queue at one of 17 checkouts.
+        Customers purchasing less than 10 items may choose the express checkout.
+        Checkout time takes 2 seconds per item purchased, plus a time of 25, 30, or 
+        35 seconds. This time depends on the method of payment (cash, check or
+        credit card which are assumed equally likely or probable).
+        After checking out a customer walks to the car (60 seconds), loads goods
+        and leaves the parking lot.</p>
+    <p>
+        The arrival rate of customers is exponentially distributed, starting at 600
+        per hour for half an hour, 900 per hour for one hour, 450 per hour for 
+        one hour and 300 per hour thereafter.</p>
+    <p>
+        Run the simulation for 3 hours and determine:</p>
+    <ol>
+        <li>
+            The transit time of customers.<br/>
+            GPSS says the time was <b>39.4</b> minutes.<br/>
+            SimScript says <b><span id='market-transit'>?</span></b> minutes.</li>
+        <li>
+            The utilization of the parking lot, carts, baskets and checkouts.<br/>
+            GPSS says the checkouts are near capacity.<br/>
+            SimScript says the utilizations are
+            <b><span id='market-utz-park'>?</span>%</b> (parking),
+            <b><span id='market-utz-cart'>?</span>%</b> (carts),
+            <b><span id='market-utz-basket'>?</span>%</b> (baskets),
+            <b><span id='market-utz-checkout'>?</span>%</b> (checkout), and
+            <b><span id='market-utz-checkoutx'>?</span>%</b> (checkout express).</li>
+        <li>
+            The number of customers in the supermarket at one minute intervals<br/>
+            GPSS says there were <b>399</b> shoppers on average, most waiting to check out.<br/>
+            SimScript says there were <b><span id='market-transit-avg'>?</span></b> shoppers on average.
+            The chart below shows the number of customers grew in the periods of high
+            traffic, and decreased later. At the end of the simulation, there were still
+            <b><span id='market-transit-last'>?</span></b> customers waiting to check out.</li>
+    </ol>
+    <div id='market-customers'></div>`,
+    (sim: Supermarket, log: HTMLElement) => {
+        setText('#market-transit', format(sim.qTransit.averageDwell / 600, 1));
+        setText('#market-utz-park', format(sim.qParking.utilization * 100, 0));
+        setText('#market-utz-cart', format(sim.qCart.utilization * 100, 0));
+        setText('#market-utz-basket', format(sim.qBasket.utilization * 100, 0));
+        setText('#market-utz-checkout', format(sim.qCheckout.utilization * 100, 0));
+        setText('#market-utz-checkoutx', format(sim.qCheckoutX.utilization * 100, 0));
+            
+        const transit = sim.qTransit.grossPop;
+        setText('#market-transit-avg', format(transit.avg, 0));
+        setText('#market-transit-last', format(sim.qTransit.pop, 0));
+        setText('#market-customers', getLineChart('Customers/minute',
+            { data: sim.customers, name: 'Total', color: 'black' },
+            { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green' },
+            { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red' }
+        ), true);
+        //log.innerHTML = sim.getStatsTable();
+    }
+);
 
 //----------------------------------------------------------
 // PromiseAll

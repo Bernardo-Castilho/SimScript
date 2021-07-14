@@ -1367,3 +1367,129 @@ class Hyperexponential extends RandomVar {
             : this.e2.sample();
     }
 }
+
+//-------------------------------------------------------------------------
+// Supermarket
+//-------------------------------------------------------------------------
+// Customers arrive by car to shop at a supermarket.
+// The parking lot has space for 650 parked cars.
+// If a customer fails to find a parking space, that customer leaves 
+// immediately without shopping.
+// On average a customer can walk to the supermarket from the parking lot
+// in 60 seconds.
+// Shoppers purchase between 5 and 100 items, uniformly distributed.
+// A customer buying 10 items or less will generally use a basket (70 provided).
+// A customer buying more than 10 items will generally use a cart (650 provided).
+// Shopping time per customer depends on the number of items purchased 
+// (10 seconds per item).
+// Customers select items and then join the shortest queue at one of 17 checkouts.
+// Customers purchasing less than 10 items may choose the express checkout.
+// Checkout time takes 2 seconds per item purchased, plus a time of 25, 30, or 
+// 35 seconds. This time depends on the method of payment (cash, check or
+// credit card which are assumed equally likely or probable).
+// After checking out a customer walks to the car (60 seconds), loads goods
+// and leaves the parking lot.
+// The arrival rate of customers is exponentially distributed, starting at 600
+// per hour for half an hour, 900 per hour for one hour, 450 per hour for 
+// one hour and 300 per hour thereafter.
+// Run the simulation for 3 hours and determine:
+// 1. Determine the transit time of customers.
+// 2. Determine the utilization of the parking lot, carts, baskets and checkouts.
+// 3. Tabulate the number of customers in the supermarket at one minute intervals.
+//-------------------------------------------------------------------------
+export class Supermarket extends Simulation {
+    
+    qParking = new Queue('Parking', 650);
+    qTransit = new Queue('Transit');
+    qBasket = new Queue('Basket', 70);
+    qCart = new Queue('Cart', 650);
+    qCheckout = new Queue('Checkout', 17);
+    qCheckoutX = new Queue('Checkout Express', 1);
+    
+    walkDelay = 600; // 60 seconds
+    itemQty = new Uniform(5, 100); // between 5 and 100 items
+    payMethod = new Uniform(0, 2); // cash, check, or credit
+
+    // number of customers at each minute
+    customers: number[];
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+
+        // one hour in 1/10 sec
+        const oneHour = 36000;
+
+        // simulate for 3 hours
+        this.timeEnd = 3 * oneHour;
+
+        // generate 600 customers/hour for 1/2 hour,
+        // 900 customers/hour for one hour, and
+        // 300 customers/hour afterwards.
+        this.generateEntities(Customer, new Exponential(oneHour / 600), null, 0, oneHour / 2); // 600/hour for 1/2 hour
+        this.generateEntities(Customer, new Exponential(oneHour / 900), null, oneHour / 2, oneHour / 2 + oneHour); // then 900/hour for one hour
+        this.generateEntities(Customer, new Exponential(oneHour / 300), null, oneHour / 2 + oneHour); // 300/hour afterwards
+
+        // tabulate the number of customers in the market by minute
+        this.customers = [];
+        this.activate(new CustomerTabulator());
+    }
+}
+class Customer extends Entity<Supermarket> {
+    itemQty = 0;
+    paymentMethod = 0;
+
+    async script() {
+        const sim = this.simulation;
+
+        // no parking available? leave
+        if (!sim.qParking.canEnter(1)) {
+            return;
+        }
+
+        // park and walk to the store
+        await this.enterQueue(sim.qParking);
+        await this.delay(sim.walkDelay);
+
+        // measure time in store
+        await this.enterQueue(sim.qTransit);
+        
+        // select item qty and payment method
+        this.itemQty = Math.round(sim.itemQty.sample());
+        this.paymentMethod = Math.round(sim.payMethod.sample());
+
+        // get basket or cart
+        const basketOrCart = this.itemQty <= 10 ? sim.qBasket : sim.qCart;
+        await this.enterQueue(basketOrCart);
+
+        // shop
+        await this.delay(this.itemQty * 100); // 10 seconds per item
+
+        // check out
+        const checkOut = this.itemQty <= 10 && sim.qCheckoutX.canEnter(1)
+            ? sim.qCheckoutX
+            : sim.qCheckout;
+        await this.enterQueue(checkOut);
+        const checkOutDelay = this.itemQty * 20 + (250 + this.paymentMethod * 50);
+        await this.delay(checkOutDelay);
+        this.leaveQueue(checkOut);
+
+        // leave store
+        this.leaveQueue(sim.qTransit);
+
+        // walk back to the car
+        await this.delay(sim.walkDelay);
+
+        // leave
+        this.leaveQueue(basketOrCart);
+        this.leaveQueue(sim.qParking);
+    }
+}
+class CustomerTabulator extends Entity<Supermarket> {
+    async script() {
+        const sim = this.simulation;
+        for (; ;) {
+            sim.customers.push(sim.qTransit.pop);
+            await this.delay(600); // wait a minute
+        }
+    }
+}

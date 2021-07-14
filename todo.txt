@@ -20,7 +20,7 @@
         12 * warehouse/branch inventory
         13 * queuing theory (solvable queueing network)
         14 * T-junction traffic
-        15 - supermarket ***
+        15 * supermarket
         16 - port ***
     - pac-man
     - elevators
