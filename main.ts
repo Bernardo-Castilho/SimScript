@@ -24,7 +24,7 @@ import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
     Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl, QTheory,
-    Traffic, Supermarket
+    Traffic, Supermarket, Port
 } from './simulations/gpss';
 
 
@@ -816,6 +816,63 @@ showSimulation(
             { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green' },
             { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red' }
         ), true);
+        //log.innerHTML = sim.getStatsTable();
+    }
+);
+
+//-------------------------------------------------------------------------
+// Port
+showSimulation(
+    new Port(),
+    'Port (GPSS)',
+    `<p>
+        A harbor port has three berths 1, 2 and 3.</p>
+    <p>
+        At any given time Berth1 can accommodate two small ships, or one
+        medium ship. Berth2 and Berth3 can each handle one large ship,
+        two medium ships or four small ships.</p>
+    <p>
+        The interarrival time of ships is 26 hours, exponentially distributed. 
+        Small, medium, and large ships are in the proportions 5:3:2.</p>
+    <p>
+        Queuing for berths is on a first-come first-serve basis, except that no
+        medium or small ship may go to a berth for which a large ship is waiting,
+        and medium ships have a higher priority than small ships.</p>
+    <p>
+        Unloading times for ships are exponentially distributed with mean times
+        as follows: small ships, 15 hours; medium ships, 30 hours; large ships,
+        45 hours.</p>
+    <p>
+        The loading times are as follows: small ships, 24±6 hours uniformly distributed;
+        medium ships, 36±10 hours uniformly distributed; large ships 56±12 hours uniformly
+        distributed.</p>
+    <p>
+        The tide must be high for large ships to enter or leave Berths 2 and 3.
+        Low tide lasts 3 hours, high tide, 10 hours.</p>
+    <p>
+        Run the simulation for 500 days and determine:</p>
+    <ol>
+        <li>
+            The distribution of transit times of each type of ship.<br/>
+            GPSS says the average transit times were about <b>44</b>, <b>74</b>,
+            and <b>115</b> hours<br/>
+            SimScript says the times were <b><span id='port-transit-small'>?</span></b>,
+            <b><span id='port-transit-medium'>?</span></b>, and
+            <b><span id='port-transit-large'>?</span></b> hours.</li>
+        <li>
+            The utilization of the three berths.<br/>
+            GPSS says the utilizations were <b>52%</b>, <b>49%</b>, and <b>54%</b>.<br/>
+            SimScript says the utilizations were <b><span id='port-utz-berth1'>?</span>%</b>,
+            <b><span id='port-utz-berth2'>?</span>%</b>, and
+            <b><span id='port-utz-berth3'>?</span>%</b>.</li>
+    </ol>`,
+    (sim: Port, log: HTMLElement) => {
+        setText('#port-transit-small', format(sim.qTransit[0].averageDwell, 0));
+        setText('#port-transit-medium', format(sim.qTransit[1].averageDwell, 0));
+        setText('#port-transit-large', format(sim.qTransit[2].averageDwell, 0));
+        setText('#port-utz-berth1', format(sim.qBerths[0].utilization * 100, 0));
+        setText('#port-utz-berth2', format(sim.qBerths[1].utilization * 100, 0));
+        setText('#port-utz-berth3', format(sim.qBerths[2].utilization * 100, 0));
         //log.innerHTML = sim.getStatsTable();
     }
 );

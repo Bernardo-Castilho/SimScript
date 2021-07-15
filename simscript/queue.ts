@@ -114,10 +114,23 @@ export class Queue {
     }
     /**
      * Gets the number of entities currently in the queue.
+     * 
+     * This value is usually, but not always, the same as the number
+     * of queue capacity units in use.
+     * 
+     * By default, entities entering queues use up one capacity unit.
+     * In this case, the **pop** and **unitsInUse** properties will
+     * return the same value. But if entities take arbitrary queue 
+     * capacity units when they enter the queue, those values will 
+     * be different.
      */
     get pop(): number {
         return this._items.size;
     }
+    /**
+     * Gets the total number of entities that have entered the queue
+     * since the simulation started.
+     */
     get totalIn(): number {
         return this._totalIn;
     }

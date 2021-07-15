@@ -113,11 +113,15 @@ class Customer extends Entity<BarberShop> {
     service = new Uniform(15 - 3, 15 + 3);
     async script() {
         const shop = this.simulation;
+
         await this.enterQueue(shop.qWait); // enter the line
         await this.enterQueue(shop.qJoe); // seize Joe the barber
         this.leaveQueue(shop.qWait); // leave the line
         await this.delay(this.service.sample()); // get a haircut
-        this.leaveQueue(shop.qJoe); // free Joe        
+        this.leaveQueue(shop.qJoe); // free Joe
+
+        // or do all this with a single call to seize:
+        // await this.seize(shop.qJoe, this.service.sample(), shop.qWait);
     }
 }
 ```

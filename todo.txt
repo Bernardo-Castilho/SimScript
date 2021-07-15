@@ -1,7 +1,6 @@
 # Todo
 * Promise.all
 * Entity.seize method
-
 - steering behaviors / pedestrians (http://www.red3d.com/cwr/steer/)
 - more docs/examples
     - more GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
@@ -21,14 +20,14 @@
         13 * queuing theory (solvable queueing network)
         14 * T-junction traffic
         15 * supermarket
-        16 - port ***
+        16 * port
+        17 - FMS (?)
     - pac-man
     - elevators
     - robot/warehouse (3d)
 - react samples
 - more tests
     - seed issue
-    - preempt
 - strips
     - length, max speed, vehicle list (with positions: extends queue)
     - multi-segment

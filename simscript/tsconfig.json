@@ -9,12 +9,14 @@
     "include": [
         "*.ts"
     ],
-
     "typedocOptions": {
-        "entryPoints": ["index.ts"],
+        "entryPoints": [
+            "index.ts"
+        ],
         "out": "docs",
+        "includes": "./includes",
         "excludePrivate": true,
         "excludeInternal": true,
         "excludeProtected": true,
-      }    
+    }
 }

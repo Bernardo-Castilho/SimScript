@@ -1493,3 +1493,157 @@ class CustomerTabulator extends Entity<Supermarket> {
         }
     }
 }
+
+//-------------------------------------------------------------------------
+// Port
+//-------------------------------------------------------------------------
+// A harbor port has three berths 1, 2 and 3.
+// At any given time Berth1 can accommodate two small ships, or one medium ship.
+// Berth2 and Berth3 can each handle one large ship, two medium ships or four small ships.
+// The interarrival time of ships is 26 hours, exponentially distributed. 
+// Small, medium, and large ships are in the proportions 5:3:2.
+// Queuing for berths is on a first-come first-serve basis, except that no
+// medium or small ship may go to a berth for which a large ship is waiting,
+// and medium ships have a higher priority than small ships.
+// Unloading times for ships are exponentially distributed with mean times as follows:
+// small ships, 15 hours; medium ships, 30 hours; and large ships, 45 hours.
+// The loading times are as follows:
+// - Small ships 24±6 hours uniformly distributed.
+// - Medium ships 36±10 hours uniformly distributed.
+// - Large ships 56±12 hours uniformly distributed.
+// The tide must be high for large ships to enter or leave Berths 2 and 3.
+// Low tide lasts 3 hours, high tide, 10 hours.
+// Run the simulation for 500 days and determine:
+// 1. The distribution of transit times of each type of ship.
+//    GPSS says the average transit times were about 44, 74, and 115 hours.
+// 2. The utilization of the three berths.
+//    GPSS says the utilizations were 52%, 49%, and 54%.
+//-------------------------------------------------------------------------
+export class Port extends Simulation {
+    highTide = false;
+    shipArrival = new Exponential(26); // ships arrive every 26 hours
+    unloadDelay = [
+        new Exponential(15), // small
+        new Exponential(30), // medium
+        new Exponential(45) // large
+    ];
+    loadDelay = [
+        new Uniform(24 - 6, 24 + 6), // small
+        new Uniform(36 - 10, 36 + 10), // medium
+        new Uniform(56 - 12, 56 + 12) // large
+    ];
+    units = [
+        1, // small ships use 1 berth unit
+        2, // medium ships use 2 berth units
+        4 // large ships use 4 berth units
+    ]
+
+    qTransit = [
+        new Queue('Small Ships'),
+        new Queue('Medium Ships'),
+        new Queue('Large Ships'),
+    ];
+    qBerths = [
+        new Queue('Berth 1', 2), // one medium or two small ships
+        new Queue('Berth 2', 4), // one large, two medium, or four small ships
+        new Queue('Berth 3', 4), // ditto
+    ];
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+
+        this.timeEnd = 500 * 24; // simulate for 500 days
+        this.activate(new TideController()); // control the tides
+        this.generateEntities(Ship, this.shipArrival); // generate ships
+    }
+}
+
+enum TideSignal {
+    Low,
+    High
+};
+enum ShipSize {
+    Small,
+    Medium,
+    Large
+};
+
+class TideController extends Entity<Port> {
+    async script() {
+        const sim = this.simulation;
+        for (; ;) {
+            sim.highTide = false;
+            this.sendSignal(TideSignal.Low);
+            await this.delay(3); // tide is low for 3 hours
+            sim.highTide = true;
+            this.sendSignal(TideSignal.High);
+            await this.delay(10); // tide is high for 10 hours
+        }
+    }
+}
+class Ship extends Entity<Port> {
+    shipSize: ShipSize;
+
+    async script() {
+        const sim = this.simulation;
+
+        // select ship size (small/medium/large)
+        const rndSz = Math.random();
+        this.shipSize = (rndSz <= 0.5) ? ShipSize.Small :
+            (rndSz <= 0.8) ? ShipSize.Medium :
+            ShipSize.Large;
+        
+        // larger ships have higher priority
+        this.priority = this.shipSize;
+
+        // measure transit time
+        const qTransit = sim.qTransit[this.shipSize];
+        this.enterQueueImmediately(qTransit);
+
+        // large ships can only enter/leave when the tide is high
+        while (this.shipSize == ShipSize.Large && !sim.highTide) {
+            await this.waitSignal(TideSignal.High);
+        }
+
+        // seize berth
+        const
+            qBerth = this.getBerth(),
+            units = sim.units[this.shipSize]; // small ships take 1 unit, medium take 2, large take 4
+        await this.enterQueue(qBerth, units);
+
+        // unload and re-load the ship
+        await this.delay(sim.unloadDelay[this.shipSize].sample());
+        await this.delay(sim.loadDelay[this.shipSize].sample());
+
+        // release berth
+        this.leaveQueue(qBerth);
+
+        // large ships can only enter/leave when the tide is high
+        while (this.shipSize == ShipSize.Large && !sim.highTide) {
+            await this.waitSignal(TideSignal.High);
+        }
+
+        // done
+        this.leaveQueue(qTransit);
+    }
+    getBerth(): Queue {
+        const berths = this.simulation.qBerths;
+        switch (this.shipSize) {
+            case ShipSize.Small: // small/medium ships can use any berth
+            case ShipSize.Medium:
+                let minIndex = -1;
+                let minPop = -1;
+                berths.forEach((b, index) => {
+                    if (minPop < 0 || b.pop < minPop || (b.pop == minPop && Math.random() < .5)) {
+                        minPop = b.pop;
+                        minIndex = index;
+                    }
+                });
+                return berths[minIndex];
+            case ShipSize.Large: // large ships can use berths 2 or 3
+                return berths[1].pop < berths[2].pop ? berths[1] :
+                    berths[2].pop < berths[1].pop ? berths[2] :
+                    Math.random() < .5 ? berths[1] : berths[2];
+        }
+    }
+}

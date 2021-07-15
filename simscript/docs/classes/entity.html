@@ -74,7 +74,7 @@
 					<p>They have an asynchronous <a href="entity.html#script">script</a> method that contains the
 					actions carried out by the entity within the simulation.</p>
 					<p>These actions typically include asyncronous methods such as
-						<a href="entity.html#delay">delay</a>, <a href="entity.html#enterqueue">enterQueue</a>, and <a href="entity.html#waitsignal">waitSignal</a>.
+						<a href="entity.html#delay">delay</a>, <a href="entity.html#enterqueue">enterQueue</a>, <a href="entity.html#seize">seize</a>, and <a href="entity.html#waitsignal">waitSignal</a>.
 					Calls to asynchonous methods should include the <strong>await</strong> keyword.</p>
 					<p>For example:</p>
 					<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">BarberShop</span><span style="color: #000000">&gt; {</span>
@@ -133,6 +133,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#canenterqueue" class="tsd-kind-icon">can<wbr>Enter<wbr>Queue</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#delay" class="tsd-kind-icon">delay</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#dispose" class="tsd-kind-icon">dispose</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#enterqueue" class="tsd-kind-icon">enter<wbr>Queue</a></li>
@@ -140,6 +141,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#getanimationposition" class="tsd-kind-icon">get<wbr>Animation<wbr>Position</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#leavequeue" class="tsd-kind-icon">leave<wbr>Queue</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#script" class="tsd-kind-icon">script</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#seize" class="tsd-kind-icon">seize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#sendsignal" class="tsd-kind-icon">send<wbr>Signal</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#tostring" class="tsd-kind-icon">to<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="entity.html#waitsignal" class="tsd-kind-icon">wait<wbr>Signal</a></li>
@@ -293,6 +295,45 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canenterqueue" class="tsd-anchor"></a>
+					<h3>can<wbr>Enter<wbr>Queue</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Enter<wbr>Queue<span class="tsd-signature-symbol">(</span>q<span class="tsd-signature-symbol">: </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a>, units<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in entity.ts:274</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks whether the entity can enter a <a href="queue.html">Queue</a> immediately.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>q: <a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Queue to check.</p>
+									</div>
+								</li>
+								<li>
+									<h5>units: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of units to check for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the queue has at least <strong>units</strong> capacity units
+							available, false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="delay" class="tsd-anchor"></a>
 					<h3>delay</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -302,7 +343,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:167</li>
+									<li>Defined in entity.ts:168</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -326,8 +367,9 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-								<p>Note that calls to async methods such as <a href="entity.html#enterqueue">enterQueue</a>, <a href="entity.html#waitsignal">waitSignal</a>,
-								and <a href="entity.html#delay">delay</a> should be preceded by the <strong>await</strong> keyword.</p>
+								<p>Note that calls to async methods such as <a href="entity.html#delay">delay</a>, <a href="entity.html#enterqueue">enterQueue</a>,
+									<a href="entity.html#seize">seize</a>, and <a href="entity.html#waitsignal">waitSignal</a> should be preceded by the <strong>await</strong>
+								keyword.</p>
 								<p>If you use the <strong>signal</strong> parameter to create an interruptible delay,
 									the call to <strong>delay</strong> may return when the specified <strong>delay</strong> has elapsed
 									or when the specified <strong>signal</strong> has been received.
@@ -397,7 +439,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:391</li>
+									<li>Defined in entity.ts:495</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -420,25 +462,25 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:209</li>
+									<li>Defined in entity.ts:220</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Async method that waits until a <a href="queue.html">Queue</a> has enough capacity,
-										then inserts this <a href="entity.html">Entity</a> into the <a href="queue.html">Queue</a> seizing a
+										then adds this <a href="entity.html">Entity</a> to the <a href="queue.html">Queue</a> seizing a
 									specified number of capacity units.</p>
 								</div>
 								<p>An entity may enter multiple queues at once, but it cannot enter
 								the same queue multiple times.</p>
 								<p>For example, the script below causes the <strong>Customer</strong> entity to
-									enter a service queue <strong>qJoe</strong>, then undergo a delay based on
-								a <strong>service</strong> random variable, then leave the service queue:</p>
+									enter a service queue <strong>qJoe</strong>, then undergo a delay based on a
+								<strong>service</strong> random variable, then leave the service queue:</p>
 								<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">BarberShop</span><span style="color: #000000">&gt; {</span>
 <span style="color: #000000">    </span><span style="color: #001080">service</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">15</span><span style="color: #000000"> - </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000"> + </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">shop</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000">;</span>
-<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// enter the line</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueueImmediately</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// enter the line</span>
 <span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qJoe</span><span style="color: #000000">); </span><span style="color: #008000">// seize Joe the barber</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// leave the line</span>
 <span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">service</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">()); </span><span style="color: #008000">// get a haircut</span>
@@ -446,8 +488,16 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-								<p>Note that calls to async methods such as <a href="entity.html#enterqueue">enterQueue</a>, <a href="entity.html#waitsignal">waitSignal</a>,
-								and <a href="entity.html#delay">delay</a> should be preceded by the <strong>await</strong> keyword.</p>
+								<p>In the example above, the <strong>qWait</strong> queue has unlimited capacity.
+									It does not restrict the flow of entities, but simply tracks how many
+								queue capacity units were used and for how long.</p>
+								<p>The <strong>qJoe</strong> queue, on the other hand, does have limited capacity.
+									Entities trying to enter it may experience delays, having to wait until
+									there is enough capacity. Like <strong>qWait</strong>, it also tracks how many
+								queue capacity units were used and for how long.</p>
+								<p>Note that calls to async methods such as <a href="entity.html#delay">delay</a>, <a href="entity.html#enterqueue">enterQueue</a>,
+									<a href="entity.html#seize">seize</a>, and <a href="entity.html#waitsignal">waitSignal</a> should be preceded by the <strong>await</strong>
+								keyword.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -479,13 +529,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:252</li>
+									<li>Defined in entity.ts:263</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Adds this <a href="entity.html">Entity</a> into a <a href="queue.html">Queue</a> seizing a
-									specified number of capacity units.</p>
+									specified number of capacity units without any wait.</p>
 								</div>
 								<p>This method is synchronous. It does not require an <strong>await</strong>
 									and assumes the queue has enough capacity to take the
@@ -542,7 +592,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:384</li>
+									<li>Defined in entity.ts:488</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -618,7 +668,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:261</li>
+									<li>Defined in entity.ts:361</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -650,7 +700,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:437</li>
+									<li>Defined in entity.ts:541</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -662,8 +712,8 @@
 									logic. It typically contains of sequences of calls to methods
 									that cause the entity to
 									enter or leave queues (<a href="entity.html#enterqueue">enterQueue</a>/<a href="entity.html#leavequeue">leaveQueue</a>),
-									undergo delays (<a href="entity.html#delay">delay</a>), or
-								wait for and send signals (<a href="entity.html#waitsignal">waitSignal</a>/<a href="entity.html#sendsignal">sendSignal</a>).</p>
+									undergo delays (<a href="entity.html#delay">delay</a>), or wait for and send signals
+								(<a href="entity.html#waitsignal">waitSignal</a>/<a href="entity.html#sendsignal">sendSignal</a>).</p>
 								<p>For example:</p>
 								<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">BarberShop</span><span style="color: #000000">&gt; {</span>
 <span style="color: #000000">    </span><span style="color: #001080">service</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">15</span><span style="color: #000000"> - </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000"> + </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
@@ -683,6 +733,93 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="seize" class="tsd-anchor"></a>
+					<h3>seize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">seize<span class="tsd-signature-symbol">(</span>resource<span class="tsd-signature-symbol">: </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a>, delay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, waitingQueues<span class="tsd-signature-symbol">?: </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol"> | </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol">[]</span>, preemptSignal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, units<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in entity.ts:324</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Seizes a resource (possibly preempting it), enters one or more
+										waiting queues, performs a delay, and leaves the waiting queues
+									and the resource.</p>
+								</div>
+								<p>This method provides a short way of telling an entity to enter
+									one or more waiting queues, seize a resource, use the resource
+									for a while, and then leave the waiting queues and the resource.
+								For example:</p>
+								<pre><code class="language-typescript"><span style="color: #001080">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// this call</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">seize</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qResource</span><span style="color: #000000">, </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">delay</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">(), </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// does the same as this</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueueImmediately</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qResource</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">delay</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">());</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qResource</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+</code></pre>
+								<p>The <strong>seize</strong> method also allows you to specify a <strong>preempt</strong> signal,
+									which is used to provide preemptive behavior. If used, entities with
+									higher <strong>priority</strong> will be able to temporarily stop lower-priority
+									entities, perform their work, and restore the suspended entities when
+								done. For example:</p>
+								<pre><code class="language-typescript"><span style="color: #001080">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// execute some work allowing higher-priority entities to </span>
+<span style="color: #000000">    </span><span style="color: #008000">// temporarily suspend the transaction and resume it later.</span>
+<span style="color: #000000">    </span><span style="color: #008000">// (this example uses sim.qResource as a preempt signal)</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">seize</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qResource</span><span style="color: #000000">, </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">delay</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">(), </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">, </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">qResource</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>resource: <a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Resource to seize.</p>
+									</div>
+								</li>
+								<li>
+									<h5>delay: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Amount of time required to perform the work.</p>
+									</div>
+								</li>
+								<li>
+									<h5>waitingQueues: <a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol"> | </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Waiting queues. Waiting queues should have unlimited capacity.</p>
+									</div>
+								</li>
+								<li>
+									<h5>preemptSignal: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Signal used to pre-empt the resource (defaults to none).</p>
+									</div>
+								</li>
+								<li>
+									<h5>units: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of <a href="queue.html">Queue</a> capacity units to seize.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="sendsignal" class="tsd-anchor"></a>
 					<h3>send<wbr>Signal</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -692,13 +829,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:326</li>
+									<li>Defined in entity.ts:430</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Sends a signal that releases entities that are currently waiting
-									for the signal.</p>
+									<p>Sends a signal that releases entities currently waiting for
+									the signal.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -732,7 +869,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:405</li>
+									<li>Defined in entity.ts:509</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -756,7 +893,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in entity.ts:312</li>
+									<li>Defined in entity.ts:416</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -802,6 +939,9 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
+								<p>Note that calls to async methods such as <a href="entity.html#delay">delay</a>, <a href="entity.html#enterqueue">enterQueue</a>,
+									<a href="entity.html#seize">seize</a>, and <a href="entity.html#waitsignal">waitSignal</a> should be preceded by the <strong>await</strong>
+								keyword.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -856,6 +996,9 @@
 								<a href="entity.html#simulation" class="tsd-kind-icon">simulation</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="entity.html#canenterqueue" class="tsd-kind-icon">can<wbr>Enter<wbr>Queue</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="entity.html#delay" class="tsd-kind-icon">delay</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -875,6 +1018,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="entity.html#script" class="tsd-kind-icon">script</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="entity.html#seize" class="tsd-kind-icon">seize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="entity.html#sendsignal" class="tsd-kind-icon">send<wbr>Signal</a>

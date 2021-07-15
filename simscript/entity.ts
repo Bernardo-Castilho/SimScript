@@ -176,22 +176,22 @@ export class Entity<S extends Simulation = Simulation> {
     }
     /**
      * Async method that waits until a {@link Queue} has enough capacity, 
-     * then inserts this {@link Entity} into the {@link Queue} seizing a 
+     * then adds this {@link Entity} to the {@link Queue} seizing a 
      * specified number of capacity units.
      * 
      * An entity may enter multiple queues at once, but it cannot enter
      * the same queue multiple times.
      * 
      * For example, the script below causes the **Customer** entity to
-     * enter a service queue **qJoe**, then undergo a delay based on
-     * a **service** random variable, then leave the service queue:
+     * enter a service queue **qJoe**, then undergo a delay based on a
+     * **service** random variable, then leave the service queue:
      * 
      * ```typescript
      * class Customer extends Entity<BarberShop> {
      *     service = new Uniform(15 - 3, 15 + 3);
      *     async script() {
      *         const shop = this.simulation;
-     *         await this.enterQueue(shop.qWait); // enter the line
+     *         this.enterQueueImmediately(shop.qWait); // enter the line
      *         await this.enterQueue(shop.qJoe); // seize Joe the barber
      *         this.leaveQueue(shop.qWait); // leave the line
      *         await this.delay(this.service.sample()); // get a haircut
@@ -199,6 +199,15 @@ export class Entity<S extends Simulation = Simulation> {
      *     }
      * }
      * ```
+     * 
+     * In the example above, the **qWait** queue has unlimited capacity.
+     * It does not restrict the flow of entities, but simply tracks how many 
+     * queue capacity units were used and for how long.
+     * 
+     * The **qJoe** queue, on the other hand, does have limited capacity. 
+     * Entities trying to enter it may experience delays, having to wait until 
+     * there is enough capacity. Like **qWait**, it also tracks how many 
+     * queue capacity units were used and for how long.
      * 
      * Note that calls to async methods such as {@link delay}, {@link enterQueue},
      * {@link seize}, and {@link waitSignal} should be preceded by the **await** 
@@ -216,7 +225,7 @@ export class Entity<S extends Simulation = Simulation> {
     }
     /**
      * Adds this {@link Entity} into a {@link Queue} seizing a 
-     * specified number of capacity units.
+     * specified number of capacity units without any wait.
      * 
      * This method is synchronous. It does not require an **await**
      * and assumes the queue has enough capacity to take the 
@@ -253,6 +262,17 @@ export class Entity<S extends Simulation = Simulation> {
      */
     enterQueueImmediately(queue: Queue, units = 1) {
         queue.add(this, units);
+    }
+    /**
+     * Checks whether the entity can enter a {@link Queue} immediately.
+     * 
+     * @param q Queue to check.
+     * @param units Number of units to check for.
+     * @returns True if the queue has at least **units** capacity units 
+     * available, false otherwise.
+     */
+    canEnterQueue(q: Queue, units = 1): boolean {
+        return q.canEnter(units);
     }
     /**
      * Seizes a resource (possibly preempting it), enters one or more
