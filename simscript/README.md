@@ -1,17 +1,16 @@
 # SimScript
 
-A Discrete Event Simulation Library in TypeScript with
+A **Discrete Event Simulation** Library in TypeScript with
 support for 2D and 3D animations.
 
 **SimScript** uses JavaScript's
 [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 features to make simulations easy to write and understand.
 
-This [SimScript Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
-shows several simulations, including 2D and 3D animations.
-
 The [SimScript API Documentation](https://bernardo-castilho.github.io/simscript/docs/)
 describes all the classes in the **SimScript** library and their properties.
+This [SimScript Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
+shows several simulations, including 2D and 3D animations.
 
 **SimScript** simulations are built using these classes:
 

@@ -149,12 +149,12 @@ showSimulation(
             <b><span id='tv-wait-ots'>?</span></b> for on-the-spot jobs.</li>
     </ol>`,
     (sim: TVRepairShop, log: HTMLElement) => {
-        log.innerHTML = sim.getStatsTable();
         setText('#tv-utz', format(sim.qRepairMan.utilization * 100, 0));
         setText('#tv-wait', format(sim.qAllJobs.averageDwell, 0));
         setText('#tv-wait-overhaul', format(sim.qOverhaulJobs.averageDwell, 0));
         setText('#tv-wait-customer', format(sim.qCustomerJobs.averageDwell, 0));
         setText('#tv-wait-ots', format(sim.qOnTheSpotJobs.averageDwell, 0));
+        log.innerHTML = sim.getStatsTable();
     }
 )
 
@@ -915,8 +915,9 @@ if (true) {
         new PromiseAll(),
         'PromiseAll',
         `<p>
-        Shows how an Entity may span multiple sub-entities and
-        execute them all using a <b>Promise.all</b> call.</p>`
+            Shows how an Entity may span multiple sub-entities and
+            execute them all using a <b>Promise.all</b> call.
+        </p>`
     );
 
     //----------------------------------------------------------
@@ -971,11 +972,10 @@ if (true) {
         showSimulation(
             new Interrupt(),
             'Interrupt',
-            `
-    <p>
-        Test Interruptible delays.
-        The queue's average dwell time should be less than 10.
-    </p>`,
+            `<p>
+                Test Interruptible delays.
+                The queue's average dwell time should be less than 10.
+            </p>`,
             (sim: Interrupt, log: HTMLElement) => {
                 log.innerHTML = `
             <p>
@@ -993,33 +993,28 @@ if (true) {
         'Preempt',
         `<p>
         Shows how to use interruptible delays to simulate pre-empting
-        resources.
-    </p>
+        resources.</p>
     <p>
         The sample has three entity types, each with a different
-        priority, all competing for a single resource.
-    </p>`
+        priority, all competing for a single resource.</p>`
     );
 
     //----------------------------------------------------------
     // RandomVarTest
     showSimulation(
         new RandomVarTest(),
-        'RandomVarTest Simulation',
+        'RandomVarTest',
         `<p>
         Shows how to create and use
         <a href='https://en.wikipedia.org/wiki/Random_variable'>random variable</a>
-        objects.
-    </p>
+        objects.</p>
     <p>
         Random variables are used to obtain values for inter-arrival times,
-        service times, and other non-deterministic values.
-    </p>
+        service times, and other non-deterministic values.</p>
     <p>
         Random variables may specify seed values, which cause the variable to
         produce repeatable streams of random values. If a seed value is not
-        specified, then each run produces a different stream of random values.
-    </p>`,
+        specified, then each run produces a different stream of random values.</p>`,
         (sim: RandomVarTest, log: HTMLElement) => {
             function getRandomVarOptions() {
                 let options = '';
@@ -1078,11 +1073,10 @@ if (true) {
         new MultiServer({
             timeEnd: 1e5
         }),
-        'MultiServer Simulation',
+        'MultiServer',
         `<p>
-        Single resource with multiple servers versus
-        multiple resources with a single server.
-    </p>`,
+            Single resource with multiple servers versus
+            multiple resources with a single server.</p>`,
         (sim: MultiServer, log: HTMLElement) => {
 
             let utzQSingle = 0;
@@ -1137,26 +1131,22 @@ if (true) {
                 Multiple Single-Server Resources (Available Server, single-line)
             </h3>
             <p>
-                Multiple queues (resources) with a single server each.
-            </p>
+                Multiple queues (resources) with a single server each.</p>
             <p>
                 Customers look for available servers as they arrive.
                 The results are the same as those for a single queue
-                with multiple servers.
-            </p>
+                with multiple servers.</p>
             ${report(utzQSingle, sim.qSingleWait)}
             <h3>
                 Multiple Single-Server Resources (Random Server, multi-line)
             </h3>
             <p>
-                Multiple queues (resources) with a single server each.
-            </p>
+                Multiple queues (resources) with a single server each.</p>
             <p>
                 Customers choose a server randomly when they arrive.
                 Even though the number of servers and service times
                 are the same, the load is not evenly distributed among
-                the servers, so queues and waits are longer.
-            </p>
+                the servers, so queues and waits are longer.</p>
             ${report(utzQSingleNC, sim.qSingleWaitNC)}
             <h3>
                 Stats
@@ -1170,15 +1160,14 @@ if (true) {
     // BarberShop
     showSimulation(
         new BarberShop(),
-        'BarberShop Simulation',
+        'BarberShop',
         `<p>
-        This is a classic
-        <a
-            href='https://try-mts.com/gpss-introduction-and-barber-shop-simulation/'
-        >GPSS simulation example</a>:
-        customers arrive at a barbershop,
-        wait until the barber is available, get serviced, and leave.
-    </p>`,
+            This is a classic
+            <a
+                href='https://try-mts.com/gpss-introduction-and-barber-shop-simulation/'
+            >GPSS simulation example</a>:
+            customers arrive at a barbershop,
+            wait until the barber is available, get serviced, and leave.</p>`,
         (sim: BarberShop, log: HTMLElement) => {
             log.innerHTML = `<ul>
             <li>Simulated time: <b>${format(sim.timeNow / 60, 0)}</b> hours</li>
@@ -1202,16 +1191,14 @@ if (true) {
     // MMC
     showSimulation(
         new MMC(),
-        'M/M/C Simulation',
+        'M/M/C',
         `<p>
-        This is a classic
-        <a href='https://en.wikipedia.org/wiki/M/M/c_queue'>M/M/C queueing system</a>.
-        Entities arrive, are served by one of C servers, and leave.
-    </p>
-    <p>
-        This system is simple enough that there are formulas to calculate the
-        average queue length and waits (calculated values are shown in italics).
-    </p>`,
+            This is a classic
+            <a href='https://en.wikipedia.org/wiki/M/M/c_queue'>M/M/C queueing system</a>.
+            Entities arrive, are served by one of C servers, and leave.</p>
+        <p>
+            This system is simple enough that there are formulas to calculate the
+            average queue length and waits (calculated values are shown in italics).</p>`,
         (sim: MMC, log: HTMLElement) => {
             const
                 lambda = 1 / sim.interArrival.mean, // arrival rate
@@ -1313,13 +1300,11 @@ if (true) {
     // Crosswalk
     showSimulation(
         new Crosswalk(),
-        'Crosswalk Simulation',
+        'Crosswalk',
         `<p>
-        Simulates a crosswalk with a traffic light.
-    </p>
-    <p>
-        Shows how to use the <b>waitsignal</b> and <b>sendSignal</b> methods.
-    </p>`,
+            Simulates a crosswalk with a traffic light.</p>
+        <p>
+            Shows how to use the <b>waitsignal</b> and <b>sendSignal</b> methods.</p>`,
         (sim: Crosswalk, log: HTMLElement) => {
             const c = sim.cycle;
             const wPavg = (c.yellow + c.red) / (c.yellow + c.red + c.green) * (c.yellow + c.red) / 2;
@@ -1384,25 +1369,22 @@ if (true) {
         new Crosswalk({
             frameDelay: 20
         }),
-        'Animated Crosswalk Simulation',
-        `   <p>
+        'Animated Crosswalk',
+        `<p>
             This sample uses the same Crosswalk <b>Simulation</b> class
             as shown earlier, with an added <b>Animation</b> object that
             adds an animated pane to show the flow of entities through
-            the simulation.
-        </p>
+            the simulation.</p>
         <p>
             The animation pane is a regular <code>&lt;div&gt;</code> element.
             Queue positions are defined by elements in the animation element.
             Entities in each queue and in transit between queues are shown
-            using <code>&lt;img&gt;</code> elements.
-        </p>
+            using <code>&lt;img&gt;</code> elements.</p>
         <p>
             Animations are great for presenting simulations and can be useful
             for debugging purposes.
             Keeping them decoupled from the simulations keeps <b>SimScript</b>
-            simple and flexible.
-        </p>
+            simple and flexible.</p>
         <div class='ss-anim'>
             <div class='time-now'>
                 Time: <span>0.00</span> hours
@@ -1467,11 +1449,10 @@ if (true) {
         new Crosswalk({
             frameDelay: 20
         }),
-        'Animated Crosswalk Simulation (SVG)',
-        `   <p>
+        'Animated Crosswalk (SVG)',
+        `<p>
             This sample uses the same Crosswalk <b>Simulation</b> class
-            as shown earlier, this time using an SVG-based animation.
-        </p>
+            as shown earlier, this time using an SVG-based animation.</p>
         <div class='svg ss-time-now'>
             Time: <b><span>0.00</span></b> hours
         </div>
@@ -1494,8 +1475,7 @@ if (true) {
             <circle class='ss-queue ped-xing' cx='50%' cy='75%' r='10' />
             <circle class='ss-queue ped-xed' cx='50%' cy='45%' r='10' />
             <circle class='ss-queue ped-leave' cx='90%' cy='35%' r='10' />
-        </svg>
-    `,
+        </svg>`,
         (sim: Crosswalk, animationHost: HTMLElement) => {
             new Animation(sim, animationHost, {
                 getEntityHtml: e => {
@@ -1548,11 +1528,10 @@ if (true) {
         new Crosswalk({
             frameDelay: 20
         }),
-        'Animated Crosswalk Simulation (X3DOM)',
-        `   <p>
+        'Animated Crosswalk (X3DOM)',
+        `<p>
             This sample uses the same Crosswalk <b>Simulation</b> class
-            as shown earlier, this time using an X3DOM-based animation.
-        </p>
+            as shown earlier, this time using an X3DOM-based animation.</p>
         <div class='x3d ss-time-now'>
             Time: <b><span>0.00</span></b> hours
         </div>
@@ -1657,8 +1636,7 @@ if (true) {
                 ${createX3Queue('ped-xed', 0, 75, 5)}
                 ${createX3Queue('ped-leave', +250, 100)}
             </scene>
-        </x3d>
-    `,
+        </x3d>`,
         (sim: Crosswalk, animationHost: HTMLElement) => {
             new Animation(sim, animationHost, {
                 getEntityHtml: (e: Entity) => {
@@ -1705,9 +1683,8 @@ if (true) {
             maxTimeStep: 0.1
         }),
         'Animation Options (SVG)',
-        `   <p>
-            Change the animation parameters to see their effect:
-        </p>
+        `<p>
+            Change the animation parameters to see their effect:</p>
         <label>
             Queue Angle
             <input id='q-angle' type='range' min='0' max='360' step='15'>
@@ -1751,8 +1728,7 @@ if (true) {
             <rect class='ss-queue q10' x='3%' y='68%' width='4%' height='4%' />
             <rect class='ss-queue q11' x='18%' y='83%' width='4%' height='4%' />
             <rect class='ss-queue q12' x='38%' y='88%' width='4%' height='4%' />
-        </svg>
-    `,
+        </svg>`,
         (sim: AnimationOptions, animationHost: HTMLElement) => {
             const anim = new Animation(sim, animationHost, {
                 rotateEntities: true,
@@ -1806,14 +1782,11 @@ if (true) {
             maxTimeStep: 0.1
         }),
         'Animation Options (A-Frame)',
-        `
-        <p>
+        `<p>
             This sample uses the same Crosswalk Simulation class as shown earlier,
-            this time using an <a href="https://aframe.io">A-Frame-based</a> animation.
-        </p>
+            this time using an <a href="https://aframe.io">A-Frame-based</a> animation.</p>
         <p>
-            Change the animation parameters to see their effect:
-        </p>
+            Change the animation parameters to see their effect:</p>
         <label>
             Queue Angle
             <input id='af-q-angle' type='range' min='0' max='360' step='15'>
@@ -1881,8 +1854,7 @@ if (true) {
                 <a-sphere class='ss-queue q11' mixin='queue' position='-50 87 0'></a-sphere>
                 <a-sphere class='ss-queue q12' mixin='queue' position='0 100 0'></a-sphere>
             </a-scene>
-        </div>
-    `,
+        </div>`,
         (sim: AnimationOptions, animationHost: HTMLElement) => {
             const anim = new Animation(sim, animationHost, {
                 rotateEntities: true,
@@ -1936,17 +1908,13 @@ if (true) {
             maxTimeStep: 0.1
         }),
         'Animation Options (X3DOM)',
-        `
-        <p>
+        `<p>
             This sample uses the same Crosswalk Simulation class as shown earlier,
-            this time using an <a href="https://www.x3dom.org/">X3DOM-based</a> animation.
-        </p>
+            this time using an <a href="https://www.x3dom.org/">X3DOM-based</a> animation.</p>
         <p>
-            Press 'A' to view <b>all</b> elements or 'R' to <b>reset</b> the viewpoint.
-        </p>
+            Press 'A' to view <b>all</b> elements or 'R' to <b>reset</b> the viewpoint.</p>
         <p>
-            Change the animation parameters to see their effect:
-        </p>
+            Change the animation parameters to see their effect:</p>
         <label>
             Queue Angle
             <input id='x3-q-angle' type='range' min='0' max='360' step='15'>
@@ -2009,8 +1977,7 @@ if (true) {
                 ${createX3Queue('q11', -50, 87)}
                 ${createX3Queue('q12', 0, 100)}
             </scene>
-        </x3d>
-    `,
+        </x3d>`,
         (sim: AnimationOptions, animationHost: HTMLElement) => {
             const anim = new Animation(sim, animationHost, {
                 rotateEntities: true,
@@ -2145,22 +2112,18 @@ if (true) {
             maxTimeStep: 0.01,
         }),
         'Network Intro (SVG)',
-        `   <p>
+        `<p>
             This sample uses a network to simulate an area with random service
-            requests and a fixed number of service vehicles.
-        </p>
+            requests and a fixed number of service vehicles.</p>
         <ul>
             <li>
                 Red circles show service requests that happen at random locations
-                on the network.
-            </li>        
+                on the network.</li>        
             <li>
                 Green circles show service vehicles that looking for or traveling
-                to requests.
-            </li>        
+                to requests.</li>        
             <li>
-                Yellow circles show service vehicles servicing a request.
-            </li>
+                Yellow circles show service vehicles servicing a request.</li>
         </ul>
         <label>
             Slow Mode
@@ -2193,8 +2156,7 @@ if (true) {
             font-size='10'
             text-anchor='middle'
             dominant-baseline='middle'>
-        </svg>
-    `,
+        </svg>`,
         (sim: NetworkIntro, animationHost: HTMLElement) => {
             renderNetworkSVG(sim.network, animationHost, true, true);
 
@@ -2253,21 +2215,17 @@ if (true) {
             maxTimeStep: 0.1,
         }),
         'Network Intro (X3DOM)',
-        `   <p>
+        `<p>
             This sample uses a network to simulate an area with random service
-            requests and a fixed number of service vehicles.
-        </p>
+            requests and a fixed number of service vehicles.</p>
         <ul>
             <li>
                 Red spheres show service requests that happen at random locations
-                on the network.
-            </li>        
+                on the network.</li>        
             <li>
-                Green service vehicles are looking for or traveling to requests.
-            </li>        
+                Green service vehicles are looking for or traveling to requests.</li>        
             <li>
-                Yellow service vehicles are servicing a request.
-            </li>
+                Yellow service vehicles are servicing a request.</li>
         </ul>
         <label>
             Slow Mode
@@ -2313,8 +2271,7 @@ if (true) {
                 </transform>
             </transform>                
             </scene>
-        </x3d>
-    `,
+        </x3d>`,
         (sim: NetworkIntro, animationHost: HTMLElement) => {
             renderNetworkX3D(sim.network, animationHost);
 
@@ -2371,52 +2328,47 @@ if (true) {
         }),
         'Car Following',
         `<p>
-        Simple car-following demo.
-    </p>
-    <p>
-        Cars are randomly generated and follow the car ahead, adjusting
-        their speed as needed to keep a safe headway (so they could
-        stop before hitting the car ahead).
-    </p>
-    <p>
-        The animation is not to scale, so the cars may appear to move
-        together too closely (the road strip is 1km long).
-    </p>
-    <p>
-        The simulation uses a simplified version of
-        <a href='https://en.wikipedia.org/wiki/Gipps%27_model'>Gipp's model</a>
-        to update the vehicle speeds at fixed time intervals.
-    </p>
-    <p>
-        This sample shows how to use the <b>getAnimationPosition</b>
-        method in the <b>Entity</b> class to customize queue
-        animations.
-    </p>
-    <label>
-        Vehicle Count:
-        <b><span id='carfollow-cnt'>0</span></b> / <span id='carfollow-tot'>0</span>
-    </label>
-    <label>
-        Max Speed:
-        <b><span id='carfollow-speed-max'>0</span></b> km/h
-    </label>
-    <label>
-        Min Speed:
-        <b><span id='carfollow-speed-min'>0</span></b> km/h
-    </label>
-    <label>
-        Average Speed:
-        <b><span id='carfollow-speed'>0</span></b> km/h
-    </label>
-    <svg class='anim-host ss-anim car-follow' viewBox='0 0 1000 500'>
-        <line class='strip'
-            x1='0%' y1='90%'
-            x2='100%' y2='10%'
-            stroke='lightgrey'
-            stroke-width='5%' />
-        <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5' />
-        <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5' />
-    </svg>`,
+            Simple car-following demo.</p>
+        <p>
+            Cars are randomly generated and follow the car ahead, adjusting
+            their speed as needed to keep a safe headway (so they could
+            stop before hitting the car ahead).</p>
+        <p>
+            The animation is not to scale, so the cars may appear to move
+            together too closely (the road strip is 1km long).</p>
+        <p>
+            The simulation uses a simplified version of
+            <a href='https://en.wikipedia.org/wiki/Gipps%27_model'>Gipp's model</a>
+            to update the vehicle speeds at fixed time intervals.</p>
+        <p>
+            This sample shows how to use the <b>getAnimationPosition</b>
+            method in the <b>Entity</b> class to customize queue
+            animations.</p>
+        <label>
+            Vehicle Count:
+            <b><span id='carfollow-cnt'>0</span></b> / <span id='carfollow-tot'>0</span>
+        </label>
+        <label>
+            Max Speed:
+            <b><span id='carfollow-speed-max'>0</span></b> km/h
+        </label>
+        <label>
+            Min Speed:
+            <b><span id='carfollow-speed-min'>0</span></b> km/h
+        </label>
+        <label>
+            Average Speed:
+            <b><span id='carfollow-speed'>0</span></b> km/h
+        </label>
+        <svg class='anim-host ss-anim car-follow' viewBox='0 0 1000 500'>
+            <line class='strip'
+                x1='0%' y1='90%'
+                x2='100%' y2='10%'
+                stroke='lightgrey'
+                stroke-width='5%' />
+            <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5' />
+            <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5' />
+        </svg>`,
         (sim: CarFollow, animationHost: HTMLElement) => {
             const colors = ['red', 'green', 'blue', 'white'];
             new Animation(sim, animationHost, {
@@ -2462,48 +2414,43 @@ if (true) {
         }),
         'Network Car Following (X3DOM)',
         `<p>
-        Network-based car-following demo.
-    </p>
-    <p>
-        Cars are randomly generated travel from the first to the
-        last network nodes using a simple car-following model.
-    </p>
-    <p>
-        The animation is not to scale, so the cars may appear to move
-        together too closely (the network nodes are 100m apart).
-        But they may not overtake each other.
-    </p>
-    <p>
-        The simulation uses a simplified version of
-        <a href='https://en.wikipedia.org/wiki/Gipps%27_model'>Gipp's model</a>
-        to update the vehicle speeds at fixed time intervals.
-        It also accounts for congestion when calculating shortest paths.
-    </p>
-    <p>
-        This sample shows how to use the <b>getAnimationPosition</b>
-        method in the <b>Entity</b> class to customize queue
-        animations.
-    </p>
-    <label>
-        Slow Mode
-        <input id='carfollowing-slow' type='checkbox'>
-    </label>
-    <label>
-        Vehicle Count:
-        <b><span id='carfollowing-cnt'>0</span></b> / <span id='carfollowing-tot'>0</span>
-    </label>
-    <label>
-        Max Speed:
-        <b><span id='carfollowing-speed-max'>0</span></b> km/h
-    </label>
-    <label>
-        Min Speed:
-        <b><span id='carfollowing-speed-min'>0</span></b> km/h
-    </label>
-    <label>
-        Average Speed:
-        <b><span id='carfollowing-speed'>0</span></b> km/h
-    </label>
+            Network-based car-following demo.</p>
+        <p>
+            Cars are randomly generated travel from the first to the
+            last network nodes using a simple car-following model.</p>
+        <p>
+            The animation is not to scale, so the cars may appear to move
+            together too closely (the network nodes are 100m apart).
+            But they may not overtake each other.</p>
+        <p>
+            The simulation uses a simplified version of
+            <a href='https://en.wikipedia.org/wiki/Gipps%27_model'>Gipp's model</a>
+            to update the vehicle speeds at fixed time intervals.
+            It also accounts for congestion when calculating shortest paths.</p>
+        <p>
+            This sample shows how to use the <b>getAnimationPosition</b>
+            method in the <b>Entity</b> class to customize queue
+            animations.</p>
+        <label>
+            Slow Mode
+            <input id='carfollowing-slow' type='checkbox'>
+        </label>
+        <label>
+            Vehicle Count:
+            <b><span id='carfollowing-cnt'>0</span></b> / <span id='carfollowing-tot'>0</span>
+        </label>
+        <label>
+            Max Speed:
+            <b><span id='carfollowing-speed-max'>0</span></b> km/h
+        </label>
+        <label>
+            Min Speed:
+            <b><span id='carfollowing-speed-min'>0</span></b> km/h
+        </label>
+        <label>
+            Average Speed:
+            <b><span id='carfollowing-speed'>0</span></b> km/h
+        </label>
         <p></p>
         <x3d class='ss-anim anim-host car-following'> 
             <scene>
@@ -2526,8 +2473,7 @@ if (true) {
                 </transform>
             </transform>                
             </scene>
-        </x3d>
-    `,
+        </x3d>`,
         (sim: CarFollowNetwork, animationHost: HTMLElement) => {
             renderNetworkX3D(sim.network, animationHost);
 
@@ -2592,56 +2538,48 @@ if (true) {
         }),
         'Asteroids (SVG)',
         `<p>
-        SimScript is not a game engine, but it can be used to create
-        simple games such as the classic Asteroids.
-    </p>
-    <p>
-        This sample shows how simulations can handle keyboard and
-        touch events, and perform collision tests.
-    </p>
-    <p>
-        To play, press the run button and use these keys:
-    </p>
-    <ul>
-        <li>
-            <code>LEFT/RIGHT</code> arrows to turn the ship
-            (or swipe left/right on touch devices).
-        </li>
-        <li>
-            <code>UP</code> arrow to accelerate
-            (or swipe up on touch devices).
-        </li>
-        <li>
-            <code>SPACE</code> bar to fire a missile
-            (or tap on touch devices).
-        </li>
-        <li>
-            <code>S</code> to toggle sound effects.
-        </li>
-    </ul>
-    <label>
-        Professional Mode:
-        <input id='pro-mode' type='checkbox'>
-    </label>
-    <label>
-        Missiles Fired:
-        <b><span id='missiles-fired'>0</span></b>
-    </label>
-    <label>
-        Asteroids Destroyed:
-            <b><span id='asteroids-destroyed'>0</span></b>
-            /
-            <span id='asteroids-cnt'>0</span>
-    </label>
-    <svg class='ss-anim anim-host asteroids' viewBox='0 0 1000 500'>
-        <radialGradient id='jetGradient' fx='1'>
-            <stop offset='0%' stop-color='yellow'/>
-            <stop offset='100%' stop-color='transparent'/>
-        </radialGradient>    
-        <circle class='ss-queue center' cx='50%' cy='50%' r='0'/>
-        <text class='game-over' x='50%' y='50%' fill='white' text-anchor='middle' font-size='36pt'>
-        </text>
-    </svg>`,
+            SimScript is not a game engine, but it can be used to create
+            simple games such as the classic Asteroids.</p>
+        <p>
+            This sample shows how simulations can handle keyboard and
+            touch events, and perform collision tests.</p>
+        <p>
+            To play, press the run button and use these keys:</p>
+        <ul>
+            <li>
+                <code>LEFT/RIGHT</code> arrows to turn the ship
+                (or swipe left/right on touch devices).</li>
+            <li>
+                <code>UP</code> arrow to accelerate
+                (or swipe up on touch devices).</li>
+            <li>
+                <code>SPACE</code> bar to fire a missile
+                (or tap on touch devices).</li>
+            <li>
+                <code>S</code> to toggle sound effects.</li>
+        </ul>
+        <label>
+            Professional Mode:
+            <input id='pro-mode' type='checkbox'>
+        </label>
+        <label>
+            Missiles Fired:
+            <b><span id='missiles-fired'>0</span></b>
+        </label>
+        <label>
+            Asteroids Destroyed:
+                <b><span id='asteroids-destroyed'>0</span></b>
+                /
+                <span id='asteroids-cnt'>0</span>
+        </label>
+        <svg class='ss-anim anim-host asteroids' viewBox='0 0 1000 500'>
+            <radialGradient id='jetGradient' fx='1'>
+                <stop offset='0%' stop-color='yellow'/>
+                <stop offset='100%' stop-color='transparent'/>
+            </radialGradient>    
+            <circle class='ss-queue center' cx='50%' cy='50%' r='0'/>
+            <text class='game-over' x='50%' y='50%' fill='white' text-anchor='middle' font-size='36pt'></text>
+        </svg>`,
         (sim: Asteroids, animationHost: HTMLElement) => {
             new Animation(sim, animationHost, {
                 rotateEntities: true,
