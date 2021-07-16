@@ -280,8 +280,8 @@ export class Entity<S extends Simulation = Simulation> {
      * and the resource.
      * 
      * This method provides a short way of telling an entity to enter
-     * one or more waiting queues, seize a resource, use the resource 
-     * for a while, and then leave the waiting queues and the resource. 
+     * one or more waiting queues, seize a resource, leave the waiting
+     * queues, use the resource for a while, and leave the resource. 
      * For example:
      * 
      * ```typescript

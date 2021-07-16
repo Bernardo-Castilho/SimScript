@@ -1,12 +1,14 @@
 import './simscript/simscript.css';
 import './style.css';
 
-import { Simulation, SimulationState } from './simscript/simulation';
+import { startSampleGroup, endSampleGroup, showSimulation, setText, getLineChart } from './util';
+
+import { SimulationState } from './simscript/simulation';
 import { Animation, IAnimatedQueue } from './simscript/animation';
 import { Entity } from './simscript/entity';
 import { Queue } from './simscript/queue';
 import { Exponential } from './simscript/random';
-import { format, bind, assert } from './simscript/util';
+import { format, bind } from './simscript/util';
 
 import { SimpleTest, SimplestSimulation, Interrupt, Preempt } from './simulations/simpletest';
 import { PromiseAll } from './simulations/promise-all';
@@ -29,10 +31,24 @@ import {
 
 
 //----------------------------------------------------------
+// GPSS sample Group
+startSampleGroup(
+    'GPSS-Inspired Samples',
+    `<p>
+        These samples were inspired by the
+        <a href="http://www.minutemansoftware.com/tutorial/tutorial_manual.htm">GPSS samples</a>
+        published by Minuteman software.</p>
+    <p>
+        They show how you can use SimScript to simulate a wide range of practical
+        applications and allow you to compare results obtained by GPSS and SimScript.</p>`
+);
+if (true) {
+
+//----------------------------------------------------------
 // Telephone
 showSimulation(
     new Telephone(),
-    'Telephone (GPSS)',
+    'Telephone',
     `<p>
         A simple telephone system has two external lines.
         Calls, which originate externally, arrive every 100±60 seconds.
@@ -69,7 +85,7 @@ showSimulation(
 // Inventory
 showSimulation(
     new Inventory(),
-    'Inventory (GPSS)',
+    'Inventory',
     `<p>
         A finished product inventory is controlled by means of a weekly
         review system.
@@ -96,7 +112,7 @@ showSimulation(
 // TVRepairShop
 showSimulation(
     new TVRepairShop(),
-    'TV Repair Shop (GPSS)',
+    'TV Repair Shop',
     `<p>
         A television shop employs a single repairman to overhaul its
         rented television sets, service customers’ sets and do
@@ -146,7 +162,7 @@ showSimulation(
 // QualityControl
 showSimulation(
     new QualityControl(),
-    'Quality Control (GPSS)',
+    'Quality Control',
     `<p>
         A component is manufactured by a sequence of three processes, 
         each followed by a short two minute inspection.</p>
@@ -178,7 +194,7 @@ showSimulation(
 // OrderPoint
 showSimulation(
     new OrderPoint(),
-    'Order Point (GPSS)',
+    'Order Point',
     `<p>
         An inventory system is controlled by an order point, set at 600 units,
         and an economic order quantity of 500 units.</p>
@@ -210,7 +226,7 @@ showSimulation(
 // Manufacturing
 showSimulation(
     new Manufacturing(),
-    'Manufacturing (GPSS)',
+    'Manufacturing',
     `<p>
         A manufacturing department of an electronics company makes digital
         watches. In the dispatch department, the watches are packed by an
@@ -254,7 +270,7 @@ showSimulation(
 // Textile
 showSimulation(
     new Textile(),
-    'Textile (GPSS)',
+    'Textile',
     `<p>
         A textile factory produces fine mohair yarn in three departments.
         The first department draws and blends the raw material, in sliver form,
@@ -307,7 +323,7 @@ showSimulation(
 // Oil Depot
 showSimulation(
     new OilDepot(),
-    'Oil Depot (GPSS)',
+    'Oil Depot',
     `<p>
         An oil storage depot distributes three grades of fuel: a) home heating
         oil, b) light industrial fuel oil, and c) diesel fuel for road vehicles.
@@ -368,7 +384,7 @@ showSimulation(
 // Pump Assembly
 showSimulation(
     new PumpAssembly(),
-    'Pump Assembly (GPSS)',
+    'Pump Assembly',
     `<p>
         A manufacturer makes centrifugal pump units which are assembled to
         customer orders. The orders arrive on average, every 5 hours,
@@ -442,7 +458,7 @@ showSimulation(
 // RobotFMS
 showSimulation(
     new RobotFMS(),
-    'Robot FMS (GPSS)',
+    'Robot FMS',
     `<p>
         An experimental, robot operated, flexible manufacturing system has
         two computer numerical control machine tools, an arrival area, and
@@ -500,7 +516,7 @@ showSimulation(
 // Bicycle Factory
 showSimulation(
     new BicycleFactory(),
-    'Bicycle Factory (GPSS)',
+    'Bicycle Factory',
     `<p>
         A factory assembles bicycles employing the following staff: 2 clerks,
         3 framers, 1 saddler, 1 handler, 1 wheeler, 1 pedaler, 4 assemblers,
@@ -544,7 +560,7 @@ showSimulation(
 // Stock Control
 showSimulation(
     new StockControl(),
-    'Stock Control (GPSS)',
+    'Stock Control',
     `<p>
         A manufacturing company makes waste disposal units, which it sells for
         $200 each. Total annual demand is for 20,000 units. Distribution is
@@ -619,7 +635,7 @@ showSimulation(
 // QTheory
 showSimulation(
     new QTheory(),
-    'Queueing Theory (GPSS)',
+    'Queueing Theory',
     `<p>
         When feasible, an analytical solution to queuing systems provides a 
         useful means of estimating the performance of simple systems.</p>
@@ -694,7 +710,7 @@ showSimulation(
 // Traffic
 showSimulation(
     new Traffic(),
-    'Traffic (GPSS)',
+    'Traffic',
     `<p>
         Cars arrive at a T-junction every 6.28 seconds hyperexponentially
         distributed. The cars then make a left turn northbound onto a
@@ -748,7 +764,7 @@ showSimulation(
 // Supermarket
 showSimulation(
     new Supermarket(),
-    'Supermarket (GPSS)',
+    'Supermarket',
     `<p>
         Customers arrive by car to shop at a supermarket.</p>
     <p>
@@ -824,7 +840,7 @@ showSimulation(
 // Port
 showSimulation(
     new Port(),
-    'Port (GPSS)',
+    'Port',
     `<p>
         A harbor port has three berths 1, 2 and 3.</p>
     <p>
@@ -877,89 +893,105 @@ showSimulation(
     }
 );
 
+}
+
 //----------------------------------------------------------
-// PromiseAll
-showSimulation(
-    new PromiseAll(),
-    'PromiseAll',
+// GPSS sample Group end
+endSampleGroup();
+
+//----------------------------------------------------------
+// SimScript sample Group
+startSampleGroup(
+    'SimScript Samples',
     `<p>
+        These samples show SimScript features, ranging from simple simulations
+        to animations and network-based samples.</p>`
+);
+if (true) {
+
+    //----------------------------------------------------------
+    // PromiseAll
+    showSimulation(
+        new PromiseAll(),
+        'PromiseAll',
+        `<p>
         Shows how an Entity may span multiple sub-entities and
         execute them all using a <b>Promise.all</b> call.</p>`
-);
+    );
 
-//----------------------------------------------------------
-// Generator
-if (false)
-showSimulation(
-    new Generator(),
-    'Generator',
-    `<p>
+    //----------------------------------------------------------
+    // Generator
+    if (false)
+        showSimulation(
+            new Generator(),
+            'Generator',
+            `<p>
         Simple test for the Simulation.generateEntities method.
     </p>`
-);
+        );
 
-//----------------------------------------------------------
-// SimplestSimulation
-if (false)
-showSimulation(
-    new SimplestSimulation(),
-    'SimplestSimulation',
-    `<p>
+    //----------------------------------------------------------
+    // SimplestSimulation
+    if (false)
+        showSimulation(
+            new SimplestSimulation(),
+            'SimplestSimulation',
+            `<p>
         Simple test with some asserts.
     </p>`
-);
+        );
 
-//----------------------------------------------------------
-// SimpleTest
-if (false)
-showSimulation(
-    new SimpleTest({
-        stateChanged: (sim) => {
-            if (sim.state == SimulationState.Finished) {
-                console.log('** SimpleTest done in', sim.timeElapsed, 'ms');
-            }
-        }
-    }),
-    'SimpleTest Simulation',
-    `<p>
+    //----------------------------------------------------------
+    // SimpleTest
+    if (false)
+        showSimulation(
+            new SimpleTest({
+                stateChanged: (sim) => {
+                    if (sim.state == SimulationState.Finished) {
+                        console.log('** SimpleTest done in', sim.timeElapsed, 'ms');
+                    }
+                }
+            }),
+            'SimpleTest Simulation',
+            `<p>
         Simple test with some asserts.
     </p>
     <p>
         Run the simulation and look at the console.
         There should be no errors.
     </p>`,
-    (sim: SimpleTest, log: HTMLElement) => {
-        log.innerHTML = sim.getStatsTable(true);
-    }
-);
+            (sim: SimpleTest, log: HTMLElement) => {
+                log.innerHTML = sim.getStatsTable(true);
+            }
+        );
 
-//----------------------------------------------------------
-// Interruptible Delays
-if (false)
-showSimulation(
-    new Interrupt(),
-    'Interrupt',
-    `
+    //----------------------------------------------------------
+    // Interruptible Delays
+    if (false)
+        showSimulation(
+            new Interrupt(),
+            'Interrupt',
+            `
     <p>
         Test Interruptible delays.
         The queue's average dwell time should be less than 10.
     </p>`,
-    (sim: Interrupt, log: HTMLElement) => {
-        log.innerHTML = `
+            (sim: Interrupt, log: HTMLElement) => {
+                log.innerHTML = `
             <p>
                 <b>${sim.elapsed}</b> entities finished their delays.<br/>
                 <b>${sim.interrupted}</b> entities were interrupted.<br/>
             </p>` +
-        sim.getStatsTable();
-    }
-)
+                    sim.getStatsTable();
+            }
+        )
 
-//----------------------------------------------------------
-// Preempt on seize
-showSimulation(
-    new Preempt(),
-    'Preempt',
-    `<p>
+    //----------------------------------------------------------
+    // Preempt on seize
+    showSimulation(
+        new Preempt(),
+        'Preempt',
+        `<p>
         Shows how to use interruptible delays to simulate pre-empting
         resources.
     </p>
@@ -967,14 +999,14 @@ showSimulation(
         The sample has three entity types, each with a different
         priority, all competing for a single resource.
     </p>`
-);
+    );
 
-//----------------------------------------------------------
-// RandomVarTest
-showSimulation(
-    new RandomVarTest(),
-    'RandomVarTest Simulation',
-    `<p>
+    //----------------------------------------------------------
+    // RandomVarTest
+    showSimulation(
+        new RandomVarTest(),
+        'RandomVarTest Simulation',
+        `<p>
         Shows how to create and use
         <a href='https://en.wikipedia.org/wiki/Random_variable'>random variable</a>
         objects.
@@ -988,17 +1020,17 @@ showSimulation(
         produce repeatable streams of random values. If a seed value is not
         specified, then each run produces a different stream of random values.
     </p>`,
-    (sim: RandomVarTest, log: HTMLElement) => {
-        function getRandomVarOptions() {
-            let options = '';
-            sim.randomVars.forEach((rnd, index) => {
-                options += `<option ${index == sim.randomVarIndex ? 'selected' : ''}>
+        (sim: RandomVarTest, log: HTMLElement) => {
+            function getRandomVarOptions() {
+                let options = '';
+                sim.randomVars.forEach((rnd, index) => {
+                    options += `<option ${index == sim.randomVarIndex ? 'selected' : ''}>
                     ${rnd.name}
                 </option>`
-            });
-            return options;
-        }
-        log.innerHTML = `
+                });
+                return options;
+            }
+            log.innerHTML = `
             <label>
                 Type:
                 <select id='rand-type'>${getRandomVarOptions()}</select>
@@ -1031,42 +1063,42 @@ showSimulation(
                     <b>${format(sim.tally.max)}</b>
                 </li>
             </ul>` +
-            sim.tally.getHistogramChart(sim.randomVar.name);
+                sim.tally.getHistogramChart(sim.randomVar.name);
         
-        // parameters
-        bind('rand-type', sim.randomVarIndex, v => sim.randomVarIndex = v);
-        bind('rand-size', sim.sampleSize, v => sim.sampleSize = v, ' samples');
-        bind('rand-seeded', sim.seeded, v => sim.seeded = v);
-    }
-);
+            // parameters
+            bind('rand-type', sim.randomVarIndex, v => sim.randomVarIndex = v);
+            bind('rand-size', sim.sampleSize, v => sim.sampleSize = v, ' samples');
+            bind('rand-seeded', sim.seeded, v => sim.seeded = v);
+        }
+    );
 
-//----------------------------------------------------------
-// MultiServer
-showSimulation(
-    new MultiServer({
-        timeEnd: 1e5
-    }),
-    'MultiServer Simulation',
-    `<p>
+    //----------------------------------------------------------
+    // MultiServer
+    showSimulation(
+        new MultiServer({
+            timeEnd: 1e5
+        }),
+        'MultiServer Simulation',
+        `<p>
         Single resource with multiple servers versus
         multiple resources with a single server.
     </p>`,
-    (sim: MultiServer, log: HTMLElement) => {
+        (sim: MultiServer, log: HTMLElement) => {
 
-        let utzQSingle = 0;
-        sim.qSingle.forEach((q: Queue) => {
-            utzQSingle += q.grossPop.avg / q.capacity;
-        });
-        utzQSingle /= sim.qSingle.length;
+            let utzQSingle = 0;
+            sim.qSingle.forEach((q: Queue) => {
+                utzQSingle += q.grossPop.avg / q.capacity;
+            });
+            utzQSingle /= sim.qSingle.length;
 
-        let utzQSingleNC = 0;
-        sim.qSingleNC.forEach((q: Queue) => {
-            utzQSingleNC += q.grossPop.avg / q.capacity;
-        });
-        utzQSingleNC /= sim.qSingleNC.length;
+            let utzQSingleNC = 0;
+            sim.qSingleNC.forEach((q: Queue) => {
+                utzQSingleNC += q.grossPop.avg / q.capacity;
+            });
+            utzQSingleNC /= sim.qSingleNC.length;
 
-        const report = (utz: number, q: Queue) => {
-            return `
+            const report = (utz: number, q: Queue) => {
+                return `
                 <ul>
                     <li>Utilization:
                         <b>${format(utz * 100)}%</b>
@@ -1091,9 +1123,9 @@ showSimulation(
                     </li>
                 </ul>
             `;
-        }
+            }
 
-        log.innerHTML = `
+            log.innerHTML = `
             <h3>
                 Single Multi-Server Resource
             </h3>
@@ -1131,15 +1163,15 @@ showSimulation(
             </h3>
             ${sim.getStatsTable(true)}
         `;
-    }
-);
+        }
+    );
 
-//----------------------------------------------------------
-// BarberShop
-showSimulation(
-    new BarberShop(),
-    'BarberShop Simulation',
-    `<p>
+    //----------------------------------------------------------
+    // BarberShop
+    showSimulation(
+        new BarberShop(),
+        'BarberShop Simulation',
+        `<p>
         This is a classic
         <a
             href='https://try-mts.com/gpss-introduction-and-barber-shop-simulation/'
@@ -1147,8 +1179,8 @@ showSimulation(
         customers arrive at a barbershop,
         wait until the barber is available, get serviced, and leave.
     </p>`,
-    (sim: BarberShop, log: HTMLElement) => {
-        log.innerHTML = `<ul>
+        (sim: BarberShop, log: HTMLElement) => {
+            log.innerHTML = `<ul>
             <li>Simulated time: <b>${format(sim.timeNow / 60, 0)}</b> hours</li>
             <li>Elapsed time: <b>${format(sim.timeElapsed / 1000, 2)}</b> seconds</li>
             <li>Barber Utilization: <b>${format(sim.qJoe.grossPop.avg * 100)}%</b></li>
@@ -1158,20 +1190,20 @@ showSimulation(
             <li>Customers Served: <b>${format(sim.qJoe.grossDwell.cnt, 0)}</b></li>
         </ul>` +
 
-        // show stats table
-        sim.getStatsTable(true) +
+                // show stats table
+                sim.getStatsTable(true) +
 
-        // show waiting queue's gross dwell histogram
-        sim.qWait.grossDwell.getHistogramChart('Waiting Times (min)');
-    }
-);
+                // show waiting queue's gross dwell histogram
+                sim.qWait.grossDwell.getHistogramChart('Waiting Times (min)');
+        }
+    );
 
-//----------------------------------------------------------
-// MMC
-showSimulation(
-    new MMC(),
-    'M/M/C Simulation',
-    `<p>
+    //----------------------------------------------------------
+    // MMC
+    showSimulation(
+        new MMC(),
+        'M/M/C Simulation',
+        `<p>
         This is a classic
         <a href='https://en.wikipedia.org/wiki/M/M/c_queue'>M/M/C queueing system</a>.
         Entities arrive, are served by one of C servers, and leave.
@@ -1180,21 +1212,21 @@ showSimulation(
         This system is simple enough that there are formulas to calculate the
         average queue length and waits (calculated values are shown in italics).
     </p>`,
-    (sim: MMC, log: HTMLElement) => {
-        const
-            lambda = 1 / sim.interArrival.mean, // arrival rate
-            mu = 1 / sim.service.mean, // service rate
-            c = sim.qService.capacity, // server count
-            rho1 = lambda / mu, // utilization
-            rho = rho1 / c; // actual utilization
-        const
-            p0 = 1 / (sum(rho1, c) + 1 / factorial(c) * Math.pow(rho1, c) * c * mu / (c * mu - lambda)),
-            ws = Math.pow(rho1, c) * mu * p0 / (factorial(c - 1) * Math.pow(c * mu - lambda, 2)) + 1 / mu,
-            ls = ws * lambda,
-            lq = ls - rho1, // average queue length
-            wq = lq / lambda; // average wait
+        (sim: MMC, log: HTMLElement) => {
+            const
+                lambda = 1 / sim.interArrival.mean, // arrival rate
+                mu = 1 / sim.service.mean, // service rate
+                c = sim.qService.capacity, // server count
+                rho1 = lambda / mu, // utilization
+                rho = rho1 / c; // actual utilization
+            const
+                p0 = 1 / (sum(rho1, c) + 1 / factorial(c) * Math.pow(rho1, c) * c * mu / (c * mu - lambda)),
+                ws = Math.pow(rho1, c) * mu * p0 / (factorial(c - 1) * Math.pow(c * mu - lambda, 2)) + 1 / mu,
+                ls = ws * lambda,
+                lq = ls - rho1, // average queue length
+                wq = lq / lambda; // average wait
 
-        log.innerHTML = `
+            log.innerHTML = `
             <label>
                 Number of Servers:
                 <input id='mmc-capy' type='range' min='2' max='10'>
@@ -1246,55 +1278,55 @@ showSimulation(
                 </li>
             </ul>`;
         
-        if (rho > 1) {
-            log.innerHTML += `<p class='error'>
+            if (rho > 1) {
+                log.innerHTML += `<p class='error'>
                 ** The server utilization exceeds 100%; the system will not reach a steady-state **
             </p>`;
-        }
+            }
 
-        log.innerHTML += `
+            log.innerHTML += `
             ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
             ${sim.qWait.grossDwell.getHistogramChart('Wait times (minutes)')}`;
 
-        // parameters
-        bind('mmc-capy', sim.qService.capacity, v => sim.qService.capacity = v, ' servers');
-        bind('mmc-inter-arr', sim.interArrival.mean, v => sim.interArrival = new Exponential(v), ' seconds');
-        bind('mmc-service', sim.service.mean, v => sim.service = new Exponential(v), ' seconds');
+            // parameters
+            bind('mmc-capy', sim.qService.capacity, v => sim.qService.capacity = v, ' servers');
+            bind('mmc-inter-arr', sim.interArrival.mean, v => sim.interArrival = new Exponential(v), ' seconds');
+            bind('mmc-service', sim.service.mean, v => sim.service = new Exponential(v), ' seconds');
 
-        // helpers
-        function sum(rho1: number, c: number): number {
-            let sum = 0;
-            for (let i = 0; i < c; i++) {
-                sum += 1 / factorial(i) * Math.pow(rho1, i);
+            // helpers
+            function sum(rho1: number, c: number): number {
+                let sum = 0;
+                for (let i = 0; i < c; i++) {
+                    sum += 1 / factorial(i) * Math.pow(rho1, i);
+                }
+                return sum;
             }
-            return sum;
+            function factorial(n: number): number {
+                let f = 1;
+                for (let i = 2; i <= n; i++) f *= i;
+                return f;
+            }
         }
-        function factorial(n: number): number {
-            let f = 1;
-            for (let i = 2; i <= n; i++) f *= i;
-            return f;
-        }
-    }
-);
+    );
 
-//----------------------------------------------------------
-// Crosswalk
-showSimulation(
-    new Crosswalk(),
-    'Crosswalk Simulation',
-    `<p>
+    //----------------------------------------------------------
+    // Crosswalk
+    showSimulation(
+        new Crosswalk(),
+        'Crosswalk Simulation',
+        `<p>
         Simulates a crosswalk with a traffic light.
     </p>
     <p>
         Shows how to use the <b>waitsignal</b> and <b>sendSignal</b> methods.
     </p>`,
-    (sim: Crosswalk, log: HTMLElement) => {
-        const c = sim.cycle;
-        const wPavg = (c.yellow + c.red) / (c.yellow + c.red + c.green) * (c.yellow + c.red) / 2;
-        const wCavg = (c.yellow + c.green) / (c.yellow + c.red + c.green) * (c.yellow + c.green) / 2;
-        const wPmax = c.yellow + c.red;
-        const wCmax = c.yellow + c.green;
-        log.innerHTML = `
+        (sim: Crosswalk, log: HTMLElement) => {
+            const c = sim.cycle;
+            const wPavg = (c.yellow + c.red) / (c.yellow + c.red + c.green) * (c.yellow + c.red) / 2;
+            const wCavg = (c.yellow + c.green) / (c.yellow + c.red + c.green) * (c.yellow + c.green) / 2;
+            const wPmax = c.yellow + c.red;
+            const wCmax = c.yellow + c.green;
+            log.innerHTML = `
             <p>
                 Pedestrian light cycle times (seconds):
             </p>
@@ -1333,27 +1365,27 @@ showSimulation(
                 <li>Car Count: <b>${format(sim.qCarXing.grossDwell.cnt, 0)}</b></li>
             </ul>` +
 
-            // show pedestrian queue's population histogram
-            sim.qPedXing.grossPop.getHistogramChart('Pedestrians waiting to cross') +
+                // show pedestrian queue's population histogram
+                sim.qPedXing.grossPop.getHistogramChart('Pedestrians waiting to cross') +
 
-            // show car queue's population histogram
-            sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross');
+                // show car queue's population histogram
+                sim.qCarXing.grossPop.getHistogramChart('Cars waiting to cross');
         
-        // parameters
-        bind('xwalk-red', sim.cycle.red, v => sim.cycle.red = v, ' seconds');
-        bind('xwalk-yellow', sim.cycle.yellow, v => sim.cycle.yellow = v, ' seconds');
-        bind('xwalk-green', sim.cycle.green, v => sim.cycle.green = v, ' seconds');
-    }
-);
+            // parameters
+            bind('xwalk-red', sim.cycle.red, v => sim.cycle.red = v, ' seconds');
+            bind('xwalk-yellow', sim.cycle.yellow, v => sim.cycle.yellow = v, ' seconds');
+            bind('xwalk-green', sim.cycle.green, v => sim.cycle.green = v, ' seconds');
+        }
+    );
 
-//----------------------------------------------------------
-// Animated Crosswalk (div)
-showSimulation(
-    new Crosswalk({
-        frameDelay: 20
-    }),
-    'Animated Crosswalk Simulation',
-    `   <p>
+    //----------------------------------------------------------
+    // Animated Crosswalk (div)
+    showSimulation(
+        new Crosswalk({
+            frameDelay: 20
+        }),
+        'Animated Crosswalk Simulation',
+        `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
             as shown earlier, with an added <b>Animation</b> object that
             adds an animated pane to show the flow of entities through
@@ -1394,49 +1426,49 @@ showSimulation(
             <div class='ss-queue ped-leave'></div>
         </div>
     `,
-    (sim: Crosswalk, animationHost: HTMLElement) => {
-        new Animation(sim, animationHost, {
-            getEntityHtml: e => {
+        (sim: Crosswalk, animationHost: HTMLElement) => {
+            new Animation(sim, animationHost, {
+                getEntityHtml: e => {
 
-                // use explicit image sizes to measuring errors while loading images
-                return e instanceof Pedestrian
-                    ? `<img class='ped' src='resources/blueped.png' width='15' height='19'>`
-                    : `<img class='car' src='resources/redcar.png' width='55' height='19'>`;
-            },
-            queues: [
-                { queue: sim.qPedArr, element: '.ss-queue.ped-arr' },
-                { queue: sim.qPedXing, element: '.ss-queue.ped-xing', angle: -45, max: 8 },
-                { queue: sim.qPedXed, element: '.ss-queue.ped-xed' },
-                { queue: sim.qPedLeave, element: '.ss-queue.ped-leave' },
+                    // use explicit image sizes to measuring errors while loading images
+                    return e instanceof Pedestrian
+                        ? `<img class='ped' src='resources/blueped.png' width='15' height='19'>`
+                        : `<img class='car' src='resources/redcar.png' width='55' height='19'>`;
+                },
+                queues: [
+                    { queue: sim.qPedArr, element: '.ss-queue.ped-arr' },
+                    { queue: sim.qPedXing, element: '.ss-queue.ped-xing', angle: -45, max: 8 },
+                    { queue: sim.qPedXed, element: '.ss-queue.ped-xed' },
+                    { queue: sim.qPedLeave, element: '.ss-queue.ped-leave' },
 
-                { queue: sim.qCarArr, element: '.ss-queue.car-arr' },
-                { queue: sim.qCarXing, element: '.ss-queue.car-xing', angle: 0, max: 16 },
-                { queue: sim.qCarXed, element: '.ss-queue.car-xed' },
-            ]
-        });
+                    { queue: sim.qCarArr, element: '.ss-queue.car-arr' },
+                    { queue: sim.qCarXing, element: '.ss-queue.car-xing', angle: 0, max: 16 },
+                    { queue: sim.qCarXed, element: '.ss-queue.car-xed' },
+                ]
+            });
 
-        // update display when the time or state change
-        const lights = animationHost.querySelectorAll('.light div');
-        const timeNow = animationHost.querySelector('.time-now span');
-        const updateStats = () => {
-            timeNow.textContent = format(sim.timeNow / 3600);
-            for (let i = 0; i < lights.length; i++) {
-                (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
+            // update display when the time or state change
+            const lights = animationHost.querySelectorAll('.light div');
+            const timeNow = animationHost.querySelector('.time-now span');
+            const updateStats = () => {
+                timeNow.textContent = format(sim.timeNow / 3600);
+                for (let i = 0; i < lights.length; i++) {
+                    (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
+                }
             }
+            sim.timeNowChanged.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(updateStats);
         }
-        sim.timeNowChanged.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(updateStats);
-    }
-);
+    );
 
-//----------------------------------------------------------
-// Animated Crosswalk (SVG)
-showSimulation(
-    new Crosswalk({
-        frameDelay: 20
-    }),
-    'Animated Crosswalk Simulation (SVG)',
-    `   <p>
+    //----------------------------------------------------------
+    // Animated Crosswalk (SVG)
+    showSimulation(
+        new Crosswalk({
+            frameDelay: 20
+        }),
+        'Animated Crosswalk Simulation (SVG)',
+        `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
             as shown earlier, this time using an SVG-based animation.
         </p>
@@ -1464,60 +1496,60 @@ showSimulation(
             <circle class='ss-queue ped-leave' cx='90%' cy='35%' r='10' />
         </svg>
     `,
-    (sim: Crosswalk, animationHost: HTMLElement) => {
-        new Animation(sim, animationHost, {
-            getEntityHtml: e => {
-                if (e instanceof Pedestrian) {
-                    return `<g class='ped' fill='black' stroke='black' opacity='0.8' transform='scale(1,0.8)'>
+        (sim: Crosswalk, animationHost: HTMLElement) => {
+            new Animation(sim, animationHost, {
+                getEntityHtml: e => {
+                    if (e instanceof Pedestrian) {
+                        return `<g class='ped' fill='black' stroke='black' opacity='0.8' transform='scale(1,0.8)'>
                         <circle cx='1%' cy='1%' r='0.5%' fill='orange' />
                         <rect x='.4%' y='2%' width='1.3%' height='4%' fill='green' rx='0.7%' />
                         <rect x='.66%' y='4%' width='.8%' height='3%' fill='blue' />
                         <rect x='.4%' y='7%' width='1.3%' height='.75%' rx='0.5%' />
                     </g>`;
-                } else {
-                    return `<g class='car' fill='black' stroke='black'>
+                    } else {
+                        return `<g class='car' fill='black' stroke='black'>
                         <rect x='1%' y='0' width='5%' height='4%' rx='1%' />
                         <rect x='0' y='1.5%' width='9%' height='3%' fill='red' rx='0.5%' />
                         <circle cx='1.5%' cy='4%' r='.9%' opacity='0.8' />
                         <circle cx='7.5%' cy='4%' r='.9%' opacity='0.8' />
                         <rect x='0' y='0' width='10%' height='1%' opacity='0' />
                     </g>`;
+                    }
+                },
+                queues: [
+                    { queue: sim.qPedArr, element: 'svg .ss-queue.ped-arr' },
+                    { queue: sim.qPedXing, element: 'svg .ss-queue.ped-xing', angle: -45, max: 8 },
+                    { queue: sim.qPedXed, element: 'svg .ss-queue.ped-xed' },
+                    { queue: sim.qPedLeave, element: 'svg .ss-queue.ped-leave' },
+
+                    { queue: sim.qCarArr, element: 'svg .ss-queue.car-arr' },
+                    { queue: sim.qCarXing, element: 'svg .ss-queue.car-xing', angle: 0, max: 16 },
+                    { queue: sim.qCarXed, element: 'svg .ss-queue.car-xed' },
+                ]
+            });
+
+            // update display when the time or state change
+            const lights = animationHost.querySelectorAll('.light circle');
+            const timeNow = document.querySelector('.svg.ss-time-now span');
+            const updateStats = () => {
+                timeNow.textContent = format(sim.timeNow / 3600);
+                for (let i = 0; i < lights.length; i++) {
+                    (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
                 }
-            },
-            queues: [
-                { queue: sim.qPedArr, element: 'svg .ss-queue.ped-arr' },
-                { queue: sim.qPedXing, element: 'svg .ss-queue.ped-xing', angle: -45, max: 8 },
-                { queue: sim.qPedXed, element: 'svg .ss-queue.ped-xed' },
-                { queue: sim.qPedLeave, element: 'svg .ss-queue.ped-leave' },
-
-                { queue: sim.qCarArr, element: 'svg .ss-queue.car-arr' },
-                { queue: sim.qCarXing, element: 'svg .ss-queue.car-xing', angle: 0, max: 16 },
-                { queue: sim.qCarXed, element: 'svg .ss-queue.car-xed' },
-            ]
-        });
-
-        // update display when the time or state change
-        const lights = animationHost.querySelectorAll('.light circle');
-        const timeNow = document.querySelector('.svg.ss-time-now span');
-        const updateStats = () => {
-            timeNow.textContent = format(sim.timeNow / 3600);
-            for (let i = 0; i < lights.length; i++) {
-                (lights[i] as HTMLElement).style.opacity = i == sim.light ? '1' : '';
             }
+            sim.timeNowChanged.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(updateStats);
         }
-        sim.timeNowChanged.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(updateStats);
-    }
-);
+    );
 
-//----------------------------------------------------------
-// Animated Crosswalk (X3DOM)
-showSimulation(
-    new Crosswalk({
-        frameDelay: 20
-    }),
-    'Animated Crosswalk Simulation (X3DOM)',
-    `   <p>
+    //----------------------------------------------------------
+    // Animated Crosswalk (X3DOM)
+    showSimulation(
+        new Crosswalk({
+            frameDelay: 20
+        }),
+        'Animated Crosswalk Simulation (X3DOM)',
+        `   <p>
             This sample uses the same Crosswalk <b>Simulation</b> class
             as shown earlier, this time using an X3DOM-based animation.
         </p>
@@ -1627,53 +1659,53 @@ showSimulation(
             </scene>
         </x3d>
     `,
-    (sim: Crosswalk, animationHost: HTMLElement) => {
-        new Animation(sim, animationHost, {
-            getEntityHtml: (e: Entity) => {
-                if (e instanceof Pedestrian) {
-                    return createX3Person('pedestrian');
-                } else {
-                    return e.serial % 2
-                        ? createX3Car('car red', 30, 14, 8, [1, 0, 0])
-                        : createX3Car('car green', 25, 12, 8, [1, 1, 0]);
+        (sim: Crosswalk, animationHost: HTMLElement) => {
+            new Animation(sim, animationHost, {
+                getEntityHtml: (e: Entity) => {
+                    if (e instanceof Pedestrian) {
+                        return createX3Person('pedestrian');
+                    } else {
+                        return e.serial % 2
+                            ? createX3Car('car red', 30, 14, 8, [1, 0, 0])
+                            : createX3Car('car green', 25, 12, 8, [1, 1, 0]);
+                    }
+                },
+                queues: [
+                    { queue: sim.qPedArr, element: 'x3d .ss-queue.ped-arr' },
+                    { queue: sim.qPedXing, element: 'x3d .ss-queue.ped-xing', angle: -45, max: 8 },
+                    { queue: sim.qPedXed, element: 'x3d .ss-queue.ped-xed' },
+                    { queue: sim.qPedLeave, element: 'x3d .ss-queue.ped-leave' },
+
+                    { queue: sim.qCarArr, element: 'x3d .ss-queue.car-arr' },
+                    { queue: sim.qCarXing, element: 'x3d .ss-queue.car-xing', angle: 0, max: 16 },
+                    { queue: sim.qCarXed, element: 'x3d .ss-queue.car-xed' },
+                ]
+            });
+
+            // update display when the time or state change
+            const lights = animationHost.querySelectorAll('material.light');
+            const timeNow = document.querySelector('.x3d.ss-time-now span');
+            const updateStats = () => {
+                timeNow.textContent = format(sim.timeNow / 3600);
+                for (let i = 0; i < lights.length; i++) {
+                    const e = lights[i] as HTMLElement;
+                    e.setAttribute('transparency', i == sim.light ? '0' : '0.7');
+                    e.closest('transform').setAttribute('scale', i == sim.light ? '1.1 1.1 1.1' : '.9 .9 .9');
                 }
-            },
-            queues: [
-                { queue: sim.qPedArr, element: 'x3d .ss-queue.ped-arr' },
-                { queue: sim.qPedXing, element: 'x3d .ss-queue.ped-xing', angle: -45, max: 8 },
-                { queue: sim.qPedXed, element: 'x3d .ss-queue.ped-xed' },
-                { queue: sim.qPedLeave, element: 'x3d .ss-queue.ped-leave' },
-
-                { queue: sim.qCarArr, element: 'x3d .ss-queue.car-arr' },
-                { queue: sim.qCarXing, element: 'x3d .ss-queue.car-xing', angle: 0, max: 16 },
-                { queue: sim.qCarXed, element: 'x3d .ss-queue.car-xed' },
-            ]
-        });
-
-        // update display when the time or state change
-        const lights = animationHost.querySelectorAll('material.light');
-        const timeNow = document.querySelector('.x3d.ss-time-now span');
-        const updateStats = () => {
-            timeNow.textContent = format(sim.timeNow / 3600);
-            for (let i = 0; i < lights.length; i++) {
-                const e = lights[i] as HTMLElement;
-                e.setAttribute('transparency', i == sim.light ? '0' : '0.7');
-                e.closest('transform').setAttribute('scale', i == sim.light ? '1.1 1.1 1.1' : '.9 .9 .9');
             }
+            sim.timeNowChanged.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(updateStats);
         }
-        sim.timeNowChanged.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(updateStats);
-    }
-);
+    );
 
-//----------------------------------------------------------
-// AnimationOptions (SVG)
-showSimulation(
-    new AnimationOptions({
-        maxTimeStep: 0.1
-    }),
-    'Animation Options (SVG)',
-    `   <p>
+    //----------------------------------------------------------
+    // AnimationOptions (SVG)
+    showSimulation(
+        new AnimationOptions({
+            maxTimeStep: 0.1
+        }),
+        'Animation Options (SVG)',
+        `   <p>
             Change the animation parameters to see their effect:
         </p>
         <label>
@@ -1721,60 +1753,60 @@ showSimulation(
             <rect class='ss-queue q12' x='38%' y='88%' width='4%' height='4%' />
         </svg>
     `,
-    (sim: AnimationOptions, animationHost: HTMLElement) => {
-        const anim = new Animation(sim, animationHost, {
-            rotateEntities: true,
-            getEntityHtml: (e: Entity) => {
-                if (e instanceof RoamEntity) {
-                    return e.fast
-                        ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='yellow' opacity='0.5' />`
-                        : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='red' opacity='0.5'/>`;
-                } else { // EnterLeaveEntity
-                    return e.serial % 2 // long/short images
-                        ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='blue' />`
-                        : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='green' />`;
-                }
-            },
-            queues: [
-                { queue: sim.qRotate, element: 'svg .ss-queue.rotate', angle: sim.qAngle },
-                { queue: sim.qCenter, element: 'svg .ss-queue.center' },
-                { queue: sim.q1, element: 'svg .ss-queue.q1' },
-                { queue: sim.q2, element: 'svg .ss-queue.q2' },
-                { queue: sim.q3, element: 'svg .ss-queue.q3' },
-                { queue: sim.q4, element: 'svg .ss-queue.q4' },
-                { queue: sim.q5, element: 'svg .ss-queue.q5' },
-                { queue: sim.q6, element: 'svg .ss-queue.q6' },
-                { queue: sim.q7, element: 'svg .ss-queue.q7' },
-                { queue: sim.q8, element: 'svg .ss-queue.q8' },
-                { queue: sim.q9, element: 'svg .ss-queue.q9' },
-                { queue: sim.q10, element: 'svg .ss-queue.q10' },
-                { queue: sim.q11, element: 'svg .ss-queue.q11' },
-                { queue: sim.q12, element: 'svg .ss-queue.q12' },
-            ]
-        });
+        (sim: AnimationOptions, animationHost: HTMLElement) => {
+            const anim = new Animation(sim, animationHost, {
+                rotateEntities: true,
+                getEntityHtml: (e: Entity) => {
+                    if (e instanceof RoamEntity) {
+                        return e.fast
+                            ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='yellow' opacity='0.5' />`
+                            : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='red' opacity='0.5'/>`;
+                    } else { // EnterLeaveEntity
+                        return e.serial % 2 // long/short images
+                            ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='blue' />`
+                            : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='green' />`;
+                    }
+                },
+                queues: [
+                    { queue: sim.qRotate, element: 'svg .ss-queue.rotate', angle: sim.qAngle },
+                    { queue: sim.qCenter, element: 'svg .ss-queue.center' },
+                    { queue: sim.q1, element: 'svg .ss-queue.q1' },
+                    { queue: sim.q2, element: 'svg .ss-queue.q2' },
+                    { queue: sim.q3, element: 'svg .ss-queue.q3' },
+                    { queue: sim.q4, element: 'svg .ss-queue.q4' },
+                    { queue: sim.q5, element: 'svg .ss-queue.q5' },
+                    { queue: sim.q6, element: 'svg .ss-queue.q6' },
+                    { queue: sim.q7, element: 'svg .ss-queue.q7' },
+                    { queue: sim.q8, element: 'svg .ss-queue.q8' },
+                    { queue: sim.q9, element: 'svg .ss-queue.q9' },
+                    { queue: sim.q10, element: 'svg .ss-queue.q10' },
+                    { queue: sim.q11, element: 'svg .ss-queue.q11' },
+                    { queue: sim.q12, element: 'svg .ss-queue.q12' },
+                ]
+            });
 
-        // parameters
-        bind('q-angle', sim.qAngle, v => {
-            sim.qAngle = v;
-            let q = anim.queues;
-            q[0].angle = v;
-            anim.queues = q;
-        });
-        bind('rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
-        bind('tension', sim.splineTension, v => sim.splineTension = v);
-        bind('max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
-        bind('frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
-    }
-);
+            // parameters
+            bind('q-angle', sim.qAngle, v => {
+                sim.qAngle = v;
+                let q = anim.queues;
+                q[0].angle = v;
+                anim.queues = q;
+            });
+            bind('rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
+            bind('tension', sim.splineTension, v => sim.splineTension = v);
+            bind('max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
+            bind('frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
+        }
+    );
 
-//----------------------------------------------------------
-// AnimationOptions (A-Frame)
-showSimulation(
-    new AnimationOptions({
-        maxTimeStep: 0.1
-    }),
-    'Animation Options (A-Frame)',
-    `
+    //----------------------------------------------------------
+    // AnimationOptions (A-Frame)
+    showSimulation(
+        new AnimationOptions({
+            maxTimeStep: 0.1
+        }),
+        'Animation Options (A-Frame)',
+        `
         <p>
             This sample uses the same Crosswalk Simulation class as shown earlier,
             this time using an <a href="https://aframe.io">A-Frame-based</a> animation.
@@ -1851,60 +1883,60 @@ showSimulation(
             </a-scene>
         </div>
     `,
-    (sim: AnimationOptions, animationHost: HTMLElement) => {
-        const anim = new Animation(sim, animationHost, {
-            rotateEntities: true,
-            getEntityHtml: (e: Entity) => {
-                if (e instanceof RoamEntity) {
-                    return e.fast
-                        ? `<a-box width='16' height='8' depth='8' color='yellow' mixin='transparent'></a-box>`
-                        : `<a-box width='8' height='16' depth='10' color='red' mixin='transparent'></a-box>`;
-                } else { // EnterLeaveEntity
-                    return e.serial % 2 // long/short images
-                        ? `<a-box width='16' height='8' depth='8' color='green' mixin='transparent'></a-box>`
-                        : `<a-box width='8' height='16' depth='10' color='blue' mixin='transparent'></a-box>`;
-                }
-            },
-            queues: [
-                { queue: sim.qRotate, element: 'a-scene .ss-queue.rotate', angle: sim.qAngle },
-                { queue: sim.qCenter, element: 'a-scene .ss-queue.center' },
-                { queue: sim.q1, element: 'a-scene .ss-queue.q1' },
-                { queue: sim.q2, element: 'a-scene .ss-queue.q2' },
-                { queue: sim.q3, element: 'a-scene .ss-queue.q3' },
-                { queue: sim.q4, element: 'a-scene .ss-queue.q4' },
-                { queue: sim.q5, element: 'a-scene .ss-queue.q5' },
-                { queue: sim.q6, element: 'a-scene .ss-queue.q6' },
-                { queue: sim.q7, element: 'a-scene .ss-queue.q7' },
-                { queue: sim.q8, element: 'a-scene .ss-queue.q8' },
-                { queue: sim.q9, element: 'a-scene .ss-queue.q9' },
-                { queue: sim.q10, element: 'a-scene .ss-queue.q10' },
-                { queue: sim.q11, element: 'a-scene .ss-queue.q11' },
-                { queue: sim.q12, element: 'a-scene .ss-queue.q12' },
-            ]
-        });
+        (sim: AnimationOptions, animationHost: HTMLElement) => {
+            const anim = new Animation(sim, animationHost, {
+                rotateEntities: true,
+                getEntityHtml: (e: Entity) => {
+                    if (e instanceof RoamEntity) {
+                        return e.fast
+                            ? `<a-box width='16' height='8' depth='8' color='yellow' mixin='transparent'></a-box>`
+                            : `<a-box width='8' height='16' depth='10' color='red' mixin='transparent'></a-box>`;
+                    } else { // EnterLeaveEntity
+                        return e.serial % 2 // long/short images
+                            ? `<a-box width='16' height='8' depth='8' color='green' mixin='transparent'></a-box>`
+                            : `<a-box width='8' height='16' depth='10' color='blue' mixin='transparent'></a-box>`;
+                    }
+                },
+                queues: [
+                    { queue: sim.qRotate, element: 'a-scene .ss-queue.rotate', angle: sim.qAngle },
+                    { queue: sim.qCenter, element: 'a-scene .ss-queue.center' },
+                    { queue: sim.q1, element: 'a-scene .ss-queue.q1' },
+                    { queue: sim.q2, element: 'a-scene .ss-queue.q2' },
+                    { queue: sim.q3, element: 'a-scene .ss-queue.q3' },
+                    { queue: sim.q4, element: 'a-scene .ss-queue.q4' },
+                    { queue: sim.q5, element: 'a-scene .ss-queue.q5' },
+                    { queue: sim.q6, element: 'a-scene .ss-queue.q6' },
+                    { queue: sim.q7, element: 'a-scene .ss-queue.q7' },
+                    { queue: sim.q8, element: 'a-scene .ss-queue.q8' },
+                    { queue: sim.q9, element: 'a-scene .ss-queue.q9' },
+                    { queue: sim.q10, element: 'a-scene .ss-queue.q10' },
+                    { queue: sim.q11, element: 'a-scene .ss-queue.q11' },
+                    { queue: sim.q12, element: 'a-scene .ss-queue.q12' },
+                ]
+            });
 
-        // parameters
-        bind('af-q-angle', sim.qAngle, v => {
-            sim.qAngle = v;
-            let q = anim.queues;
-            q[0].angle = v;
-            anim.queues = q;
-        }, ' degrees');
-        bind('af-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
-        bind('af-tension', sim.splineTension, v => sim.splineTension = v);
-        bind('af-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
-        bind('af-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
-    }
-);
+            // parameters
+            bind('af-q-angle', sim.qAngle, v => {
+                sim.qAngle = v;
+                let q = anim.queues;
+                q[0].angle = v;
+                anim.queues = q;
+            }, ' degrees');
+            bind('af-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
+            bind('af-tension', sim.splineTension, v => sim.splineTension = v);
+            bind('af-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
+            bind('af-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
+        }
+    );
 
-//----------------------------------------------------------
-// AnimationOptions (X3DOM)
-showSimulation(
-    new AnimationOptions({
-        maxTimeStep: 0.1
-    }),
-    'Animation Options (X3DOM)',
-    `
+    //----------------------------------------------------------
+    // AnimationOptions (X3DOM)
+    showSimulation(
+        new AnimationOptions({
+            maxTimeStep: 0.1
+        }),
+        'Animation Options (X3DOM)',
+        `
         <p>
             This sample uses the same Crosswalk Simulation class as shown earlier,
             this time using an <a href="https://www.x3dom.org/">X3DOM-based</a> animation.
@@ -1979,53 +2011,53 @@ showSimulation(
             </scene>
         </x3d>
     `,
-    (sim: AnimationOptions, animationHost: HTMLElement) => {
-        const anim = new Animation(sim, animationHost, {
-            rotateEntities: true,
-            getEntityHtml: (e: Entity) => {
-                if (e instanceof RoamEntity) {
-                    return e.fast
-                        ? createX3Car('yellow', 30, 10, 4, [1, 1, 0])
-                        : createX3Car('red', 20, 8, 4, [1, 0, 0]);
-                } else { // EnterLeaveEntity
-                    return e.serial % 2 // long/short images
-                        ? createX3Car('green', 30, 10, 4, [0, 1, 0])
-                        : createX3Car('blue', 20, 8, 4, [0, 0, 1]);
-                }
-            },
-            queues: [
-                { queue: sim.qRotate, element: 'x3d .ss-queue.rotate', angle: sim.qAngle },
-                { queue: sim.qCenter, element: 'x3d .ss-queue.center' },
-                { queue: sim.q1, element: 'x3d .ss-queue.q1' },
-                { queue: sim.q2, element: 'x3d .ss-queue.q2' },
-                { queue: sim.q3, element: 'x3d .ss-queue.q3' },
-                { queue: sim.q4, element: 'x3d .ss-queue.q4' },
-                { queue: sim.q5, element: 'x3d .ss-queue.q5' },
-                { queue: sim.q6, element: 'x3d .ss-queue.q6' },
-                { queue: sim.q7, element: 'x3d .ss-queue.q7' },
-                { queue: sim.q8, element: 'x3d .ss-queue.q8' },
-                { queue: sim.q9, element: 'x3d .ss-queue.q9' },
-                { queue: sim.q10, element: 'x3d .ss-queue.q10' },
-                { queue: sim.q11, element: 'x3d .ss-queue.q11' },
-                { queue: sim.q12, element: 'x3d .ss-queue.q12' },
-            ]
-        });
+        (sim: AnimationOptions, animationHost: HTMLElement) => {
+            const anim = new Animation(sim, animationHost, {
+                rotateEntities: true,
+                getEntityHtml: (e: Entity) => {
+                    if (e instanceof RoamEntity) {
+                        return e.fast
+                            ? createX3Car('yellow', 30, 10, 4, [1, 1, 0])
+                            : createX3Car('red', 20, 8, 4, [1, 0, 0]);
+                    } else { // EnterLeaveEntity
+                        return e.serial % 2 // long/short images
+                            ? createX3Car('green', 30, 10, 4, [0, 1, 0])
+                            : createX3Car('blue', 20, 8, 4, [0, 0, 1]);
+                    }
+                },
+                queues: [
+                    { queue: sim.qRotate, element: 'x3d .ss-queue.rotate', angle: sim.qAngle },
+                    { queue: sim.qCenter, element: 'x3d .ss-queue.center' },
+                    { queue: sim.q1, element: 'x3d .ss-queue.q1' },
+                    { queue: sim.q2, element: 'x3d .ss-queue.q2' },
+                    { queue: sim.q3, element: 'x3d .ss-queue.q3' },
+                    { queue: sim.q4, element: 'x3d .ss-queue.q4' },
+                    { queue: sim.q5, element: 'x3d .ss-queue.q5' },
+                    { queue: sim.q6, element: 'x3d .ss-queue.q6' },
+                    { queue: sim.q7, element: 'x3d .ss-queue.q7' },
+                    { queue: sim.q8, element: 'x3d .ss-queue.q8' },
+                    { queue: sim.q9, element: 'x3d .ss-queue.q9' },
+                    { queue: sim.q10, element: 'x3d .ss-queue.q10' },
+                    { queue: sim.q11, element: 'x3d .ss-queue.q11' },
+                    { queue: sim.q12, element: 'x3d .ss-queue.q12' },
+                ]
+            });
 
-        // parameters
-        bind('x3-q-angle', sim.qAngle, v => {
-            sim.qAngle = v;
-            let q = anim.queues;
-            q[0].angle = v;
-            anim.queues = q;
-        }, ' degrees');
-        bind('x3-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
-        bind('x3-tension', sim.splineTension, v => sim.splineTension = v);
-        bind('x3-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
-        bind('x3-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
-    }
-);
-function createX3Queue(name: string, x: number, y: number, z = 0): string {
-    return `
+            // parameters
+            bind('x3-q-angle', sim.qAngle, v => {
+                sim.qAngle = v;
+                let q = anim.queues;
+                q[0].angle = v;
+                anim.queues = q;
+            }, ' degrees');
+            bind('x3-rotate-ents', anim.rotateEntities, v => anim.rotateEntities = v);
+            bind('x3-tension', sim.splineTension, v => sim.splineTension = v);
+            bind('x3-max-step', sim.maxTimeStep, v => sim.maxTimeStep = v, ' sim time units');
+            bind('x3-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
+        }
+    );
+    function createX3Queue(name: string, x: number, y: number, z = 0): string {
+        return `
         <transform class='ss-queue ${name}' translation='${x} ${y} ${z}'>
             <shape>
                 <appearance>
@@ -2034,9 +2066,9 @@ function createX3Queue(name: string, x: number, y: number, z = 0): string {
                 <sphere radius='4'></sphere>
             </shape>
         </transform>`;
-}
-function createX3Car(name: string, w: number, h: number, d: number, rgb: number[]): string {
-    return `<transform class='ss-car ${name}' translation='0 0 ${h/2}'>
+    }
+    function createX3Car(name: string, w: number, h: number, d: number, rgb: number[]): string {
+        return `<transform class='ss-car ${name}' translation='0 0 ${h / 2}'>
         <transform>
             <shape> <!-- body -->
                 <appearance>
@@ -2051,12 +2083,12 @@ function createX3Car(name: string, w: number, h: number, d: number, rgb: number[
         <transform translation='${-w * .2} 0 ${+d * .5}'>
             <shape> <!-- cabin -->
                 <appearance>
-                    <material diffuseColor='${rgb[0]/3} ${rgb[1]/3} ${rgb[2]/3}'></material>
+                    <material diffuseColor='${rgb[0] / 3} ${rgb[1] / 3} ${rgb[2] / 3}'></material>
                 </appearance>
                 <box size='${w * .5} ${h * .75} ${d}'></box>
             </shape>
         </transform>
-        <transform translation='${-w/2 + 4} 0 -2'>
+        <transform translation='${-w / 2 + 4} 0 -2'>
             <shape> <!-- front wheels -->
                 <appearance>
                     <material diffuseColor='0 0 0'></material>
@@ -2064,7 +2096,7 @@ function createX3Car(name: string, w: number, h: number, d: number, rgb: number[
                 <cylinder radius='3' height='${h + 2}'></cylinder>
             </shape>
         </transform>
-        <transform translation='${+w/2 - 4} 0 -2'>
+        <transform translation='${+w / 2 - 4} 0 -2'>
             <shape> <!-- rear wheels -->
                 <appearance>
                     <material diffuseColor='0 0 0'></material>
@@ -2073,9 +2105,9 @@ function createX3Car(name: string, w: number, h: number, d: number, rgb: number[
             </shape>
         </transform>
     </transform>`;
-}
-function createX3Person(name: string) {
-    return `<transform class='${name}'>
+    }
+    function createX3Person(name: string) {
+        return `<transform class='${name}'>
         <transform>
             <shape>
                 <appearance> 
@@ -2104,16 +2136,16 @@ function createX3Person(name: string) {
             </shape>
         </transform>
     </transform>`;
-}
+    }
 
-//----------------------------------------------------------
-// NetworkIntro (SVG)
-showSimulation(
-    new NetworkIntro({
-        maxTimeStep: 0.01,
-    }),
-    'Network Intro (SVG)',
-    `   <p>
+    //----------------------------------------------------------
+    // NetworkIntro (SVG)
+    showSimulation(
+        new NetworkIntro({
+            maxTimeStep: 0.01,
+        }),
+        'Network Intro (SVG)',
+        `   <p>
             This sample uses a network to simulate an area with random service
             requests and a fixed number of service vehicles.
         </p>
@@ -2163,65 +2195,65 @@ showSimulation(
             dominant-baseline='middle'>
         </svg>
     `,
-    (sim: NetworkIntro, animationHost: HTMLElement) => {
-        renderNetworkSVG(sim.network, animationHost, true, true);
+        (sim: NetworkIntro, animationHost: HTMLElement) => {
+            renderNetworkSVG(sim.network, animationHost, true, true);
 
-        const queues: IAnimatedQueue[] = [];
-        sim.network.nodes.forEach(nd => {
-            queues.push({
-                queue: nd.queue, element: 'svg .ss-node.id' + nd.id, stackEntities: true
-            })
-        });
+            const queues: IAnimatedQueue[] = [];
+            sim.network.nodes.forEach(nd => {
+                queues.push({
+                    queue: nd.queue, element: 'svg .ss-node.id' + nd.id, stackEntities: true
+                })
+            });
 
-        new Animation(sim, animationHost, {
-            animateToQueueEnd: false,
-            rotateEntities: true,
-            queues: queues,
-            getEntityHtml: e => {
-                if (e instanceof ServiceVehicle) {
-                    return `<g opacity='0.5'>
+            new Animation(sim, animationHost, {
+                animateToQueueEnd: false,
+                rotateEntities: true,
+                queues: queues,
+                getEntityHtml: e => {
+                    if (e instanceof ServiceVehicle) {
+                        return `<g opacity='0.5'>
                         <circle r='20' stroke='black' fill=${e.busy ? 'yellow' : 'green'} />
                         <polygon
                             stroke='none'
                             fill=${e.busy ? 'none' : 'black'}
                             points='20 0, -13 -18, -13 18' />
                     </g>`;
-                } else {
-                    return `<g opacity='0.5'>
+                    } else {
+                        return `<g opacity='0.5'>
                         <circle r='30' fill='red'/>
                     </g>`;
+                    }
                 }
-            }
-        });
+            });
 
-        // toggle slow mode
-        bind('network-svg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.01 : 0);
+            // toggle slow mode
+            bind('network-svg-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.01 : 0);
 
-        // show number of service vehicles
-        setText('#network-svg-nsvc', format(sim.serviceVehicles, 0));
-        setText('#network-svg-nreq', format(sim.requests, 0));
+            // show number of service vehicles
+            setText('#network-svg-nsvc', format(sim.serviceVehicles, 0));
+            setText('#network-svg-nreq', format(sim.requests, 0));
         
-        // update stats when time or state change
-        const updateStats = () => {
-            setText('#network-svg-utz', format(sim.qBusy.utilization * 100, 0));
-            setText('#network-svg-wait', format(sim.qWait.averageDwell, 0));
-            setText('#network-svg-served', format(sim.requestsServed, 0));
-            setText('#network-svg-missed', format(sim.requestsMissed, 0));
+            // update stats when time or state change
+            const updateStats = () => {
+                setText('#network-svg-utz', format(sim.qBusy.utilization * 100, 0));
+                setText('#network-svg-wait', format(sim.qWait.averageDwell, 0));
+                setText('#network-svg-served', format(sim.requestsServed, 0));
+                setText('#network-svg-missed', format(sim.requestsMissed, 0));
+            }
+            //sim.timeNowChanged.addEventListener(updateStats); // too many updates
+            sim.requestFinished.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(updateStats);
         }
-        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
-        sim.requestFinished.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(updateStats);
-    }
-);
+    );
 
-//----------------------------------------------------------
-// NetworkIntro (X3DOM)
-showSimulation(
-    new NetworkIntro({
-        maxTimeStep: 0.1,
-    }),
-    'Network Intro (X3DOM)',
-    `   <p>
+    //----------------------------------------------------------
+    // NetworkIntro (X3DOM)
+    showSimulation(
+        new NetworkIntro({
+            maxTimeStep: 0.1,
+        }),
+        'Network Intro (X3DOM)',
+        `   <p>
             This sample uses a network to simulate an area with random service
             requests and a fixed number of service vehicles.
         </p>
@@ -2283,62 +2315,62 @@ showSimulation(
             </scene>
         </x3d>
     `,
-    (sim: NetworkIntro, animationHost: HTMLElement) => {
-        renderNetworkX3D(sim.network, animationHost);
+        (sim: NetworkIntro, animationHost: HTMLElement) => {
+            renderNetworkX3D(sim.network, animationHost);
 
-        const queues: IAnimatedQueue[] = [];
-        sim.network.nodes.forEach(nd => {
-            queues.push({
-                queue: nd.queue, element: 'x3d.network .ss-queue.q' + nd.id, stackEntities: true
-            })
-        });
+            const queues: IAnimatedQueue[] = [];
+            sim.network.nodes.forEach(nd => {
+                queues.push({
+                    queue: nd.queue, element: 'x3d.network .ss-queue.q' + nd.id, stackEntities: true
+                })
+            });
 
-        new Animation(sim, animationHost, {
-            queues: queues,
-            rotateEntities: true,
-            getEntityHtml: e => {
-                if (e instanceof ServiceVehicle) { // green/yellow sphere
-                    return createX3Car('service', 40, 15, 10, [e.busy ? 1 : 0, 0.5, 0]);
-                } else { // red sphere
-                    return `<shape>
+            new Animation(sim, animationHost, {
+                queues: queues,
+                rotateEntities: true,
+                getEntityHtml: e => {
+                    if (e instanceof ServiceVehicle) { // green/yellow sphere
+                        return createX3Car('service', 40, 15, 10, [e.busy ? 1 : 0, 0.5, 0]);
+                    } else { // red sphere
+                        return `<shape>
                         <appearance>
                             <material transparency='0.5' diffuseColor='1 0 0'/>
                         </appearance>
                         <sphere radius='40'></sphere>
                     </shape>`;
+                    }
                 }
-            }
-        });
+            });
 
-        // toggle slow mode
-        bind('network-x3d-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 1 : 0);
+            // toggle slow mode
+            bind('network-x3d-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 1 : 0);
 
-        // show number of service vehicles
-        setText('#network-x3d-nsvc', format(sim.serviceVehicles, 0));
-        setText('#network-x3d-nreq', format(sim.requests, 0));
+            // show number of service vehicles
+            setText('#network-x3d-nsvc', format(sim.serviceVehicles, 0));
+            setText('#network-x3d-nreq', format(sim.requests, 0));
         
-        // update stats when time or state change
-        const updateStats = () => {
-            setText('#network-x3d-utz', format(sim.qBusy.utilization * 100, 0));
-            setText('#network-x3d-wait', format(sim.qWait.averageDwell, 0));
-            setText('#network-x3d-served', format(sim.requestsServed, 0));
-            setText('#network-x3d-missed', format(sim.requestsMissed, 0));
+            // update stats when time or state change
+            const updateStats = () => {
+                setText('#network-x3d-utz', format(sim.qBusy.utilization * 100, 0));
+                setText('#network-x3d-wait', format(sim.qWait.averageDwell, 0));
+                setText('#network-x3d-served', format(sim.requestsServed, 0));
+                setText('#network-x3d-missed', format(sim.requestsMissed, 0));
+            }
+            //sim.timeNowChanged.addEventListener(updateStats); // too many updates
+            sim.requestFinished.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(updateStats);
         }
-        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
-        sim.requestFinished.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(updateStats);
-    }
-);
+    );
 
-//----------------------------------------------------------
-// CarFollow
-showSimulation(
-    new CarFollow({
-        maxTimeStep: 0.0001,
-        frameDelay: 50
-    }),
-    'Car Following',
-    `<p>
+    //----------------------------------------------------------
+    // CarFollow
+    showSimulation(
+        new CarFollow({
+            maxTimeStep: 0.0001,
+            frameDelay: 50
+        }),
+        'Car Following',
+        `<p>
         Simple car-following demo.
     </p>
     <p>
@@ -2385,15 +2417,15 @@ showSimulation(
         <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5' />
         <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5' />
     </svg>`,
-    (sim: CarFollow, animationHost: HTMLElement) => {
-        const colors = ['red', 'green', 'blue', 'white'];
-        new Animation(sim, animationHost, {
-            rotateEntities: true,
-            queues: [
-                { queue: sim.qStrip, element: '.strip-start', endElement: '.strip-end' },
-            ],
-            getEntityHtml: (e: Entity) => {
-                return `<g>
+        (sim: CarFollow, animationHost: HTMLElement) => {
+            const colors = ['red', 'green', 'blue', 'white'];
+            new Animation(sim, animationHost, {
+                rotateEntities: true,
+                queues: [
+                    { queue: sim.qStrip, element: '.strip-start', endElement: '.strip-end' },
+                ],
+                getEntityHtml: (e: Entity) => {
+                    return `<g>
                     <polygon
                         stroke-width='1'
                         stroke='black'
@@ -2403,33 +2435,33 @@ showSimulation(
                         fill='black'
                         points='20 2, 30 2, 30 18, 20 18' />
                 </g>`;
-            },
-        });
+                },
+            });
 
-        // update stats when time or state change
-        setText('#carfollow-tot', format(sim.totalCars, 0));
-        setText('#carfollow-speed-max', format(sim.carSpeeds.max * 3.6, 0));
-        setText('#carfollow-speed-min', format(sim.carSpeeds.min * 3.6, 0));
-        const updateStats = () => {
-            const
-                time = sim.qStrip.averageDwell, // seconds
-                len = sim.stripLength; // meters
-            setText('#carfollow-cnt', format(sim.qStrip.totalCount, 0));
-            setText('#carfollow-speed', format(time ? len / time * 3.6 : 0, 0)); // km/h
+            // update stats when time or state change
+            setText('#carfollow-tot', format(sim.totalCars, 0));
+            setText('#carfollow-speed-max', format(sim.carSpeeds.max * 3.6, 0));
+            setText('#carfollow-speed-min', format(sim.carSpeeds.min * 3.6, 0));
+            const updateStats = () => {
+                const
+                    time = sim.qStrip.averageDwell, // seconds
+                    len = sim.stripLength; // meters
+                setText('#carfollow-cnt', format(sim.qStrip.totalCount, 0));
+                setText('#carfollow-speed', format(time ? len / time * 3.6 : 0, 0)); // km/h
+            }
+            sim.carFinished.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(updateStats);
         }
-        sim.carFinished.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(updateStats);
-    }
-);
+    );
 
-//----------------------------------------------------------
-// CarFollowNetwork
-showSimulation(
-    new CarFollowNetwork({
-        maxTimeStep: .001
-    }),
-    'Network Car Following (X3DOM)',
-    `<p>
+    //----------------------------------------------------------
+    // CarFollowNetwork
+    showSimulation(
+        new CarFollowNetwork({
+            maxTimeStep: .001
+        }),
+        'Network Car Following (X3DOM)',
+        `<p>
         Network-based car-following demo.
     </p>
     <p>
@@ -2496,70 +2528,70 @@ showSimulation(
             </scene>
         </x3d>
     `,
-    (sim: CarFollowNetwork, animationHost: HTMLElement) => {
-        renderNetworkX3D(sim.network, animationHost);
+        (sim: CarFollowNetwork, animationHost: HTMLElement) => {
+            renderNetworkX3D(sim.network, animationHost);
 
-        const queues: IAnimatedQueue[] = [];
-        sim.network.nodes.forEach(nd => {
-            queues.push({
-                queue: nd.queue,
-                element: 'x3d.car-following .ss-queue.q' + nd.id
-            })
-        });
-        sim.network.links.forEach(link => {
-            queues.push({
-                queue: link.queue,
-                element: 'x3d.car-following .ss-queue.q' + link.from.id,
-                endElement: 'x3d.car-following .ss-queue.q' + link.to.id,
-            })
-        });
+            const queues: IAnimatedQueue[] = [];
+            sim.network.nodes.forEach(nd => {
+                queues.push({
+                    queue: nd.queue,
+                    element: 'x3d.car-following .ss-queue.q' + nd.id
+                })
+            });
+            sim.network.links.forEach(link => {
+                queues.push({
+                    queue: link.queue,
+                    element: 'x3d.car-following .ss-queue.q' + link.from.id,
+                    endElement: 'x3d.car-following .ss-queue.q' + link.to.id,
+                })
+            });
 
-        const colors = [
-            [1, 0, 0], // red
-            [0, 1, 0], // green
-            [0, 0, 1], // blue
-            [1, 1, 1]  // white
-        ];
+            const colors = [
+                [1, 0, 0], // red
+                [0, 1, 0], // green
+                [0, 0, 1], // blue
+                [1, 1, 1]  // white
+            ];
 
-        new Animation(sim, animationHost, {
-            queues: queues,
-            rotateEntities: true,
-            getEntityHtml: (e: Entity) => {
-                return createX3Car('car', 25, 10, 6, colors[e.serial % colors.length]);
+            new Animation(sim, animationHost, {
+                queues: queues,
+                rotateEntities: true,
+                getEntityHtml: (e: Entity) => {
+                    return createX3Car('car', 25, 10, 6, colors[e.serial % colors.length]);
+                }
+            });
+
+            // toggle slow mode
+            bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.001 : 0);
+
+            // update stats when time or state change
+            setText('#carfollowing-tot', format(sim.totalCars, 0));
+            setText('#carfollowing-speed-max', format(sim.carSpeeds.max * 3.6, 0));
+            setText('#carfollowing-speed-min', format(sim.carSpeeds.min * 3.6, 0));
+            const updateStats = () => {
+                const
+                    time = sim.stats.totalTime, // seconds
+                    len = sim.stats.totalDistance; // meters
+                setText('#carfollowing-cnt', format(sim.stats.carsDone, 0));
+                setText('#carfollowing-speed', format(time ? len / time * 3.6 : 0, 0)); // km/h
             }
-        });
-
-        // toggle slow mode
-        bind('carfollowing-slow', sim.maxTimeStep > 0, v => sim.maxTimeStep = v ? 0.001 : 0);
-
-        // update stats when time or state change
-        setText('#carfollowing-tot', format(sim.totalCars, 0));
-        setText('#carfollowing-speed-max', format(sim.carSpeeds.max * 3.6, 0));
-        setText('#carfollowing-speed-min', format(sim.carSpeeds.min * 3.6, 0));
-        const updateStats = () => {
-            const
-                time = sim.stats.totalTime, // seconds
-                len = sim.stats.totalDistance; // meters
-            setText('#carfollowing-cnt', format(sim.stats.carsDone, 0));
-            setText('#carfollowing-speed', format(time ? len / time * 3.6: 0, 0)); // km/h
+            //sim.timeNowChanged.addEventListener(updateStats); // too many updates
+            sim.carFinished.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(updateStats);
         }
-        //sim.timeNowChanged.addEventListener(updateStats); // too many updates
-        sim.carFinished.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(updateStats);
-    }
-);
+    );
 
-//----------------------------------------------------------
-// Asteroids
-const DEF_DELAY = 50;
-const PRO_DELAY = 10;
-showSimulation(
-    new Asteroids({
-        //maxTimeStep: DEF_STEP,
-        frameDelay: DEF_DELAY,
-    }),
-    'Asteroids (SVG)',
-    `<p>
+    //----------------------------------------------------------
+    // Asteroids
+    const DEF_DELAY = 50;
+    const PRO_DELAY = 10;
+    showSimulation(
+        new Asteroids({
+            //maxTimeStep: DEF_STEP,
+            frameDelay: DEF_DELAY,
+        }),
+        'Asteroids (SVG)',
+        `<p>
         SimScript is not a game engine, but it can be used to create
         simple games such as the classic Asteroids.
     </p>
@@ -2610,12 +2642,12 @@ showSimulation(
         <text class='game-over' x='50%' y='50%' fill='white' text-anchor='middle' font-size='36pt'>
         </text>
     </svg>`,
-    (sim: Asteroids, animationHost: HTMLElement) => {
-        new Animation(sim, animationHost, {
-            rotateEntities: true,
-            getEntityHtml: e => {
-                if (e instanceof Ship) {
-                    return `<g>
+        (sim: Asteroids, animationHost: HTMLElement) => {
+            new Animation(sim, animationHost, {
+                rotateEntities: true,
+                getEntityHtml: e => {
+                    if (e instanceof Ship) {
+                        return `<g>
                         <polygon
                             fill='none'
                             stroke='white'
@@ -2627,258 +2659,54 @@ showSimulation(
                             fill='url(#jetGradient)'
                             opacity=${e.engineOn ? '1' : '0'} />
                     </g>`;
-                } else if (e instanceof Missile) {
-                    return `<g>
+                    } else if (e instanceof Missile) {
+                        return `<g>
                         <line
                             x1='-10' y1='0' x2='10' y2='0'
                             stroke='red'
                             stroke-width='6' />
                     </g>`;
-                } else if (e instanceof Asteroid) {
-                    const scale = e.small ? `transform='scale(0.5, 0.5)'`: ``;
-                    return `<g ${scale}'>
+                    } else if (e instanceof Asteroid) {
+                        const scale = e.small ? `transform='scale(0.5, 0.5)'` : ``;
+                        return `<g ${scale}'>
                         <polygon
                             fill='none'
                             stroke='white'
                             stroke-width='2'
                             points='0 49, 17 29, 41 24, 46 0, 29 -17, 21 -36, 0 -50, -20 -35, -26 -15, -53 0, -29 17, -27 46' />
                     </g>`
-                } else {
-                    throw 'unknown entity type'
-                }
-            },
-            queues: [
-                { queue: sim.q, element: 'svg.asteroids .ss-queue.center' },
-            ]
-        });
+                    } else {
+                        throw 'unknown entity type'
+                    }
+                },
+                queues: [
+                    { queue: sim.q, element: 'svg.asteroids .ss-queue.center' },
+                ]
+            });
 
-        // bind pro-mode button
-        bind('pro-mode', false, (v: boolean) => sim.maxTimeStep = (v ? PRO_DELAY : DEF_DELAY));
+            // bind pro-mode button
+            bind('pro-mode', false, (v: boolean) => sim.maxTimeStep = (v ? PRO_DELAY : DEF_DELAY));
 
-        // update display when the time or state change
-        setText('#asteroids-cnt', format(sim.asteroidCount, 0));
-        const updateStats = () => {
-            setText('#missiles-fired', format(sim.missilesFired, 0));
-            setText('#asteroids-destroyed', format(sim.asteroidsDestroyed, 0));
+            // update display when the time or state change
+            setText('#asteroids-cnt', format(sim.asteroidCount, 0));
+            const updateStats = () => {
+                setText('#missiles-fired', format(sim.missilesFired, 0));
+                setText('#asteroids-destroyed', format(sim.asteroidsDestroyed, 0));
+            }
+            sim.asteroidsDestroyedChanged.addEventListener(updateStats);
+            sim.missilesFiredChanged.addEventListener(updateStats);
+            sim.stateChanged.addEventListener(() => {
+                updateStats();
+                const gameOver = animationHost.querySelector('.game-over');
+                gameOver.innerHTML = sim.state == SimulationState.Finished
+                    ? `Game Over! You ${sim.won ? 'Won!!!' : 'Lost...'}`
+                    : ``;
+            });
         }
-        sim.asteroidsDestroyedChanged.addEventListener(updateStats);
-        sim.missilesFiredChanged.addEventListener(updateStats);
-        sim.stateChanged.addEventListener(() => {
-            updateStats();
-            const gameOver = animationHost.querySelector('.game-over');
-            gameOver.innerHTML = sim.state == SimulationState.Finished
-                ? `Game Over! You ${sim.won ? 'Won!!!' : 'Lost...'}`
-                : ``;
-        });
-    }
-);
+    );
+}
 
 //----------------------------------------------------------
-// my little framework
-function showSimulation(sim: Simulation, title: string, intro: string, showStats?: Function) {
-    const runText = '&#9654; Run';
-    const stopText = '&#9632; Stop';
-
-    // create the simulation item on the page
-    let e = createElement(`
-        <div class='sim'>
-            <h2>
-                <button class='collapse'>+</button> ${title}
-            </h2>
-            <div class='body' style='display:none'>
-                <div class='intro'>
-                    ${intro}
-                </div>
-                <button class='run'></button>
-                <div class='log'></div>
-            </div>
-        </div>`,
-        document.body);
-
-    // get the elements we need
-    let btnRun = e.querySelector('button.run') as HTMLButtonElement;
-    let btnCollapse = e.querySelector('button.collapse') as HTMLButtonElement;
-    let body = e.querySelector('.body') as HTMLElement;
-    let animationHost = e.querySelector('.ss-anim') as HTMLElement | null;
-    let eLog = e.querySelector('div.log') as HTMLElement;
-
-    // animation
-    if (animationHost && showStats) {
-        showStats(sim, animationHost);
-    }
-
-    // default stats
-    if (!showStats) {
-        showStats = () => {
-            eLog.innerHTML = '';
-            createElement(sim.getStatsTable(), eLog);
-        }
-    }
-
-    // handle collapse button
-    btnCollapse.addEventListener('click', e => {
-        if (body.offsetHeight) {
-            btnCollapse.innerHTML = '+';
-            body.style.display = 'none';
-        } else {
-            btnCollapse.innerHTML = '-';
-            body.style.display = '';
-
-            // A-Frame needs a resize event to refresh
-            const scene = body.querySelector('a-scene');
-            if (scene) {
-                window.dispatchEvent(new Event('resize'));
-            }
-        }
-    });
-
-    // handle run/stop button
-    btnRun.innerHTML = runText;
-    btnRun.addEventListener('click', e => {
-        lastUpdate = 0;
-        if (sim.state == SimulationState.Running) {
-            sim.stop();
-        } else {
-            sim.start(e.ctrlKey ? true : null);
-            eLog.style.display = '';
-        }
-    });
-    sim.stateChanged.addEventListener(() => {
-        btnRun.innerHTML = sim.state == SimulationState.Running
-            ? stopText
-            : runText;
-        updateStats();
-    });
-
-    // update stats when the time advances
-    let lastUpdate = 0;
-    sim.timeNowChanged.addEventListener(() => {
-        let now = Date.now();
-        if (now - lastUpdate > 500) {
-            lastUpdate = now;
-            updateStats();
-        }
-    });
-    const updateStats = () => {
-        if (eLog && showStats && !animationHost) {
-            showStats(sim, eLog);
-        }
-    }
-}
-
-// shows some formatted text
-function setText(selector: string, text: string, html?: boolean) {
-    const e = document.querySelector(selector);
-    assert(e != null, () => `element '${selector}' not found`);
-    if (html) {
-        e.innerHTML = text;
-    } else {
-        e.textContent = text;
-    }
-}
-
-// creates an HTML element
-function createElement(template: string, appendTo?: Element) {
-
-    // create element
-    let e: Element = document.createElement('div');
-    e.innerHTML = template;
-    if (e.children.length == 1) {
-        e = e.children[0] as Element;
-    }
-
-    // append to document
-    if (appendTo) {
-        appendTo.appendChild(e);
-    }
-
-    // return new element
-    return e;
-}
-
-/**
- * Defines parameters for series in a chart created by the
- * {@link getLineChart} method.
- */
-interface IChartSeries {
-    /** The series name as shown in the legend. */
-    name?: string,
-    /** The series color (defaults to black). */
-    color?: string,
-    /** The series line width (defaults to 2). */
-    width?: string,
-    /** An array containing the series data. */
-    data: number[]
-}
-
-/**
- * Gets an HTML string showing numeric arrays as an SVG line chart.
- * @param title Chart title.
- * @param series Array of {@link IChartSeries} objects.
- * @returns A string showing the series as an SVG line chart.
- */
-function getLineChart(title: string, ...series: IChartSeries[]): string {
-
-    // get max and min (accounting for all series)
-    let max = null;
-    let min = null;
-    series.forEach((s: IChartSeries) => {
-        min = Math.min(min, Math.min.apply(null, s.data));
-        max = Math.max(max, Math.max.apply(null, s.data));
-    });
-    const rng = max - min || 1;
-
-    // start chart
-    let svg = `<svg xmlns='http://www.w3.org/2000/svg' class='ss-chart' fill='none'>`;
-
-    // add box
-    svg += `<rect width='100%' height='100%' stroke='black' />`;
-
-    // chart margins
-    const margin = {
-        left: 10,
-        right: 10,
-        top: 10,
-        bottom: 10
-    };
-    
-    // add each series
-    series.forEach((s: IChartSeries) => {
-        if (s.data.length > 1) {
-            svg += `<g stroke='${s.color || 'black'}' stroke-width='${s.width || '2'}'>`;
-            if (s.name) {
-                svg += `<title>${s.name}</title>`;
-            }
-            for (let i = 0; i < s.data.length - 1; i++) {
-                const
-                    x1 = margin.left + i / (s.data.length - 1) * (100 - margin.left - margin.right), // 10% to 90%
-                    y1 = 100 - margin.bottom - (s.data[i] - min) / rng * (100 - margin.top - margin.bottom),
-                    x2 = margin.left + (i + 1) / (s.data.length - 1) * (100 - margin.left - margin.right),
-                    y2 = 100 - margin.bottom - (s.data[i + 1] - min) / rng * (100 - margin.top - margin.bottom);
-                svg += `<line x1=${x1.toFixed(1)}% y1=${y1.toFixed(1)}% x2=${x2.toFixed(1)}% y2=${y2.toFixed(1)}% />`;
-            }
-            svg += '</g>';
-        }
-    });
-
-    // add title
-    if (title) {
-        svg += `<text x='50%' y='1em' text-anchor='middle' fill='black'>${title}</text>`
-    }
-
-    // add legends
-    let top = 10;
-    series.forEach((s: IChartSeries) => {
-        if (s.name) {
-            svg += `
-                <rect x='${margin.left}%' y='${top}%' width='2.5%' height='1em' fill='${s.color || 'black'}' />
-                <text x='${margin.left + 3}%' y='${top + 1}%' fill='black' font-size='80%' dominant-baseline='hanging'>${s.name}</text>`;
-            top += 10;
-        }
-    });
-
-    // finish and return chart
-    svg += `</svg>`;
-    return svg;
-}
+// SimScript sample Group end
+endSampleGroup();
 

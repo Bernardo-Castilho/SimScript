@@ -1,33 +1,22 @@
 # Todo
 * Promise.all
 * Entity.seize method
+- seed issue
 - steering behaviors / pedestrians (http://www.red3d.com/cwr/steer/)
+- intro docs/samples
+    - create Simulation (show output)
+    - add entities
+    - add tracking queue (show histogram)
+    - add resource (histogram)
+    - resource units
+    - seize/pre-empt
+    - network
 - more docs/examples
-    - more GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
-    https://stackblitz.com/edit/typescript-mapmna?file=index.html
-        1 * phone
-        2 * periodic inventory
-        3 * tv repair
-        4 * quality control system
-        5 * order point inventory
-        6 * electronics manufacturing
-        7 * textile
-        8 * oil storage
-        9 * pump assembly
-        10 * robot FMS
-        11 * bicycle factory
-        12 * warehouse/branch inventory
-        13 * queuing theory (solvable queueing network)
-        14 * T-junction traffic
-        15 * supermarket
-        16 * port
-        17 - FMS (?)
+    * GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
     - pac-man
     - elevators
     - robot/warehouse (3d)
 - react samples
-- more tests
-    - seed issue
 - strips
     - length, max speed, vehicle list (with positions: extends queue)
     - multi-segment

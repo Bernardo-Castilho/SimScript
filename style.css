@@ -13,7 +13,7 @@ h2 {
     line-height: 2em;
 }
 
-h2 {
+.sample-group h1, h2 {
     border-top: 1px solid rgba(0, 0, 0, .2);
 }
 
@@ -45,12 +45,14 @@ input[type=range] {
     padding: 0;
 }
 
+h1 button,
 h2 button {
     padding: 0;
     width: 1.5em;
     height: 1.5em;
     border-radius: .3em;
     margin-right: .25em;
+    margin-bottom: 0;
 }
 
 .error {
@@ -289,4 +291,8 @@ table.params .ss {
     color: darkblue;
     display: inline-block;
     margin-bottom: 0.5em;
+}
+
+.sample-group .body {
+    margin-left: 1em;
 }
