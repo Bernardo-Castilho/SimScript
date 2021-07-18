@@ -28,7 +28,7 @@ export class Telephone extends Simulation {
 
     onStarting(e: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 's';
+        this.timeUnit = 's';
         this.totalDuration.grossDwell.setHistogramParameters(60 * 10, 0, 60 * 120); // 10-min bins up to 2 hours
         this.generateEntities(Call, this.callArrival, 200);
     }
@@ -76,7 +76,7 @@ export class Inventory extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'days';
+        this.timeUnit = 'days';
 
         // initialize variables
         this.stock = 1000;
@@ -156,7 +156,7 @@ export class TVRepairShop extends Simulation {
     // initialization
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'hours';
+        this.timeUnit = 'hours';
         this.timeEnd = 50 * 8 * 60; // simulate 50 8-hour days
         this.generateEntities(TVOverhaulEntity, this.interArrOverhaul);
         this.generateEntities(TVOnTheSpotEntity, this.interArrOnTheSpot);
@@ -243,7 +243,7 @@ export class QualityControl extends Simulation {
     // generate entities
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'min';
+        this.timeUnit = 'min';
         this.timeEnd = null;
         this.cntCompleted = 0;
         this.cntRejected = 0;
@@ -327,7 +327,7 @@ export class OrderPoint extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'days';
+        this.timeUnit = 'days';
 
         this.stock = 700;
         this.timeEnd = 100;
@@ -408,7 +408,7 @@ export class Manufacturing extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'min';
+        this.timeUnit = 'min';
 
         this.stock = 1000;
         this.stockOut = 0;
@@ -510,7 +510,7 @@ export class Textile extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'min';
+        this.timeUnit = 'min';
 
         // initialize stock
         this.reduced = 50;
@@ -627,7 +627,7 @@ export class OilDepot extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'min';
+        this.timeUnit = 'min';
         this.timeEnd = this.simulatedDays * 24 * 60; // 5 days, in minutes
         this.gallonsSold = 0;
         this.generateEntities(OilTruck, this.interArrival);
@@ -711,7 +711,7 @@ export class PumpAssembly extends Simulation {
 
     onStarting(e: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'min';
+        this.timeUnit = 'min';
         this.generateEntities(PumpOrder, this.orderArrivalInterval, 50); // 50 units
     }
 }
@@ -845,7 +845,7 @@ export class RobotFMS extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 's';
+        this.timeUnit = 's';
         this.generateEntities(FMSComponent, this.componentArrivalInterval, 75)
     }
 }
@@ -935,7 +935,7 @@ export class BicycleFactory extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'min';
+        this.timeUnit = 'min';
         this.timeEnd = 5 * 8 * 60; // 5 8-hour days, in minutes
         this.generateEntities(Bicycle, new Uniform(50 - 10, 50 + 10));
     }
@@ -1110,7 +1110,7 @@ export class StockControl extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'weeks';
+        this.timeUnit = 'weeks';
 
         // initialize stock, records
         this.stock = [3400, 430, 600, 1000];
@@ -1238,7 +1238,7 @@ export class QTheory extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = '1/100 s';
+        this.timeUnit = '1/100 s';
         this.timeEnd = 5000 * 60 * 100; // 5,000 minutes of simulated time
         this.generateEntities(QTheoryCt, this.interArrival);
         this.generateEntities(QTheoryExp, this.interArrival);
@@ -1319,7 +1319,7 @@ export class Traffic extends Simulation {
     // setup
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = '1/100 s';
+        this.timeUnit = '1/100 s';
 
         this.timeEnd = 10 * 60 * 100; // simulate 10 minutes
         this.tCross.reset();
@@ -1429,7 +1429,7 @@ export class Supermarket extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = '1/10 s';
+        this.timeUnit = '1/10 s';
 
         // one hour in 1/10 sec
         const oneHour = 36000;
@@ -1566,7 +1566,7 @@ export class Port extends Simulation {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.timeUnits = 'hours';
+        this.timeUnit = 'hours';
 
         this.timeEnd = 500 * 24; // simulate for 500 days
         this.activate(new TideController()); // control the tides

@@ -41,7 +41,7 @@ export class Crosswalk extends Simulation {
     // initialize Simulation
     constructor(options?: any) {
         super(options);
-        this.timeUnits = 's';
+        this.timeUnit = 's';
         this.qPedXing.grossPop.setHistogramParameters(3);
         this.qCarXing.grossPop.setHistogramParameters(2);
         if (this.timeEnd == null) {
