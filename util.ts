@@ -44,6 +44,9 @@ export function showSimulation(sim: Simulation, title: string, intro: string, sh
     const runText = '&#9654; Run';
     const stopText = '&#9632; Stop';
 
+    // set the simulation name (in case the code is minified)
+    sim.name = title;
+
     // create the simulation item on the page
     let e = createElement(`
         <div class='sim'>

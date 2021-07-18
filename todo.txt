@@ -1,6 +1,4 @@
 # Todo
-* Promise.all
-* Entity.seize method
 - seed issue
 - steering behaviors / pedestrians (http://www.red3d.com/cwr/steer/)
 - intro docs/samples
@@ -26,6 +24,10 @@
     - canals?
 
 # Change Log
+
+SimScript 1.0.30    (?/?/21)
+- Added **Simulation.name** and **Simulation.timeUnit** properties
+  (used by the **Simulation.getStatsTable** method).
 
 SimScript 1.0.29    (7/9/21)
 - Added **Entity.seize** method (condenses enterQueue/delay/leaveQueue and provides preemptive behavior).

@@ -85,6 +85,8 @@ export enum SimulationState {
  */
 export class Simulation {
     /** @internal */ _fec: FecItem[] = [];
+    private _name = '';
+    private _timeUnits = 'Sim Time';
     private _tmNow = 0;
     private _tmEnd: number | null = null;
     private _tmMaxStep = 0;
@@ -110,6 +112,37 @@ export class Simulation {
         setOptions(this, options);
     }
 
+    /**
+     * Gets or sets a string that represents the simulation name.
+     * 
+     * This value used by the {@link getStatsTable} method when creating
+     * output tables. It does not have any effect on the simulation results.
+     * 
+     * This property is set to an empty string by default, which causes 
+     * the {@link getStatsTable} method to use the class name as the
+     * simulation name. This is adequate in most cases, except if
+     * the code is minified.
+     */
+    get name(): string {
+        return this._name;
+    }
+    set name(value: string) {
+        this._name = value;
+    }
+    /**
+     * Gets or sets a string that represents the simulation time units.
+     * 
+     * This value used by the {@link getStatsTable} method when creating
+     * output tables. It does not have any effect on the simulation results.
+     * 
+     * This property is set to **'Sim Time'** by default.
+     */
+     get timeUnits(): string {
+        return this._timeUnits;
+    }
+    set timeUnits(value: string) {
+        this._timeUnits = value;
+    }
     /**
      * Gets the simulation state.
      * 
@@ -594,10 +627,10 @@ export class Simulation {
     private _createSimulationReport(): string {
         return `
             <tr>
-                <th colspan="2">${this.constructor.name}</th>
+                <th colspan="2">${this.name || this.constructor.name}</th>
             </tr>
             <tr>
-                <th>Finish Time</th>
+                <th>Finish Time (${this.timeUnits})</th>
                 <td>${format(this.timeNow, 0)}</td>
             </tr>
             <tr>
@@ -611,7 +644,7 @@ export class Simulation {
         const isPop = tallyName.indexOf('Pop') > -1;
         let html = `<tr>
                 <th colspan="6">
-                    ${title}
+                    ${isPop ? title : title + ' (' + this.timeUnits + ')'}
                 </th>
             </tr>
             <tr>

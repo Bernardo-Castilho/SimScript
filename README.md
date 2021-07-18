@@ -29,8 +29,9 @@ methods that contain instructions for entities.
 Typical actions include entering and leaving **queues**, going through
 **delays**, and sending or waiting for **signals**.
 
-The **Entity** class is abstract. In most cases, you will create one of more 
-classes that extend it to perform the actions required by your simulations.
+The **Entity** class is abstract. In most cases, you will create one
+or more classes that extend it to perform the actions required by your 
+simulations.
 The **Entity** class has an optional generic parameter that contains the
 type of **Simulation** it refers to.
 
@@ -57,13 +58,14 @@ debugging simulations.
 
 Networks are defined by sets of nodes and links.
 
-The **Network** class provides a **shortestPath** method that returns a
-list of links so entities may travel along the network.
+The **Network** class provides a **shortestPath** method that returns
+a list of links so entities may travel along the network.
 
-The **Network** class has a **getLinkDistance** that returns the distance
-represented by a link.
-You may create classes that extend **Network** and override this method
-to provide custom behaviors such as congestion and turning costs.
+The **Network** class has a **getLinkDistance** that returns the
+distance represented by a link.
+You may create classes that extend **Network** and override this 
+method to provide custom behaviors such as congestion and turning 
+costs.
 For example:
 
 ```typescript
