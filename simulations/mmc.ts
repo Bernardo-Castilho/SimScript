@@ -1,11 +1,10 @@
 import { Simulation } from '../simscript/simulation';
 import { Entity } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
-import { Exponential, LogNormal, RandomVar } from '../simscript/random';
+import { Exponential } from '../simscript/random';
 import { Tally } from '../simscript/tally';
 
 // MMC simulation
-// time units: minutes
 export class MMC extends Simulation {
     qWait = new Queue('Wait');
     qService = new Queue('Service', 2);
@@ -16,11 +15,12 @@ export class MMC extends Simulation {
     // generate entities with exponential inter-arrival times
     onStarting() {
         super.onStarting();
+        this.timeUnit = 'min';
 
-        // use seeded random generators with the same mean
-        //// ** REVIEW: using the same seed produces wrong results?!?!?!?
-        this.interArrival = new Exponential(this.interArrival.mean);
-        this.service = new Exponential(this.service.mean);
+        // use seeded random generators
+        // (with different seeds to prevent correlations)
+        this.interArrival = new Exponential(this.interArrival.mean, 1);
+        this.service = new Exponential(this.service.mean, 2);
 
         // get up tally histograms
         this.qWait.grossPop.setHistogramParameters(1, 0, 10);

@@ -257,3 +257,30 @@ class Prty2 extends PreemptEntity {
         this.log('done (@17)');
     }
 }
+
+
+// M/M/1
+// https://en.wikipedia.org/wiki/M/M/1_queue
+export class MM1 extends Simulation {
+    serviceTime: Exponential;
+    interArrival: Exponential;
+    q = new Queue('server', 1);
+    system = new Queue('system');
+    onStarting() {
+        super.onStarting();
+        this.timeUnit = 's';
+        this.serviceTime = new Exponential(10, 1);
+        this.interArrival = new Exponential(15, 2); // different seeds to prevent correlation
+        this.generateEntities(MM1Entity, this.interArrival, 1e6);
+    }
+}
+class MM1Entity extends Entity<MM1> {
+    async script() {
+        const sim = this.simulation;
+        this.enterQueueImmediately(sim.system);
+        await this.enterQueue(sim.q);
+        await this.delay(sim.serviceTime.sample());
+        this.leaveQueue(sim.q);
+        this.leaveQueue(sim.system);
+    }
+}

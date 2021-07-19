@@ -17,6 +17,44 @@ export class RandomVar {
      * Initializes a new instance of the {@link RandomVar} class.
      * 
      * @param seed Optional value used to initialize the random sequence.
+     * 
+     * If you omit the **seed** value, a random seed will be generated
+     * automatically and the random sequences will be different every time
+     * you run the simulation.
+     * If you do provide a **seed** value, be careful to avoid unintended 
+     * correlations between different random variables. For example:
+     * 
+     * ```typescript
+     * // M/M/1: https://en.wikipedia.org/wiki/M/M/1_queue
+     * export class MM1 extends Simulation {
+     * 
+     *     // service times are exponentially distributed with mean 10 min and seed 1:
+     *     serviceTime = new Exponential(10, 1);
+     * 
+     *     // inter-arrival times are exponentially distributed with mean 15 min
+     *     // and the seed is 2 (to avoid correlations with the service times):
+     *     this.interArrival = new Exponential(15, 2);
+     * 
+     *     // System and Server queues
+     *     system = new Queue('System');
+     *     server = new Queue('Server', 1);
+     * 
+     *     onStarting() {
+     *         super.onStarting();
+     *         this.generateEntities(MM1Entity, this.interArrival, 1e4);
+     *     }
+     * }
+     * class MM1Entity extends Entity<MM1> {
+     *     async script() {
+     *         const sim = this.simulation;
+     *         this.enterQueueImmediately(sim.system);
+     *         await this.enterQueue(sim.server);
+     *         await this.delay(sim.serviceTime.sample());
+     *         this.leaveQueue(sim.server);
+     *         this.leaveQueue(sim.system);
+     *     }
+     * }
+     * ```
      */
     constructor(seed: number | null = null) {
         this._seed = seed;

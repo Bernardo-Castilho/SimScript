@@ -10,7 +10,7 @@ import { Queue } from './simscript/queue';
 import { Exponential } from './simscript/random';
 import { format, bind } from './simscript/util';
 
-import { SimpleTest, SimplestSimulation, Interrupt, Preempt } from './simulations/simpletest';
+import { SimpleTest, SimplestSimulation, Interrupt, Preempt, MM1 } from './simulations/simpletest';
 import { PromiseAll } from './simulations/promise-all';
 import { Generator } from './simulations/simpletest';
 import { RandomVarTest } from './simulations/randomvartest';
@@ -1188,6 +1188,32 @@ if (true) {
     );
 
     //----------------------------------------------------------
+    // M/M/1
+    // https://en.wikipedia.org/wiki/M/M/1_queue
+    showSimulation(
+        new MM1(),
+        'M/M/1',
+        `<p>
+            The utilization is
+            <b><span id='mm1-utz'>?</span>%</b></p>
+        <p>
+            The mean number of customers in the system is
+             <b><span id='mm1-pop'>?</span></b> customers.</p>
+        <p>
+            The mean dwell time is
+            <b><span id='mm1-dwell'>?</span></b> seconds.</p>`,
+        (sim: MM1, log: HTMLElement) => {
+            const interArr = sim.interArrival.mean;
+            const service = sim.serviceTime.mean;
+            const utz = service / interArr;
+            setText('#mm1-utz', format(utz * 100, 0));
+            setText('#mm1-pop', format(utz / (1 - utz)));
+            setText('#mm1-dwell', format(1 / (1/service - 1/interArr)));
+            log.innerHTML = sim.getStatsTable();
+        }
+    );
+
+    //----------------------------------------------------------
     // MMC
     showSimulation(
         new MMC(),
@@ -1406,8 +1432,7 @@ if (true) {
             <div class='ss-queue ped-xing'></div>
             <div class='ss-queue ped-xed'></div>
             <div class='ss-queue ped-leave'></div>
-        </div>
-    `,
+        </div>`,
         (sim: Crosswalk, animationHost: HTMLElement) => {
             new Animation(sim, animationHost, {
                 getEntityHtml: e => {
@@ -1639,6 +1664,7 @@ if (true) {
         </x3d>`,
         (sim: Crosswalk, animationHost: HTMLElement) => {
             new Animation(sim, animationHost, {
+                rotateEntities: true,
                 getEntityHtml: (e: Entity) => {
                     if (e instanceof Pedestrian) {
                         return createX3Person('pedestrian');
@@ -2647,4 +2673,3 @@ if (true) {
 //----------------------------------------------------------
 // SimScript sample Group end
 endSampleGroup();
-

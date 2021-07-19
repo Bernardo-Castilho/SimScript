@@ -1,16 +1,7 @@
 # Todo
-- seed issue
 - steering behaviors / pedestrians (http://www.red3d.com/cwr/steer/)
 - intro docs/samples
-    - create Simulation (show output)
-    - add entities
-    - add tracking queue (show histogram)
-    - add resource (histogram)
-    - resource units
-    - seize/pre-empt
-    - network
 - more docs/examples
-    * GPSS examples (validation): http://www.minutemansoftware.com/tutorial/tutorial_manual.htm
     - pac-man
     - elevators
     - robot/warehouse (3d)
