@@ -103,7 +103,7 @@ showSimulation(
     (sim: Inventory, log: HTMLElement) => {
         setText('#gpss-inv-stockout', format(sim.stockOuts, 0));
         log.innerHTML = getLineChart('Stock',
-            { data: sim.stockHistory, color: 'green' }
+            { data: sim.stockHistory, color: 'green', showPoints: true }
         );
     }    
 )
@@ -209,11 +209,11 @@ showSimulation(
 
         // show inventory chart and stats
         log.innerHTML = getLineChart('Demand and Inventory',
+            { data: [sim.stockTally.min, sim.stockTally.min], color: '#d0d0d0', width: '1' },
+            { data: [sim.stockTally.max, sim.stockTally.max], color: '#d0d0d0', width: '1' },
+            { data: [sim.stockTally.avg, sim.stockTally.avg], color: '#d0d0d0', width: '1' },
+            { name: 'Inventory', data: sim.inventoryLevel, color: 'blue', showPoints: true },
             { name: 'Daily Orders', data: sim.dailyOrders, color: 'green' },
-            { name: 'Inventory', data: sim.inventoryLevel, color: 'blue' },
-            { data: [sim.stockTally.min, sim.stockTally.min], color: '#d0d0d0' },
-            { data: [sim.stockTally.max, sim.stockTally.max], color: '#d0d0d0' },
-            { data: [sim.stockTally.avg, sim.stockTally.avg], color: '#d0d0d0' }
         ) + `
             Minimum Inventory: <b>${format(sim.stockTally.min, 0)}</b> units.<br/>
             Maximum Inventory: <b>${format(sim.stockTally.max, 0)}</b> units.<br/>
@@ -311,9 +311,9 @@ showSimulation(
         //log.innerHTML = sim.getStatsTable();
         log.innerHTML =
             getLineChart('In-Process Inventories',
-                { name: 'Reduced', data: sim.recReduced, color: 'red' },
-                { name: 'Wound', data: sim.recWound, color: 'green' },
-                { name: 'Spun', data: sim.recSpun, color: 'blue' }
+                { name: 'Reduced', data: sim.recReduced, color: 'red', showPoints: true },
+                { name: 'Wound', data: sim.recWound, color: 'green', showPoints: true },
+                { name: 'Spun', data: sim.recSpun, color: 'blue', showPoints: true },
             ) +
             sim.getStatsTable();
     }
@@ -623,7 +623,7 @@ showSimulation(
         setText('#ctl-stock0-avg', format(sim.stockTallies[0].avg, 0));
         setText('#ctl-stockouts', format(sim.stockouts, 0));
         log.innerHTML = getLineChart('Inventory Distribution',
-            { data: sim.stockHistory[0], name: 'Warehouse', color: 'black' },
+            { data: sim.stockHistory[0], name: 'Warehouse', color: 'black', showPoints: true },
             { data: sim.stockHistory[1], name: 'Branch 1', color: 'red' },
             { data: sim.stockHistory[2], name: 'Branch 2', color: 'green' },
             { data: sim.stockHistory[3], name: 'Branch 3', color: 'blue' },
@@ -828,9 +828,9 @@ showSimulation(
         setText('#market-transit-avg', format(transit.avg, 0));
         setText('#market-transit-last', format(sim.qTransit.pop, 0));
         setText('#market-customers', getLineChart('Customers/minute',
-            { data: sim.customers, name: 'Total', color: 'black' },
-            { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green' },
-            { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red' }
+            { data: sim.customers, name: 'Total', color: 'black', showPoints: true },
+            { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green', width: '1' },
+            { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red', width: '1' },
         ), true);
         //log.innerHTML = sim.getStatsTable();
     }

@@ -1,5 +1,5 @@
 import { Simulation, SimulationState } from './simscript/simulation';
-import { assert } from './simscript/util';
+import { assert, format } from './simscript/util';
 
 let sampleHost = document.body;
 
@@ -174,8 +174,10 @@ interface IChartSeries {
     name?: string,
     /** The series color (defaults to black). */
     color?: string,
-    /** The series line width (defaults to 2). */
+    /** The series line width (defaults to 3px). */
     width?: string,
+    /** Whether to show points with tooltpis along the line (dafaults to false). */
+    showPoints?: boolean,
     /** An array containing the series data. */
     data: number[]
 }
@@ -214,10 +216,20 @@ export function getLineChart(title: string, ...series: IChartSeries[]): string {
     // add each series
     series.forEach((s: IChartSeries) => {
         if (s.data.length > 1) {
-            svg += `<g stroke='${s.color || 'black'}' stroke-width='${s.width || '2'}'>`;
+
+            // create line group
+            svg += `<g stroke='${s.color || 'black'}' stroke-width='${s.width || '3'}'>`;
             if (s.name) {
-                svg += `<title>${s.name}</title>`;
+                const
+                    min = Math.min.apply(null, s.data),
+                    max = Math.max.apply(null, s.data),
+                    rng = min < max ? ` (min: ${format(min, 0)}, max: ${format(max, 0)})` : '';
+                svg += `<title>
+                    ${s.name}${rng}
+                </title>`;
             }
+
+            // add lines
             for (let i = 0; i < s.data.length - 1; i++) {
                 const
                     x1 = margin.left + i / (s.data.length - 1) * (100 - margin.left - margin.right), // 10% to 90%
@@ -226,7 +238,46 @@ export function getLineChart(title: string, ...series: IChartSeries[]): string {
                     y2 = 100 - margin.bottom - (s.data[i + 1] - min) / rng * (100 - margin.top - margin.bottom);
                 svg += `<line x1=${x1.toFixed(1)}% y1=${y1.toFixed(1)}% x2=${x2.toFixed(1)}% y2=${y2.toFixed(1)}% />`;
             }
+
+            // close line group
             svg += '</g>';
+
+            // show series points
+            if (s.showPoints) {
+
+                // create point group
+                svg += `<g fill='${s.color || 'black'}' stroke='none' opacity='0.4'>`;
+
+                // add points
+                for (let i = 0; i < s.data.length - 1; i++) {
+                    const
+                        x1 = margin.left + i / (s.data.length - 1) * (100 - margin.left - margin.right), // 10% to 90%
+                        y1 = 100 - margin.bottom - (s.data[i] - min) / rng * (100 - margin.top - margin.bottom),
+                        x2 = margin.left + (i + 1) / (s.data.length - 1) * (100 - margin.left - margin.right),
+                        y2 = 100 - margin.bottom - (s.data[i + 1] - min) / rng * (100 - margin.top - margin.bottom),
+                        radius = `r='5px'`;
+
+                    // show first, last, inflexion, and distant points
+                    if (i == 0 ||
+                        i == s.data.length - 1 ||
+                        x2 - x1 > 10 ||
+                        (s.data[i] - s.data[i - 1]) * (s.data[i] - s.data[i + 1]) > 0) {
+                        svg += `<circle cx=${x1.toFixed(1)}% cy=${y1.toFixed(1)}% ${radius}>
+                            <title>${format(s.data[i], 0)}</title>
+                        </circle>`;
+                    }
+
+                    // last point
+                    if (i == s.data.length - 2) {
+                        svg += `<circle cx=${x2.toFixed(1)}% cy=${y2.toFixed(1)}% ${radius}>
+                            <title>${format(s.data[i + 1], 0)}</title>
+                        </circle>`;
+                    }
+                }
+
+                // close point group
+                svg += '</g>';
+            }
         }
     });
 
@@ -237,14 +288,21 @@ export function getLineChart(title: string, ...series: IChartSeries[]): string {
 
     // add legends
     let top = 10;
+    let legend = '';
     series.forEach((s: IChartSeries) => {
         if (s.name) {
-            svg += `
+            legend += `
                 <rect x='${margin.left}%' y='${top}%' width='2.5%' height='1em' fill='${s.color || 'black'}' />
-                <text x='${margin.left + 3}%' y='${top + 1}%' fill='black' font-size='80%' dominant-baseline='hanging'>${s.name}</text>`;
+                <text x='${margin.left + 3}%' y='${top + 1}%' fill='black'>${s.name}</text>`;
             top += 10;
         }
     });
+    if (legend) {
+        svg += `<g font-size='80%' font-weight='bold' dominant-baseline='hanging'>
+            ${legend}
+        </g>`;
+    }
+
 
     // finish and return chart
     svg += `</svg>`;
