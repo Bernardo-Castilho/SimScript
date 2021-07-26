@@ -1,5 +1,12 @@
 # Todo
-- steering behaviors / pedestrians (http://www.red3d.com/cwr/steer/)
+- steering behaviors (http://www.red3d.com/cwr/steer/)
+    - wander
+    - arrive
+    - seek
+    - flee
+    - avoid
+    - follow
+    - traverse
 - intro docs/samples
 - more docs/examples
     - pac-man

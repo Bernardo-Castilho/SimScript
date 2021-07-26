@@ -13,7 +13,8 @@ h2 {
     line-height: 2em;
 }
 
-.sample-group h1, h2 {
+.sample-group h1,
+h2 {
     border-top: 1px solid rgba(0, 0, 0, .2);
 }
 
@@ -21,6 +22,16 @@ code {
     font-weight: bold;
     font-size: 120%;
     background: #f0f0f0;
+}
+
+span.yellow {
+    font-weight: bold;
+    background: yellow;
+}
+
+span.red {
+    font-weight: bold;
+    background: red;
 }
 
 button,

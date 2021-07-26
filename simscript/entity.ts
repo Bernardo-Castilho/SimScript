@@ -483,7 +483,7 @@ export class Entity<S extends Simulation = Simulation> {
      * @param start Position of the queue's start.
      * @param end Position of the queue's end.
      * @returns An {@link IAnimationPosition} value used to position the
-     * entity in the animation. or null to use the standard queue layout.
+     * entity in the animation, or **null** to use the standard queue layout.
      */
     getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
         return null;

@@ -23,12 +23,12 @@ import { NetworkIntro, ServiceVehicle, renderNetworkSVG, renderNetworkX3D } from
 import { CarFollow } from './simulations/car-follow';
 import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
+import { Steering, SteeringVehicle } from './simulations/steering';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
     Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl, QTheory,
     Traffic, Supermarket, Port
 } from './simulations/gpss';
-
 
 //----------------------------------------------------------
 // GPSS sample Group
@@ -44,12 +44,12 @@ startSampleGroup(
 );
 if (true) {
 
-//----------------------------------------------------------
-// Telephone
-showSimulation(
-    new Telephone(),
-    'Telephone',
-    `<p>
+    //----------------------------------------------------------
+    // Telephone
+    showSimulation(
+        new Telephone(),
+        'Telephone',
+        `<p>
         A simple telephone system has two external lines.
         Calls, which originate externally, arrive every 100±60 seconds.
         When the line is occupied, the caller redials after 5±1 minutes have elapsed.
@@ -73,20 +73,20 @@ showSimulation(
             GPSS says the lines are utilized at <b>84%</b> of capacity,
             SimScript says <b><span id='gpss-tel-utz'>?</span>%</b>.</li>
     </ol>`,
-    (sim: Telephone, log: HTMLElement) => {
-        setText('#gpss-tel-total', format(sim.timeNow / 60));
-        setText('#gpss-tel-complete', format(sim.totalDuration.averageDwell / 60));
-        setText('#gpss-tel-utz', format(sim.lines.utilization * 100, 0));
-        log.innerHTML = sim.totalDuration.grossDwell.getHistogramChart('Call Duration (min)', 1 / 60);
-    }    
-)
+        (sim: Telephone, log: HTMLElement) => {
+            setText('#gpss-tel-total', format(sim.timeNow / 60));
+            setText('#gpss-tel-complete', format(sim.totalDuration.averageDwell / 60));
+            setText('#gpss-tel-utz', format(sim.lines.utilization * 100, 0));
+            log.innerHTML = sim.totalDuration.grossDwell.getHistogramChart('Call Duration (min)', 1 / 60);
+        }
+    )
 
-//----------------------------------------------------------
-// Inventory
-showSimulation(
-    new Inventory(),
-    'Inventory',
-    `<p>
+    //----------------------------------------------------------
+    // Inventory
+    showSimulation(
+        new Inventory(),
+        'Inventory',
+        `<p>
         A finished product inventory is controlled by means of a weekly
         review system.
         The initial stock is 1,000 units.
@@ -100,20 +100,20 @@ showSimulation(
         Simulate the inventory system for 200 days and determine if any stockouts occur.
         GPSS says there won't be any. SimScript says there will be
         <b><span id='gpss-inv-stockout'>?</span></b>.</p>`,
-    (sim: Inventory, log: HTMLElement) => {
-        setText('#gpss-inv-stockout', format(sim.stockOuts, 0));
-        log.innerHTML = getLineChart('Stock',
-            { data: sim.stockHistory, color: 'green', showPoints: true }
-        );
-    }    
-)
+        (sim: Inventory, log: HTMLElement) => {
+            setText('#gpss-inv-stockout', format(sim.stockOuts, 0));
+            log.innerHTML = getLineChart('Stock',
+                { data: sim.stockHistory, color: 'green', showPoints: true }
+            );
+        }
+    )
 
-//----------------------------------------------------------
-// TVRepairShop
-showSimulation(
-    new TVRepairShop(),
-    'TV Repair Shop',
-    `<p>
+    //----------------------------------------------------------
+    // TVRepairShop
+    showSimulation(
+        new TVRepairShop(),
+        'TV Repair Shop',
+        `<p>
         A television shop employs a single repairman to overhaul its
         rented television sets, service customers’ sets and do
         on-the-spot repairs.</p>
@@ -148,22 +148,22 @@ showSimulation(
             <b><span id='tv-wait-customer'>?</span></b> for customer jobs, and
             <b><span id='tv-wait-ots'>?</span></b> for on-the-spot jobs.</li>
     </ol>`,
-    (sim: TVRepairShop, log: HTMLElement) => {
-        setText('#tv-utz', format(sim.qRepairMan.utilization * 100, 0));
-        setText('#tv-wait', format(sim.qAllJobs.averageDwell, 0));
-        setText('#tv-wait-overhaul', format(sim.qOverhaulJobs.averageDwell, 0));
-        setText('#tv-wait-customer', format(sim.qCustomerJobs.averageDwell, 0));
-        setText('#tv-wait-ots', format(sim.qOnTheSpotJobs.averageDwell, 0));
-        log.innerHTML = sim.getStatsTable();
-    }
-)
+        (sim: TVRepairShop, log: HTMLElement) => {
+            setText('#tv-utz', format(sim.qRepairMan.utilization * 100, 0));
+            setText('#tv-wait', format(sim.qAllJobs.averageDwell, 0));
+            setText('#tv-wait-overhaul', format(sim.qOverhaulJobs.averageDwell, 0));
+            setText('#tv-wait-customer', format(sim.qCustomerJobs.averageDwell, 0));
+            setText('#tv-wait-ots', format(sim.qOnTheSpotJobs.averageDwell, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    )
 
-//----------------------------------------------------------
-// QualityControl
-showSimulation(
-    new QualityControl(),
-    'Quality Control',
-    `<p>
+    //----------------------------------------------------------
+    // QualityControl
+    showSimulation(
+        new QualityControl(),
+        'Quality Control',
+        `<p>
         A component is manufactured by a sequence of three processes, 
         each followed by a short two minute inspection.</p>
     <p>
@@ -183,19 +183,19 @@ showSimulation(
         and the number of components rejected
         (GPSS says <b>21</b>,
         Simscript says <b><span id='qc-rejected'>?</span></b>).</p>`,
-    (sim: QualityControl, log: HTMLElement) => {
-        log.innerHTML = sim.getStatsTable();
-        setText('#qc-tm', format(sim.timeNow / 60, 0))
-        setText('#qc-rejected', format(sim.cntRejected, 0));
-    }
-);
+        (sim: QualityControl, log: HTMLElement) => {
+            log.innerHTML = sim.getStatsTable();
+            setText('#qc-tm', format(sim.timeNow / 60, 0))
+            setText('#qc-rejected', format(sim.cntRejected, 0));
+        }
+    );
 
-//-------------------------------------------------------------------------
-// OrderPoint
-showSimulation(
-    new OrderPoint(),
-    'Order Point',
-    `<p>
+    //-------------------------------------------------------------------------
+    // OrderPoint
+    showSimulation(
+        new OrderPoint(),
+        'Order Point',
+        `<p>
         An inventory system is controlled by an order point, set at 600 units,
         and an economic order quantity of 500 units.</p>
     <p>
@@ -205,29 +205,29 @@ showSimulation(
     <p>
         Simulate the inventory system for a period of 100 days.
         Determine the distribution of inventory and the actual daily sales.</p>`,
-    (sim: OrderPoint, log: HTMLElement) => {
+        (sim: OrderPoint, log: HTMLElement) => {
 
-        // show inventory chart and stats
-        log.innerHTML = getLineChart('Demand and Inventory',
-            { data: [sim.stockTally.min, sim.stockTally.min], color: '#d0d0d0', width: '1' },
-            { data: [sim.stockTally.max, sim.stockTally.max], color: '#d0d0d0', width: '1' },
-            { data: [sim.stockTally.avg, sim.stockTally.avg], color: '#d0d0d0', width: '1' },
-            { name: 'Inventory', data: sim.inventoryLevel, color: 'blue', showPoints: true },
-            { name: 'Daily Orders', data: sim.dailyOrders, color: 'green' },
-        ) + `
+            // show inventory chart and stats
+            log.innerHTML = getLineChart('Demand and Inventory',
+                { data: [sim.stockTally.min, sim.stockTally.min], color: '#d0d0d0', width: '1' },
+                { data: [sim.stockTally.max, sim.stockTally.max], color: '#d0d0d0', width: '1' },
+                { data: [sim.stockTally.avg, sim.stockTally.avg], color: '#d0d0d0', width: '1' },
+                { name: 'Inventory', data: sim.inventoryLevel, color: 'blue', showPoints: true },
+                { name: 'Daily Orders', data: sim.dailyOrders, color: 'green' },
+            ) + `
             Minimum Inventory: <b>${format(sim.stockTally.min, 0)}</b> units.<br/>
             Maximum Inventory: <b>${format(sim.stockTally.max, 0)}</b> units.<br/>
             Average Inventory: <b>${format(sim.stockTally.avg, 0)}</b> units.<br/>
         `;
-    }
-);
+        }
+    );
 
-//-------------------------------------------------------------------------
-// Manufacturing
-showSimulation(
-    new Manufacturing(),
-    'Manufacturing',
-    `<p>
+    //-------------------------------------------------------------------------
+    // Manufacturing
+    showSimulation(
+        new Manufacturing(),
+        'Manufacturing',
+        `<p>
         A manufacturing department of an electronics company makes digital
         watches. In the dispatch department, the watches are packed by an
         automatic packing machine, in display packets, in the quantities
@@ -257,21 +257,21 @@ showSimulation(
             SimScript says orders take <b><span id='man-transit'>?</span></b>
             minutes to process on average.</li>
     </ol>`,
-    (sim: Manufacturing, log: HTMLElement) => {
-        setText('#man-wait', format(sim.qPacking.averageLength, 2));
-        setText('#man-dispatched', format(sim.dispatched / 5, 0));
-        setText('#man-transit', format(sim.qOrderTransit.averageDwell));
-        //log.innerHTML = sim.getStatsTable();
-        log.innerHTML = sim.qOrderTransit.grossDwell.getHistogramChart('Order Transit Times (min)');
-    }
-);
+        (sim: Manufacturing, log: HTMLElement) => {
+            setText('#man-wait', format(sim.qPacking.averageLength, 2));
+            setText('#man-dispatched', format(sim.dispatched / 5, 0));
+            setText('#man-transit', format(sim.qOrderTransit.averageDwell));
+            //log.innerHTML = sim.getStatsTable();
+            log.innerHTML = sim.qOrderTransit.grossDwell.getHistogramChart('Order Transit Times (min)');
+        }
+    );
 
-//----------------------------------------------------------
-// Textile
-showSimulation(
-    new Textile(),
-    'Textile',
-    `<p>
+    //----------------------------------------------------------
+    // Textile
+    showSimulation(
+        new Textile(),
+        'Textile',
+        `<p>
         A textile factory produces fine mohair yarn in three departments.
         The first department draws and blends the raw material, in sliver form,
         and reduces it to a suitable thickness for spinning, in 5 reducer frames.
@@ -304,27 +304,27 @@ showSimulation(
             spinners <b><span id='txt-utz-spin'>?</span>%</b>, and
             winders <b><span id='txt-utz-wind'>?</span>%</b>.</li>
     </ol>`,
-    (sim: Textile, log: HTMLElement) => {
-        setText('#txt-utz-red', format(sim.qReducers.utilization * 100, 0));
-        setText('#txt-utz-spin', format(sim.qSpinners.utilization * 100, 0));
-        setText('#txt-utz-wind', format(sim.qWinders.utilization * 100, 0));
-        //log.innerHTML = sim.getStatsTable();
-        log.innerHTML =
-            getLineChart('In-Process Inventories',
-                { name: 'Reduced', data: sim.recReduced, color: 'red', showPoints: true },
-                { name: 'Wound', data: sim.recWound, color: 'green', showPoints: true },
-                { name: 'Spun', data: sim.recSpun, color: 'blue', showPoints: true },
-            ) +
-            sim.getStatsTable();
-    }
-)
+        (sim: Textile, log: HTMLElement) => {
+            setText('#txt-utz-red', format(sim.qReducers.utilization * 100, 0));
+            setText('#txt-utz-spin', format(sim.qSpinners.utilization * 100, 0));
+            setText('#txt-utz-wind', format(sim.qWinders.utilization * 100, 0));
+            //log.innerHTML = sim.getStatsTable();
+            log.innerHTML =
+                getLineChart('In-Process Inventories',
+                    { name: 'Reduced', data: sim.recReduced, color: 'red', showPoints: true },
+                    { name: 'Wound', data: sim.recWound, color: 'green', showPoints: true },
+                    { name: 'Spun', data: sim.recSpun, color: 'blue', showPoints: true },
+                ) +
+                sim.getStatsTable();
+        }
+    )
 
-//----------------------------------------------------------
-// Oil Depot
-showSimulation(
-    new OilDepot(),
-    'Oil Depot',
-    `<p>
+    //----------------------------------------------------------
+    // Oil Depot
+    showSimulation(
+        new OilDepot(),
+        'Oil Depot',
+        `<p>
         An oil storage depot distributes three grades of fuel: a) home heating
         oil, b) light industrial fuel oil, and c) diesel fuel for road vehicles.
         There is one pump for each grade of fuel, and the demand for each is the same.
@@ -372,20 +372,20 @@ showSimulation(
             GPSS says <b>109,490</b> gallons,
             SimScript says <b><span id="oil-sales">?</span></b> gallons.</li>
     </ul>`,
-    (sim: OilDepot, log: HTMLElement) => {
-        setText('#oil-mean', format(sim.depot.grossDwell.avg, 0));
-        setText('#oil-std', format(sim.depot.grossDwell.stdev, 0));
-        setText('#oil-sales', format(sim.gallonsSoldPerDay, 0));
-        log.innerHTML = sim.getStatsTable();
-    }
-)
+        (sim: OilDepot, log: HTMLElement) => {
+            setText('#oil-mean', format(sim.depot.grossDwell.avg, 0));
+            setText('#oil-std', format(sim.depot.grossDwell.stdev, 0));
+            setText('#oil-sales', format(sim.gallonsSoldPerDay, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    )
 
-//-------------------------------------------------------------------------
-// Pump Assembly
-showSimulation(
-    new PumpAssembly(),
-    'Pump Assembly',
-    `<p>
+    //-------------------------------------------------------------------------
+    // Pump Assembly
+    showSimulation(
+        new PumpAssembly(),
+        'Pump Assembly',
+        `<p>
         A manufacturer makes centrifugal pump units which are assembled to
         customer orders. The orders arrive on average, every 5 hours,
         exponentially distributed.</p>
@@ -437,29 +437,29 @@ showSimulation(
         If all activity is increased proportionately, they will be the first to
         saturate.</p>
     `,
-    (sim: PumpAssembly, log: HTMLElement) => {
-        const utz = [];
-        sim.queues.forEach(q => {
-            if (q.capacity == 1) {
-                utz.push(q.utilization);
-            }
-        });
-        setText('#pump-utz-min', format(Math.min(...utz) * 100, 0));
-        setText('#pump-utz-max', format(Math.max(...utz) * 100, 0));
-        setText('#pump-tm-avg', format(sim.qOrders.grossDwell.avg, 0));
-        setText('#pump-tm-std', format(sim.qOrders.grossDwell.stdev, 0));
-        setText('#pump-utz-pump', format(sim.qPumps.utilization * 100, 0));
-        setText('#pump-utz-base', format(sim.qBaseStation.utilization * 100, 0));
-        log.innerHTML = sim.getStatsTable();
-    }
-);
+        (sim: PumpAssembly, log: HTMLElement) => {
+            const utz = [];
+            sim.queues.forEach(q => {
+                if (q.capacity == 1) {
+                    utz.push(q.utilization);
+                }
+            });
+            setText('#pump-utz-min', format(Math.min(...utz) * 100, 0));
+            setText('#pump-utz-max', format(Math.max(...utz) * 100, 0));
+            setText('#pump-tm-avg', format(sim.qOrders.grossDwell.avg, 0));
+            setText('#pump-tm-std', format(sim.qOrders.grossDwell.stdev, 0));
+            setText('#pump-utz-pump', format(sim.qPumps.utilization * 100, 0));
+            setText('#pump-utz-base', format(sim.qBaseStation.utilization * 100, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    );
 
-//-------------------------------------------------------------------------
-// RobotFMS
-showSimulation(
-    new RobotFMS(),
-    'Robot FMS',
-    `<p>
+    //-------------------------------------------------------------------------
+    // RobotFMS
+    showSimulation(
+        new RobotFMS(),
+        'Robot FMS',
+        `<p>
         An experimental, robot operated, flexible manufacturing system has
         two computer numerical control machine tools, an arrival area, and
         a finished parts area.</p>
@@ -501,23 +501,23 @@ showSimulation(
             GPSS says the maximum storage required totals <b>13</b>;<br/>
             SimScript says <b><span id='fms-stg'>?</span></b>.</li>
     </ol>`,
-    (sim: RobotFMS, log: HTMLElement) => {
-        setText('#fms-tm-mean', format(sim.qJobs.grossDwell.avg, 0));
-        setText('#fms-tm-std', format(sim.qJobs.grossDwell.stdev, 0));
-        setText('#fms-utz-robot', format(sim.qRobot.utilization * 100, 0));
-        setText('#fms-utz-m1', format(sim.qMachine1.utilization * 100, 0));
-        setText('#fms-utz-m2', format(sim.qMachine2.utilization * 100, 0));
-        setText('#fms-stg', format(sim.qJobs.grossPop.max, 0));
-        log.innerHTML = sim.getStatsTable();
-    }
-)
+        (sim: RobotFMS, log: HTMLElement) => {
+            setText('#fms-tm-mean', format(sim.qJobs.grossDwell.avg, 0));
+            setText('#fms-tm-std', format(sim.qJobs.grossDwell.stdev, 0));
+            setText('#fms-utz-robot', format(sim.qRobot.utilization * 100, 0));
+            setText('#fms-utz-m1', format(sim.qMachine1.utilization * 100, 0));
+            setText('#fms-utz-m2', format(sim.qMachine2.utilization * 100, 0));
+            setText('#fms-stg', format(sim.qJobs.grossPop.max, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    )
 
-//-------------------------------------------------------------------------
-// Bicycle Factory
-showSimulation(
-    new BicycleFactory(),
-    'Bicycle Factory',
-    `<p>
+    //-------------------------------------------------------------------------
+    // Bicycle Factory
+    showSimulation(
+        new BicycleFactory(),
+        'Bicycle Factory',
+        `<p>
         A factory assembles bicycles employing the following staff: 2 clerks,
         3 framers, 1 saddler, 1 handler, 1 wheeler, 1 pedaler, 4 assemblers,
         and 3 packers.</p>
@@ -548,20 +548,20 @@ showSimulation(
             SimScript says the average was <b><span id='bike-tm-mean'>?</span></b> min with a
             <b><span id='bike-tm-std'>?</span></b> min standard deviation.</li>
     </ol>`,
-    (sim: BicycleFactory, log: HTMLElement) => {
-        setText('#bike-clerk-utz', format(sim.qClerks.utilization * 100, 0));
-        setText('#bike-tm-mean', format(sim.qTransit.grossDwell.avg, 0));
-        setText('#bike-tm-std', format(sim.qTransit.grossDwell.stdev, 0));
-        log.innerHTML = sim.getStatsTable();
-    }
-);
+        (sim: BicycleFactory, log: HTMLElement) => {
+            setText('#bike-clerk-utz', format(sim.qClerks.utilization * 100, 0));
+            setText('#bike-tm-mean', format(sim.qTransit.grossDwell.avg, 0));
+            setText('#bike-tm-std', format(sim.qTransit.grossDwell.stdev, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    );
 
-//-------------------------------------------------------------------------
-// Stock Control
-showSimulation(
-    new StockControl(),
-    'Stock Control',
-    `<p>
+    //-------------------------------------------------------------------------
+    // Stock Control
+    showSimulation(
+        new StockControl(),
+        'Stock Control',
+        `<p>
         A manufacturing company makes waste disposal units, which it sells for
         $200 each. Total annual demand is for 20,000 units. Distribution is
         through three branches from a factory warehouse.</p>
@@ -615,28 +615,28 @@ showSimulation(
             GPSS says there were some stockouts at Branch 3 during the 75-week simulated period.<br/>
             SimScript detected <b><span id='ctl-stockouts'>?</span></b> stockouts.
     </ol>`,
-    (sim: StockControl, log: HTMLElement) => {
-        setText('#ctl-sales-avg', format(sim.salesTally.avg * 4, 0)); // one month ~ 4 weeks
-        setText('#ctl-stock1-avg', format(sim.stockTallies[1].avg, 0));
-        setText('#ctl-stock2-avg', format(sim.stockTallies[2].avg, 0));
-        setText('#ctl-stock3-avg', format(sim.stockTallies[3].avg, 0));
-        setText('#ctl-stock0-avg', format(sim.stockTallies[0].avg, 0));
-        setText('#ctl-stockouts', format(sim.stockouts, 0));
-        log.innerHTML = getLineChart('Inventory Distribution',
-            { data: sim.stockHistory[0], name: 'Warehouse', color: 'black', showPoints: true },
-            { data: sim.stockHistory[1], name: 'Branch 1', color: 'red' },
-            { data: sim.stockHistory[2], name: 'Branch 2', color: 'green' },
-            { data: sim.stockHistory[3], name: 'Branch 3', color: 'blue' },
-        );
-    }    
-)
+        (sim: StockControl, log: HTMLElement) => {
+            setText('#ctl-sales-avg', format(sim.salesTally.avg * 4, 0)); // one month ~ 4 weeks
+            setText('#ctl-stock1-avg', format(sim.stockTallies[1].avg, 0));
+            setText('#ctl-stock2-avg', format(sim.stockTallies[2].avg, 0));
+            setText('#ctl-stock3-avg', format(sim.stockTallies[3].avg, 0));
+            setText('#ctl-stock0-avg', format(sim.stockTallies[0].avg, 0));
+            setText('#ctl-stockouts', format(sim.stockouts, 0));
+            log.innerHTML = getLineChart('Inventory Distribution',
+                { data: sim.stockHistory[0], name: 'Warehouse', color: 'black', showPoints: true },
+                { data: sim.stockHistory[1], name: 'Branch 1', color: 'red' },
+                { data: sim.stockHistory[2], name: 'Branch 2', color: 'green' },
+                { data: sim.stockHistory[3], name: 'Branch 3', color: 'blue' },
+            );
+        }
+    )
 
-//-------------------------------------------------------------------------
-// QTheory
-showSimulation(
-    new QTheory(),
-    'Queueing Theory',
-    `<p>
+    //-------------------------------------------------------------------------
+    // QTheory
+    showSimulation(
+        new QTheory(),
+        'Queueing Theory',
+        `<p>
         When feasible, an analytical solution to queuing systems provides a 
         useful means of estimating the performance of simple systems.</p>
     <p>
@@ -687,31 +687,31 @@ showSimulation(
                 <td><br/><span class='gpss'>1.57</span><br/><span class='ss' id='qt-ldev-erl'>?</span></td>
         </tr>
     </table>`,
-    (sim: QTheory, log: HTMLElement) => {
-        setText('#qt-wait-ct', format(sim.qCt.averageDwell, 1));
-        setText('#qt-wait-exp', format(sim.qExp.averageDwell, 1));
-        setText('#qt-wait-erl', format(sim.qErl.averageDwell, 1));
+        (sim: QTheory, log: HTMLElement) => {
+            setText('#qt-wait-ct', format(sim.qCt.averageDwell, 1));
+            setText('#qt-wait-exp', format(sim.qExp.averageDwell, 1));
+            setText('#qt-wait-erl', format(sim.qErl.averageDwell, 1));
 
-        setText('#qt-len-ct', format(sim.qCt.averageLength, 2));
-        setText('#qt-len-exp', format(sim.qExp.averageLength, 2));
-        setText('#qt-len-erl', format(sim.qErl.averageLength, 2));
+            setText('#qt-len-ct', format(sim.qCt.averageLength, 2));
+            setText('#qt-len-exp', format(sim.qExp.averageLength, 2));
+            setText('#qt-len-erl', format(sim.qErl.averageLength, 2));
 
-        setText('#qt-tdev-ct', format(sim.qCt.grossDwell.stdev, 0));
-        setText('#qt-tdev-exp', format(sim.qExp.grossDwell.stdev, 0));
-        setText('#qt-tdev-erl', format(sim.qErl.grossDwell.stdev, 0));
+            setText('#qt-tdev-ct', format(sim.qCt.grossDwell.stdev, 0));
+            setText('#qt-tdev-exp', format(sim.qExp.grossDwell.stdev, 0));
+            setText('#qt-tdev-erl', format(sim.qErl.grossDwell.stdev, 0));
         
-        setText('#qt-ldev-ct', format(sim.qCt.grossPop.stdev, 2));
-        setText('#qt-ldev-exp', format(sim.qExp.grossPop.stdev, 2));
-        setText('#qt-ldev-erl', format(sim.qErl.grossPop.stdev, 2));
-    }
-);
+            setText('#qt-ldev-ct', format(sim.qCt.grossPop.stdev, 2));
+            setText('#qt-ldev-exp', format(sim.qExp.grossPop.stdev, 2));
+            setText('#qt-ldev-erl', format(sim.qErl.grossPop.stdev, 2));
+        }
+    );
 
-//-------------------------------------------------------------------------
-// Traffic
-showSimulation(
-    new Traffic(),
-    'Traffic',
-    `<p>
+    //-------------------------------------------------------------------------
+    // Traffic
+    showSimulation(
+        new Traffic(),
+        'Traffic',
+        `<p>
         Cars arrive at a T-junction every 6.28 seconds hyperexponentially
         distributed. The cars then make a left turn northbound onto a
         highway.</p>
@@ -751,21 +751,21 @@ showSimulation(
             <b><span id='traffic-turn-cross'>?</span></b> seconds.<br/>
             </li>
     </ol>`,
-    (sim: Traffic, log: HTMLElement) => {
-        setText('#traffic-transit-time', format(sim.qTransit.averageDwell / 100, 0));
-        setText('#traffic-cross-time', format(sim.tCross.avg / 100, 1));
-        setText('#traffic-merge-time', format(sim.tMerge.avg / 100, 1));
-        setText('#traffic-turn-cnt', format(sim.qAisle.grossPop.max, 0));
-        setText('#traffic-turn-cross', format(sim.qCross.averageDwell / 100, 1));
-        log.innerHTML = sim.getStatsTable();
-    });
+        (sim: Traffic, log: HTMLElement) => {
+            setText('#traffic-transit-time', format(sim.qTransit.averageDwell / 100, 0));
+            setText('#traffic-cross-time', format(sim.tCross.avg / 100, 1));
+            setText('#traffic-merge-time', format(sim.tMerge.avg / 100, 1));
+            setText('#traffic-turn-cnt', format(sim.qAisle.grossPop.max, 0));
+            setText('#traffic-turn-cross', format(sim.qCross.averageDwell / 100, 1));
+            log.innerHTML = sim.getStatsTable();
+        });
 
-//----------------------------------------------------------
-// Supermarket
-showSimulation(
-    new Supermarket(),
-    'Supermarket',
-    `<p>
+    //----------------------------------------------------------
+    // Supermarket
+    showSimulation(
+        new Supermarket(),
+        'Supermarket',
+        `<p>
         Customers arrive by car to shop at a supermarket.</p>
     <p>
         The parking lot has space for 650 parked cars.
@@ -816,32 +816,32 @@ showSimulation(
             <b><span id='market-transit-last'>?</span></b> customers waiting to check out.</li>
     </ol>
     <div id='market-customers'></div>`,
-    (sim: Supermarket, log: HTMLElement) => {
-        setText('#market-transit', format(sim.qTransit.averageDwell / 600, 1));
-        setText('#market-utz-park', format(sim.qParking.utilization * 100, 0));
-        setText('#market-utz-cart', format(sim.qCart.utilization * 100, 0));
-        setText('#market-utz-basket', format(sim.qBasket.utilization * 100, 0));
-        setText('#market-utz-checkout', format(sim.qCheckout.utilization * 100, 0));
-        setText('#market-utz-checkoutx', format(sim.qCheckoutX.utilization * 100, 0));
+        (sim: Supermarket, log: HTMLElement) => {
+            setText('#market-transit', format(sim.qTransit.averageDwell / 600, 1));
+            setText('#market-utz-park', format(sim.qParking.utilization * 100, 0));
+            setText('#market-utz-cart', format(sim.qCart.utilization * 100, 0));
+            setText('#market-utz-basket', format(sim.qBasket.utilization * 100, 0));
+            setText('#market-utz-checkout', format(sim.qCheckout.utilization * 100, 0));
+            setText('#market-utz-checkoutx', format(sim.qCheckoutX.utilization * 100, 0));
             
-        const transit = sim.qTransit.grossPop;
-        setText('#market-transit-avg', format(transit.avg, 0));
-        setText('#market-transit-last', format(sim.qTransit.pop, 0));
-        setText('#market-customers', getLineChart('Customers/minute',
-            { data: sim.customers, name: 'Total', color: 'black', showPoints: true },
-            { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green', width: '1' },
-            { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red', width: '1' },
-        ), true);
-        //log.innerHTML = sim.getStatsTable();
-    }
-);
+            const transit = sim.qTransit.grossPop;
+            setText('#market-transit-avg', format(transit.avg, 0));
+            setText('#market-transit-last', format(sim.qTransit.pop, 0));
+            setText('#market-customers', getLineChart('Customers/minute',
+                { data: sim.customers, name: 'Total', color: 'black', showPoints: true },
+                { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green', width: '1' },
+                { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red', width: '1' },
+            ), true);
+            //log.innerHTML = sim.getStatsTable();
+        }
+    );
 
-//-------------------------------------------------------------------------
-// Port
-showSimulation(
-    new Port(),
-    'Port',
-    `<p>
+    //-------------------------------------------------------------------------
+    // Port
+    showSimulation(
+        new Port(),
+        'Port',
+        `<p>
         A harbor port has three berths 1, 2 and 3.</p>
     <p>
         At any given time Berth1 can accommodate two small ships, or one
@@ -882,16 +882,16 @@ showSimulation(
             <b><span id='port-utz-berth2'>?</span>%</b>, and
             <b><span id='port-utz-berth3'>?</span>%</b>.</li>
     </ol>`,
-    (sim: Port, log: HTMLElement) => {
-        setText('#port-transit-small', format(sim.qTransit[0].averageDwell, 0));
-        setText('#port-transit-medium', format(sim.qTransit[1].averageDwell, 0));
-        setText('#port-transit-large', format(sim.qTransit[2].averageDwell, 0));
-        setText('#port-utz-berth1', format(sim.qBerths[0].utilization * 100, 0));
-        setText('#port-utz-berth2', format(sim.qBerths[1].utilization * 100, 0));
-        setText('#port-utz-berth3', format(sim.qBerths[2].utilization * 100, 0));
-        //log.innerHTML = sim.getStatsTable();
-    }
-);
+        (sim: Port, log: HTMLElement) => {
+            setText('#port-transit-small', format(sim.qTransit[0].averageDwell, 0));
+            setText('#port-transit-medium', format(sim.qTransit[1].averageDwell, 0));
+            setText('#port-transit-large', format(sim.qTransit[2].averageDwell, 0));
+            setText('#port-utz-berth1', format(sim.qBerths[0].utilization * 100, 0));
+            setText('#port-utz-berth2', format(sim.qBerths[1].utilization * 100, 0));
+            setText('#port-utz-berth3', format(sim.qBerths[2].utilization * 100, 0));
+            //log.innerHTML = sim.getStatsTable();
+        }
+    );
 
 }
 
@@ -2673,3 +2673,60 @@ if (true) {
 //----------------------------------------------------------
 // SimScript sample Group end
 endSampleGroup();
+
+//----------------------------------------------------------
+// Steering Vehicles Group
+startSampleGroup(
+    'Steering Vehicles',
+    `<p>
+        These samples were inspired by the
+        <a href="http://www.minutemansoftware.com/tutorial/tutorial_manual.htm">GPSS samples</a>
+        published by Minuteman software.</p>
+    <p>
+        They show how you can use SimScript to simulate a wide range of practical
+        applications and allow you to compare results obtained by GPSS and SimScript.</p>`
+);
+if (true) {
+
+    //----------------------------------------------------------
+    // Steering Vehicles
+    showSimulation(
+        new Steering({
+            frameDelay: 20,
+            maxTimeStep: 0.1
+        }),
+        'Wander/Arrive (SVG)',
+        `<p>
+            <span class='light yellow'></span>Yellow entities <b>wander</b> around
+            the simulation surface, periodically updating their direction and
+            speed.</p>
+        <p>
+            <span class='light red'></span>Red entities travel towards the center
+            of the simulation surface, <b>arrive</b> there with speed zero, and
+            start a new trip when they arrive.</p>
+        <svg class='ss-anim' viewBox='0 0 1000 500'>
+            <circle class='ss-queue q-center' cx='500' cy='250' r='10' />
+        </svg>`,
+        (sim: Steering, animationHost: HTMLElement) => {
+            new Animation(sim, animationHost, {
+                rotateEntities: true,
+                getEntityHtml: e => {
+                    return (e instanceof SteeringVehicle)
+                        ? `<polygon
+                        stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
+                        points='0 0, 40 0, 50 10, 40 20, 0 20'
+                        />`
+                        : '';
+                },
+                queues: [
+                    { queue: sim.q, element: 'svg .ss-queue.q-center' }
+                ]
+            });
+        }
+    );
+}
+
+//----------------------------------------------------------
+// Steering Vehicles Group End
+endSampleGroup();
+
