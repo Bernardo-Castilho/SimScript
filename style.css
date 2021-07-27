@@ -24,16 +24,6 @@ code {
     background: #f0f0f0;
 }
 
-span.yellow {
-    font-weight: bold;
-    background: yellow;
-}
-
-span.red {
-    font-weight: bold;
-    background: red;
-}
-
 button,
 input,
 select {

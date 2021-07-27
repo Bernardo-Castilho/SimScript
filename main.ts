@@ -23,7 +23,10 @@ import { NetworkIntro, ServiceVehicle, renderNetworkSVG, renderNetworkX3D } from
 import { CarFollow } from './simulations/car-follow';
 import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
-import { Steering, SteeringVehicle } from './simulations/steering';
+import {
+    SteeringArrive, SteeringChase, SteeringAvoid,
+    SteeringVehicle
+} from './simulations/steering';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
     Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl, QTheory,
@@ -2675,27 +2678,28 @@ if (true) {
 endSampleGroup();
 
 //----------------------------------------------------------
-// Steering Vehicles Group
+// Steering Behaviors Group
 startSampleGroup(
-    'Steering Vehicles',
+    'Steering Behaviors',
     `<p>
-        These samples were inspired by the
-        <a href="http://www.minutemansoftware.com/tutorial/tutorial_manual.htm">GPSS samples</a>
-        published by Minuteman software.</p>
+        These samples are based on the article
+        <a href='http://www.red3d.com/cwr/steer/'>Steering Behaviors For Autonomous Characters</a>.</p>
     <p>
-        They show how you can use SimScript to simulate a wide range of practical
-        applications and allow you to compare results obtained by GPSS and SimScript.</p>`
+        The article presents solutions for a common requirement of autonomous characters
+        in simulations, animations, and games: the ability to navigate around their world
+        in a life-like and improvisational manner.</p>
+    <p>
+        These "steering behaviors" are largely independent of the particulars of the
+        character's means of locomotion. Combinations of steering behaviors can be used
+        to achieve higher level goals.</p>`
 );
 if (true) {
 
     //----------------------------------------------------------
-    // Steering Vehicles
+    // Arrive
     showSimulation(
-        new Steering({
-            frameDelay: 20,
-            maxTimeStep: 0.1
-        }),
-        'Wander/Arrive (SVG)',
+        new SteeringArrive(),
+        'Arrive (SVG)',
         `<p>
             <span class='light yellow'></span>Yellow entities <b>wander</b> around
             the simulation surface, periodically updating their direction and
@@ -2703,27 +2707,96 @@ if (true) {
         <p>
             <span class='light red'></span>Red entities travel towards the center
             of the simulation surface, <b>arrive</b> there with speed zero, and
-            start a new trip when they arrive.</p>
+            then start a new trip from a random location.</p>
         <svg class='ss-anim' viewBox='0 0 1000 500'>
-            <circle class='ss-queue q-center' cx='500' cy='250' r='10' />
+            <circle class='ss-queue'/>
         </svg>`,
-        (sim: Steering, animationHost: HTMLElement) => {
+        (sim: SteeringArrive, animationHost: HTMLElement) => {
             new Animation(sim, animationHost, {
                 rotateEntities: true,
                 getEntityHtml: e => {
                     return (e instanceof SteeringVehicle)
                         ? `<polygon
                         stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
-                        points='0 0, 40 0, 50 10, 40 20, 0 20'
-                        />`
+                        points='0 0, 40 0, 50 10, 40 20, 0 20' />`
                         : '';
                 },
                 queues: [
-                    { queue: sim.q, element: 'svg .ss-queue.q-center' }
+                    { queue: sim.q, element: 'svg .ss-queue' }
                 ]
             });
         }
     );
+
+    //----------------------------------------------------------
+    // Chase
+    showSimulation(
+        new SteeringChase(),
+        'Chase (SVG)',
+        `<p>
+            <span class='light yellow'></span>Yellow entities <b>wander</b> around
+            the simulation surface, periodically updating their direction and
+            speed.</p>
+        <p>
+            <span class='light red'></span>Red entities <b>chase</b> the yellow
+            entities.
+            The yellow entities wrap around the animation surface and red ones don't,
+            which makes the chase more interesting.</p>
+        <svg class='ss-anim' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringChase, animationHost: HTMLElement) => {
+            new Animation(sim, animationHost, {
+                rotateEntities: true,
+                getEntityHtml: e => {
+                    return (e instanceof SteeringVehicle)
+                        ? `<polygon
+                        stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
+                        points='0 0, 40 0, 50 10, 40 20, 0 20' />`
+                        : '';
+                },
+                queues: [
+                    { queue: sim.q, element: 'svg .ss-queue' }
+                ]
+            });
+        }
+    );
+
+    //----------------------------------------------------------
+    // Avoid
+    showSimulation(
+        new SteeringAvoid(),
+        'Avoid (SVG)',
+        `<p>
+            <span class='light yellow'></span>Yellow entities <b>wander</b> around
+            the simulation surface, periodically updating their direction and
+            speed.</p>
+        <p>
+            <span class='light red'></span>They turn red when they find obstacles,
+            and change direction to <b>avoid</b> them.</p>
+        <svg class='ss-anim' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringAvoid, animationHost: HTMLElement) => {
+            sim.obstacles.forEach(o => {
+                animationHost.innerHTML += `<circle cx='${o.x}' cy='${o.y}' r='${o.r}' fill='lightgrey' />`;
+            });
+            new Animation(sim, animationHost, {
+                rotateEntities: true,
+                getEntityHtml: e => {
+                    return (e instanceof SteeringVehicle)
+                        ? `<polygon
+                        stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
+                        points='0 0, 40 0, 50 10, 40 20, 0 20' />`
+                        : '';
+                },
+                queues: [
+                    { queue: sim.q, element: 'svg .ss-queue' }
+                ]
+            });
+        }
+    );
+
 }
 
 //----------------------------------------------------------

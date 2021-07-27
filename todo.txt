@@ -1,10 +1,10 @@
 # Todo
 - steering behaviors (http://www.red3d.com/cwr/steer/)
-    - wander
-    - arrive
-    - seek
-    - flee
+    * wander
+    * arrive
+    * chase
     - avoid
+    - flee
     - follow
     - traverse
 - intro docs/samples

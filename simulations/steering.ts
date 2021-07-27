@@ -1,22 +1,42 @@
 import { Simulation } from '../simscript/simulation';
 import { Entity, IAnimationPosition } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
-import { Event, EventArgs } from '../simscript/event';
-import { Uniform, Exponential } from '../simscript/random';
-import { IPoint, Point, clamp, assert, setOptions } from '../simscript/util';
+import { EventArgs } from '../simscript/event';
+import { Uniform } from '../simscript/random';
+import { IPoint, Point, setOptions, clamp } from '../simscript/util';
 
-export class Steering extends Simulation {
+/**
+ * Simulation used to show various steering behaviors.
+ */
+class Steering extends Simulation {
     q = new Queue();
     step = 0.1;
     bounds = [new Point(), new Point(1000, 500)];
-    onStarting(e?: EventArgs) {
-        super.onStarting(e);
-        this.generateEntities(Wander, new Exponential(1), 8);
-        this.activate(new Arrive());
+
+    /**
+     * Initializes a new instance of the {@link Steering} class.
+     * @param options Object with parameters used to initialize the {@link Steering} instance.
+     */
+    constructor(options?: any) {
+        super();
+        this.frameDelay = 10;
+        this.maxTimeStep = 0.01;
+        setOptions(this, options);
+    }
+
+    // gets a random position within the animation surface.
+    getRandomPosition(): IPoint {
+        return new Point(
+            Math.round(Math.random() * this.bounds[1].x),
+            Math.round(Math.random() * this.bounds[1].y));
     }
 }
 
-export class SteeringVehicle extends Entity<Steering> {
+/**
+ * Entities with a position, angle, speed, and an
+ * updatePosition method.
+ */
+ export class SteeringVehicle extends Entity<Steering> {
     _angle = 0; // in degrees, clockwise
     _sin = 0;
     _cos = 1;
@@ -130,7 +150,6 @@ export class SteeringVehicle extends Entity<Steering> {
     set acceleration(value: number) {
         this._accel = value;
     }
-
     /**
      * Updates the entity's angle, speed, and position after a given
      * time interval.
@@ -147,6 +166,32 @@ export class SteeringVehicle extends Entity<Steering> {
         const p = this.position;
         p.x += this.speed * this._cos * dt;
         p.y += this.speed * this._sin * dt;
+    }
+    /**
+     * Gets the angle to turn in order to match a target entity.
+     * @param targetAngle The angle of the target entity.
+     * @param dt The time step.
+     * @param da The maximum angle to turn per time step.
+     * @returns The new angle used to match the target angle.
+     */
+    getTurnAngle(targetAngle: number, dt: number, da = 2): number {
+        const step = Math.max(da, da * dt); // turn up to da degrees at a time
+        let delta = targetAngle - this.angle;
+
+        // normalize delta to [-180,+180]
+        if (delta < -180) {
+            delta += 360;
+        } else if (delta > 180) {
+            delta -= 360;
+        }
+
+        // close enough
+        if (Math.abs(delta) < step) {
+            return targetAngle;
+        }
+
+        // get closer
+        return this.angle + step * Math.sign(delta);
     }
 
     // gets the entity's current animation position and angle.
@@ -174,6 +219,20 @@ export class SteeringVehicle extends Entity<Steering> {
     }
 }
 
+//------------------------------------------------------------------------------------
+// SteeringArrive
+
+/**
+ * Steering simulation with Wander and Arrive entities.
+ */
+ export class SteeringArrive extends Steering {
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.generateEntities(Wander, 0, 4);
+        this.generateEntities(Arrive, 0, 4);
+    }
+}
+
 /**
  * Entities that wander around the simulation surface, 
  * periodically updating their direction and speed.
@@ -187,9 +246,9 @@ class Wander extends SteeringVehicle {
 
         // initialize entity properties
         this.color = 'orange';
-        this.speedMin = 5;
+        this.speedMin = 20;
         this.speedMax = 100;
-        this.speed = 50 + Math.random() * this.speedMax;
+        this.speed = this.speedMin + Math.random() * (this.speedMax - this.speedMin);
         this.steerAngleMax = 45;
         this.angle = Math.round(Math.random() * 360);
         this.position = new Point(Math.random() * sim.bounds[1].x, Math.random() * sim.bounds[1].y);
@@ -211,7 +270,11 @@ class Wander extends SteeringVehicle {
 
     // wrap position around the edges of the simulation
     updatePosition(dt: number) {
+
+        // update speed/position/angle
         super.updatePosition(dt);
+
+        // wrap position around simulation bounds
         const bounds = this.simulation.bounds;
         if (bounds) {
             const p = this.position;
@@ -235,65 +298,194 @@ class Wander extends SteeringVehicle {
  */
 class Arrive extends SteeringVehicle {
     async script() {
-        const
-            sim = this.simulation,
-            center = new Point(sim.bounds[1].x / 2, sim.bounds[1].y / 2);
+        const sim = this.simulation;
 
         // initialize entity properties
         this.color = 'red';
         this.speed = 10;
         this.speedMax = 500;
         this.speedMin = 2;
-        this.position = this.getRandomPosition();
+        this.position = sim.getRandomPosition();
         this.angle = Math.random() * 360;
             
         // start endless loop
         this.enterQueue(sim.q);
-        for (let step = 0; ;step++) {
-
-            // adjust speed
-            const
-                dist = Point.distance(this.position, center),
-                pct = dist / (center.x / 2);
-            this.speed = this.speedMax * pct;
-
-            // adjust angle
-            let angCenter = Point.angle(this.position, center);
-            this.angle = this.getTurnAngle(this.angle, angCenter);
-
-            // move
+        for (; ;) {
             await this.delay(sim.step);
-
-            // re-start when close to center
-            if (dist < 10) {
-                this.position = this.getRandomPosition();
-            }
         }
     }
 
-    getTurnAngle(ang: number, target: number): number {
-        const step = 15;
-        let delta = target - ang;
+    // update the position and angle to arrive at the target
+    updatePosition(dt: number) {
+        const
+            sim = this.simulation,
+            target = new Point(sim.bounds[1].x / 2, sim.bounds[1].y / 2);
 
-        // wrap around
-        if (delta < -180) {
-            delta += 360;
-        } else if (delta > 180) {
-            delta -= 360;
+        // update speed/position/angle
+        super.updatePosition(dt);
+
+        // adjust speed
+        const
+            dist = Point.distance(this.position, target),
+            pct = dist / (sim.bounds[1].x / 4);
+        this.speed = this.speedMax * pct;
+
+        // adjust angle
+        let angCenter = Point.angle(this.position, target);
+        this.angle = this.getTurnAngle(angCenter, dt);
+
+        // re-start when close to center
+        if (dist < 10) {
+            this.position = sim.getRandomPosition();
         }
-
-        // close enough
-        if (Math.abs(delta) < step) {
-            return target;
-        }
-
-        // get closer
-        return ang + step * Math.sign(delta);
     }
-    getRandomPosition(): IPoint {
+}
+
+//------------------------------------------------------------------------------------
+// SteeringChase
+
+/**
+ * Steering simulation with Chase entities.
+ */
+ export class SteeringChase extends Steering {
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.generateEntities(Chase, 0, 8);
+    }
+}
+
+class Chase extends SteeringVehicle {
+    target = new Wander();
+    async script() {
         const sim = this.simulation;
-        return new Point(
-            Math.round(Math.random() * sim.bounds[1].x),
-            Math.round(Math.random() * sim.bounds[1].y));
+
+        // initialize entity properties
+        this.color = 'red';
+        this.position = sim.getRandomPosition();
+        this.angle = Math.random() * 360;
+        this.speedMax = 500;
+
+        // activate target Wander entity
+        this.target.priority = 1;
+        sim.activate(this.target);
+
+        // start endless loop
+        this.enterQueue(sim.q);
+        for (; ;) {
+            await this.delay(sim.step);
+        }
+    }
+
+    // update the position and angle to chase the target
+    updatePosition(dt: number) {
+        const sim = this.simulation;
+
+        // update speed/position/angle
+        super.updatePosition(dt);
+
+        // adjust speed
+        const
+            dist = Point.distance(this.position, this.target.position),
+            pct = dist / (sim.bounds[1].x / 4);
+        this.speed = this.speedMax * pct;
+
+        // adjust angle
+        let angTarget = Point.angle(this.position, this.target.position);
+        this.angle = this.getTurnAngle(angTarget, dt);
+    }
+}
+
+//------------------------------------------------------------------------------------
+// SteeringAvoid
+
+/**
+ * Steering simulation with Avoid entities.
+ */
+export class SteeringAvoid extends Steering {
+    obstacles = [
+        { x: 100, y: 400, r: 50 },
+        { x: 150, y: 300, r: 30 },
+        { x: 200, y: 150, r: 80 },
+        { x: 500, y: 350, r: 100 },
+        { x: 800, y: 200, r: 50 },
+        { x: 800, y: 400, r: 75 },
+    ];
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.generateEntities(Avoid, 0, 1);
+    }
+}
+
+class Avoid extends Wander {
+    avoiding = false;
+    
+    // avoid obstacles
+    updatePosition(dt: number) {
+        const
+            sim = this.simulation as SteeringAvoid,
+            avoidDistance = 50,
+            avoidAngle = 10,
+            slowDown = 0.75;
+
+        // update speed/position/angle
+        this.steerAngle = 0;
+        super.updatePosition(dt);
+
+        // get current position
+        const p = this.position;
+        
+        // find obstacle
+        let nearest = null;
+        let minDist = null;
+        sim.obstacles.forEach(o => {
+            const dist = Point.distance(p, o) - o.r;
+            if (minDist == null || dist < minDist) {
+                if (dist < avoidDistance) {
+                    minDist = dist;
+                    nearest = o;
+                }
+            }
+        });
+
+        // avoid it
+        if (nearest == null) {
+            if (this.avoiding) {
+                console.log('*** not avoiding');
+                this.color = 'orange';
+                this.speed /= slowDown;
+                this.avoiding = false;
+            }
+        } else {
+
+            // slow down
+            if (!this.avoiding) {
+                console.log('*** avoiding');
+                this.color = 'red';
+                this.speed *= slowDown;
+                this.avoiding = true;
+            }
+
+            // steer away
+            const
+                a = this.angle,
+
+                aLeft = (a - avoidAngle) * Math.PI / 180,
+                pLeft = {
+                    x: p.x + Math.sin(aLeft),// * avoidDistance,
+                    y: p.y + Math.cos(aLeft),// * avoidDistance
+                },
+                dLeft = Point.distance(pLeft, nearest),
+
+                aRight = (a + avoidAngle) * Math.PI / 180,
+                pRight = {
+                    x: p.x + Math.sin(aRight),// * avoidDistance,
+                    y: p.y + Math.cos(aRight),// * avoidDistance
+                },
+                dRight = Point.distance(pRight, nearest);
+        
+            console.log(`dLeft: ${dLeft}, dRight: ${dRight}, turning ${Math.sign(dRight - dLeft) > 0 ? 'right': 'left'}`)
+            const targetAngle = this.angle + avoidAngle * Math.sign(dRight - dLeft);
+            this.angle = this.getTurnAngle(targetAngle, dt);
+        }
     }
 }

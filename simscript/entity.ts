@@ -616,7 +616,7 @@ export class EntityGenerator extends Entity {
             this.simulation.activate(e);
 
             // wait for the given interval or break if no interval
-            if (interval) {
+            if (interval != null) {
                 const delay = interval instanceof RandomVar ? interval.sample() : interval;
                 await this.delay(delay);
             } else {
