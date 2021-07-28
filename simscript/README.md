@@ -133,7 +133,7 @@ The links below show some samples of **SimScript** simulations:
 
 ## New Samples
 
-- [GPSS-inspired samples](https://stackblitz.com/edit/typescript-fhrhfm)\
+- [Steering Behaviors](https://stackblitz.com/edit/typescript-fhrhfm)\
     Shows samples inspired by the article 
     [Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/).
     The samples show you can implement entities that navigate around their
