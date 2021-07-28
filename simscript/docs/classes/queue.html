@@ -1,0 +1,1075 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Queue | simscript</title>
+	<meta name="description" content="Documentation for simscript">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">simscript</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">simscript</a>
+				</li>
+				<li>
+					<a href="queue.html">Queue</a>
+				</li>
+			</ul>
+			<h1>Class Queue</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Class that represents a resource and collects statistics within
+						a simulation.</p>
+					</div>
+					<p>Queues can be seized and released by entities while the simulation
+						runs. When that happens, the simulation collects aggregate statistics
+						about the number of entities in the queue and the amount of time
+					they spent there.</p>
+					<p>For example, the script below causes entities to enter a waiting
+						queue, seize one capacity unit of a server queue, leave the waiting
+						queue, undergo a delay that represents the service, then leave the
+					server:</p>
+					<pre><code class="language-typescript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">Customer</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">BarberShop</span><span style="color: #000000">&gt; {</span>
+<span style="color: #000000">    </span><span style="color: #001080">service</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Uniform</span><span style="color: #000000">(</span><span style="color: #098658">15</span><span style="color: #000000"> - </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000"> + </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">shop</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// enter the line (unlimited capacity)</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qJoe</span><span style="color: #000000">); </span><span style="color: #008000">// seize Joe the barber (capacity == 1)</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qWait</span><span style="color: #000000">); </span><span style="color: #008000">// leave the line</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">service</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">()); </span><span style="color: #008000">// get a haircut</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">shop</span><span style="color: #000000">.</span><span style="color: #001080">qJoe</span><span style="color: #000000">); </span><span style="color: #008000">// free Joe        </span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>The queue statistics can be obtained at the end of the simulation by
+						inspeting the queue&#39;s <a href="queue.html#grosspop">grossPop</a> and <a href="queue.html#grossdwell">grossDwell</a>
+					<a href="tally.html">Tally</a> objects.</p>
+					<p>You can also generate complete reports on queue utilization using
+					the <a href="simulation.html#getstatstable">Simulation.getStatsTable</a> method.</p>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Queue</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="queue.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#averagedwell" class="tsd-kind-icon">average<wbr>Dwell</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#averagelength" class="tsd-kind-icon">average<wbr>Length</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="queue.html#capacity" class="tsd-kind-icon">capacity</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#entities" class="tsd-kind-icon">entities</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#grossdwell" class="tsd-kind-icon">gross<wbr>Dwell</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#grosspop" class="tsd-kind-icon">gross<wbr>Pop</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#items" class="tsd-kind-icon">items</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#lastchange" class="tsd-kind-icon">last<wbr>Change</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#maxdwell" class="tsd-kind-icon">max<wbr>Dwell</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#maxlength" class="tsd-kind-icon">max<wbr>Length</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="queue.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#netdwell" class="tsd-kind-icon">net<wbr>Dwell</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#netpop" class="tsd-kind-icon">net<wbr>Pop</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#pop" class="tsd-kind-icon">pop</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#totalcount" class="tsd-kind-icon">total<wbr>Count</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#totalin" class="tsd-kind-icon">total<wbr>In</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#unitsinuse" class="tsd-kind-icon">units<wbr>InUse</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="queue.html#utilization" class="tsd-kind-icon">utilization</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="queue.html#_updatetallies" class="tsd-kind-icon">_update<wbr>Tallies</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="queue.html#add" class="tsd-kind-icon">add</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="queue.html#canenter" class="tsd-kind-icon">can<wbr>Enter</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="queue.html#remove" class="tsd-kind-icon">remove</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="queue.html#reset" class="tsd-kind-icon">reset</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Queue<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, capacity<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:53</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Initializes a new instance of a <a href="queue.html">Queue</a> object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;&#x27;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Queue name.
+											This is the name that will appear in reports generated by the
+											<a href="simulation.html#getstatstable">Simulation.getStatsTable</a> method.
+										If ommitted, the queue will not be included in any reports.</p>
+									</div>
+								</li>
+								<li>
+									<h5>capacity: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Queue capacity.
+											If an entity tries to enter a queue that does not have enough capacity,
+											it enters a wait state until another entity leaves the queue and enough
+											capacity becomes available.
+										If ommitted, the queue has infinite capacity.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Object with parameters used to initialize the <a href="queue.html">Queue</a>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="queue.html" class="tsd-signature-type" data-tsd-kind="Class">Queue</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="averagedwell" class="tsd-anchor"></a>
+					<h3>average<wbr>Dwell</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> averageDwell<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:222</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the average dwell time for entities/units in this queue.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="averagelength" class="tsd-anchor"></a>
+					<h3>average<wbr>Length</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> averageLength<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:210</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the average queue length in entities/units.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="capacity" class="tsd-anchor"></a>
+					<h3>capacity</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> capacity<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> capacity<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:97</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the <a href="queue.html">Queue</a> capacity.</p>
+								</div>
+								<p>The queue&#39;s capacity limits the flow of entities through the
+									simulation. When an entity tries to enter a queue that is
+									at capacity, it is forced to wait until another entity exits
+								the queue.</p>
+								<p>This property is set to <strong>null</strong> by default, which means the
+								queue has infinite capacity.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:100</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the <a href="queue.html">Queue</a> capacity.</p>
+								</div>
+								<p>The queue&#39;s capacity limits the flow of entities through the
+									simulation. When an entity tries to enter a queue that is
+									at capacity, it is forced to wait until another entity exits
+								the queue.</p>
+								<p>This property is set to <strong>null</strong> by default, which means the
+								queue has infinite capacity.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="entities" class="tsd-anchor"></a>
+					<h3>entities</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> entities<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:140</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets an array containing the entities currently in the <a href="queue.html">Queue</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="grossdwell" class="tsd-anchor"></a>
+					<h3>gross<wbr>Dwell</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> grossDwell<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:170</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets a <a href="tally.html">Tally</a> object containing statistics about the queue dwell times
+									(amount of simulated time during which capacity units were in use).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="grosspop" class="tsd-anchor"></a>
+					<h3>gross<wbr>Pop</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> grossPop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:163</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets a <a href="tally.html">Tally</a> object containing statistics about the queue population
+									(capacity units used).</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="items" class="tsd-anchor"></a>
+					<h3>items</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> items<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">QueueItem</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:150</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets a <strong>Map</strong> where the keys are the entities in the queue and the values
+									are {@link QueueItem} objects containing information about the entities.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">QueueItem</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="lastchange" class="tsd-anchor"></a>
+					<h3>last<wbr>Change</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> lastChange<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:156</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the last simulated time when an entity entered or left the queue.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="maxdwell" class="tsd-anchor"></a>
+					<h3>max<wbr>Dwell</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> maxDwell<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:228</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the maximum dwell time for entities/units in this queue.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="maxlength" class="tsd-anchor"></a>
+					<h3>max<wbr>Length</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> maxLength<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:216</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the maximum queue length in entities/units.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> name<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:80</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the <a href="queue.html">Queue</a> name.</p>
+								</div>
+								<p>The queue&#39;s name is used in output reports such as the ones
+								created by the <a href="simulation.html#getstatstable">Simulation.getStatsTable</a> method.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:83</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets the <a href="queue.html">Queue</a> name.</p>
+								</div>
+								<p>The queue&#39;s name is used in output reports such as the ones
+								created by the <a href="simulation.html#getstatstable">Simulation.getStatsTable</a> method.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="netdwell" class="tsd-anchor"></a>
+					<h3>net<wbr>Dwell</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> netDwell<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:188</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets a <a href="tally.html">Tally</a> object containing statistics about the queue <strong>net</strong> dwell times
+									(amount of simulated time during which capacity units were in use).</p>
+								</div>
+								<p>This <a href="tally.html">Tally</a> excludes periods when the <a href="queue.html">Queue</a> was empty.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="netpop" class="tsd-anchor"></a>
+					<h3>net<wbr>Pop</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> netPop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:179</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets a <a href="tally.html">Tally</a> object containing statistics about the queue <strong>net</strong> population
+									(capacity units used).</p>
+								</div>
+								<p>This <a href="tally.html">Tally</a> excludes periods when the <a href="queue.html">Queue</a> was empty.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="tally.html" class="tsd-signature-type" data-tsd-kind="Class">Tally</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="pop" class="tsd-anchor"></a>
+					<h3>pop</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> pop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:127</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the number of entities currently in the queue.</p>
+								</div>
+								<p>This value is usually, but not always, the same as the number
+								of queue capacity units in use.</p>
+								<p>By default, entities entering queues use up one capacity unit.
+									In this case, the <strong>pop</strong> and <strong>unitsInUse</strong> properties will
+									return the same value. But if entities take arbitrary queue
+									capacity units when they enter the queue, those values will
+								be different.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="totalcount" class="tsd-anchor"></a>
+					<h3>total<wbr>Count</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> totalCount<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:204</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the total number of entities/units that were seized and
+									released during the simulation.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="totalin" class="tsd-anchor"></a>
+					<h3>total<wbr>In</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> totalIn<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:134</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the total number of entities that have entered the queue
+									since the simulation started.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="unitsinuse" class="tsd-anchor"></a>
+					<h3>units<wbr>InUse</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> unitsInUse<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:112</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the total number of capacity units currently in use.</p>
+								</div>
+								<p>The <a href="entity.html#enterqueue">Entity.enterQueue</a> method allows entities to seize
+									arbitry capacity units when entering queues.
+									If all entities seize one capacity unit when entering the queue,
+									then the <a href="queue.html#unitsinuse">unitsInUse</a> property returns the same value as the
+								<a href="queue.html#pop">pop</a> property.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="utilization" class="tsd-anchor"></a>
+					<h3>utilization</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> utilization<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:197</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the queue utilization.</p>
+								</div>
+								<p>This value is calculated based on the queue&#39;s <a href="queue.html#capacity">capacity</a> and
+								<a href="queue.html#grosspop">grossPop</a> tally.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="_updatetallies" class="tsd-anchor"></a>
+					<h3>_update<wbr>Tallies</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">_update<wbr>Tallies<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:330</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>internal</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="add" class="tsd-anchor"></a>
+					<h3>add</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span>, units<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:248</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds an <a href="entity.html">Entity</a> to the <a href="queue.html">Queue</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p><a href="entity.html">Entity</a> to add to the <a href="queue.html">Queue</a>.</p>
+									</div>
+								</li>
+								<li>
+									<h5>units: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of capacity units to seize.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<p>True if the <a href="entity.html">Entity</a> was added to the <a href="queue.html">Queue</a>, false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canenter" class="tsd-anchor"></a>
+					<h3>can<wbr>Enter</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Enter<span class="tsd-signature-symbol">(</span>units<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:238</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks whether the <a href="queue.html">Queue</a> has enough capacity to accept a new entry.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>units: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of units to check for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True <a href="queue.html">Queue</a> has at least <strong>units</strong> capacity units available,
+							false otherwise.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="remove" class="tsd-anchor"></a>
+					<h3>remove</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:289</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes an <a href="entity.html">Entity</a> from this <a href="queue.html">Queue</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>e: <a href="entity.html" class="tsd-signature-type" data-tsd-kind="Class">Entity</a><span class="tsd-signature-symbol">&lt;</span><a href="simulation.html" class="tsd-signature-type" data-tsd-kind="Class">Simulation</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p><a href="entity.html">Entity</a> to remove from the <a href="queue.html">Queue</a>.</p>
+										<p>If the <a href="entity.html">Entity</a> is not currently in the <a href="queue.html">Queue</a>, an exception is thrown.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="reset" class="tsd-anchor"></a>
+					<h3>reset</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">reset<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in queue.ts:314</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Resets the <a href="queue.html">Queue</a> to its initial state, removing all entities and
+									resetting all its <a href="tally.html">Tally</a> objects.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="../enums/simulationstate.html" class="tsd-kind-icon">Simulation<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="animation.html" class="tsd-kind-icon">Animation</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="empirical.html" class="tsd-kind-icon">Empirical</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="entity.html" class="tsd-kind-icon">Entity</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="entitygenerator.html" class="tsd-kind-icon">Entity<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="erlang.html" class="tsd-kind-icon">Erlang</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="event.html" class="tsd-kind-icon">Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="eventargs.html" class="tsd-kind-icon">Event<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="exponential.html" class="tsd-kind-icon">Exponential</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="fecitem.html" class="tsd-kind-icon">Fec<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="gamma.html" class="tsd-kind-icon">Gamma</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="lognormal.html" class="tsd-kind-icon">Log<wbr>Normal</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="network.html" class="tsd-kind-icon">Network</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="normal.html" class="tsd-kind-icon">Normal</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="point.html" class="tsd-kind-icon">Point</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="queue.html" class="tsd-kind-icon">Queue</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="queue.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#averagedwell" class="tsd-kind-icon">average<wbr>Dwell</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#averagelength" class="tsd-kind-icon">average<wbr>Length</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="queue.html#capacity" class="tsd-kind-icon">capacity</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#entities" class="tsd-kind-icon">entities</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#grossdwell" class="tsd-kind-icon">gross<wbr>Dwell</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#grosspop" class="tsd-kind-icon">gross<wbr>Pop</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#items" class="tsd-kind-icon">items</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#lastchange" class="tsd-kind-icon">last<wbr>Change</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#maxdwell" class="tsd-kind-icon">max<wbr>Dwell</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#maxlength" class="tsd-kind-icon">max<wbr>Length</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="queue.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#netdwell" class="tsd-kind-icon">net<wbr>Dwell</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#netpop" class="tsd-kind-icon">net<wbr>Pop</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#pop" class="tsd-kind-icon">pop</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#totalcount" class="tsd-kind-icon">total<wbr>Count</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#totalin" class="tsd-kind-icon">total<wbr>In</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#unitsinuse" class="tsd-kind-icon">units<wbr>InUse</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="queue.html#utilization" class="tsd-kind-icon">utilization</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="queue.html#_updatetallies" class="tsd-kind-icon">_update<wbr>Tallies</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="queue.html#add" class="tsd-kind-icon">add</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="queue.html#canenter" class="tsd-kind-icon">can<wbr>Enter</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="queue.html#remove" class="tsd-kind-icon">remove</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="queue.html#reset" class="tsd-kind-icon">reset</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-class">
+						<a href="randomint.html" class="tsd-kind-icon">Random<wbr>Int</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="randomvar.html" class="tsd-kind-icon">Random<wbr>Var</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="simulation.html" class="tsd-kind-icon">Simulation</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="tally.html" class="tsd-kind-icon">Tally</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="triangular.html" class="tsd-kind-icon">Triangular</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="uniform.html" class="tsd-kind-icon">Uniform</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ianimatedqueue.html" class="tsd-kind-icon">IAnimated<wbr>Queue</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ianimationposition.html" class="tsd-kind-icon">IAnimation<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="../interfaces/ieventlistener.html" class="tsd-kind-icon">IEvent<wbr>Listener</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ifecitemoptions.html" class="tsd-kind-icon">IFec<wbr>Item<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ihistogramentry.html" class="tsd-kind-icon">IHistogram<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ilink.html" class="tsd-kind-icon">ILink</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/imovepath.html" class="tsd-kind-icon">IMove<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/inode.html" class="tsd-kind-icon">INode</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/ipoint.html" class="tsd-kind-icon">IPoint</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#assert" class="tsd-kind-icon">assert</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#bind" class="tsd-kind-icon">bind</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#clamp" class="tsd-kind-icon">clamp</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#format" class="tsd-kind-icon">format</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#isnumber" class="tsd-kind-icon">is<wbr>Number</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../modules.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
