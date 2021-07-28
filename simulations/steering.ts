@@ -8,10 +8,11 @@ import { IPoint, Point, setOptions, clamp } from '../simscript/util';
 /**
  * Simulation used to show various steering behaviors.
  */
-class Steering extends Simulation {
+export class Steering extends Simulation {
     q = new Queue();
-    step = 0.1;
+    step = 1;
     bounds = [new Point(), new Point(1000, 500)];
+    _eCnt = 8;
 
     /**
      * Initializes a new instance of the {@link Steering} class.
@@ -19,13 +20,27 @@ class Steering extends Simulation {
      */
     constructor(options?: any) {
         super();
-        this.frameDelay = 10;
+        this.frameDelay = 20;
         this.maxTimeStep = 0.01;
         setOptions(this, options);
     }
 
-    // gets a random position within the animation surface.
-    getRandomPosition(): IPoint {
+    /**
+     * Gets or sets the number of entities to generate.
+     */
+    get entityCount(): number {
+        return this._eCnt;
+    }
+    set entityCount(value: number) {
+        if (value != this._eCnt) {
+            this._eCnt = value;
+            this.start(true);
+        }
+    }
+    /**
+     * Gets a random position within the animation surface.
+     */ 
+     getRandomPosition(): IPoint {
         return new Point(
             Math.round(Math.random() * this.bounds[1].x),
             Math.round(Math.random() * this.bounds[1].y));
@@ -36,7 +51,7 @@ class Steering extends Simulation {
  * Entities with a position, angle, speed, and an
  * updatePosition method.
  */
- export class SteeringVehicle extends Entity<Steering> {
+export class SteeringVehicle extends Entity<Steering> {
     _angle = 0; // in degrees, clockwise
     _sin = 0;
     _cos = 1;
@@ -95,7 +110,7 @@ class Steering extends Simulation {
      * the {@link steerAngle} property is clamped to values between 
      * -90 and +90 degrees.
      */
-     get steerAngleMax(): number {
+    get steerAngleMax(): number {
         return this._steerAngleMax;
     }
     set steerAngleMax(value: number) {
@@ -168,11 +183,16 @@ class Steering extends Simulation {
         p.y += this.speed * this._sin * dt;
     }
     /**
-     * Gets the angle to turn in order to match a target entity.
-     * @param targetAngle The angle of the target entity.
+     * Gets the angle to turn to in order to match a target angle.
+     * 
+     * Use this method to make gradual turns instead of changing
+     * the angle abruptly to a new value.
+     * 
+     * @param targetAngle The angle we are aiming for.
      * @param dt The time step.
      * @param da The maximum angle to turn per time step.
-     * @returns The new angle used to match the target angle.
+     * @returns The new angle needed to make a gradual turn from the
+     * current angle to the **targetAngle**.
      */
     getTurnAngle(targetAngle: number, dt: number, da = 2): number {
         const step = Math.max(da, da * dt); // turn up to da degrees at a time
@@ -225,11 +245,11 @@ class Steering extends Simulation {
 /**
  * Steering simulation with Wander and Arrive entities.
  */
- export class SteeringArrive extends Steering {
+export class SteeringArrive extends Steering {
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.generateEntities(Wander, 0, 4);
-        this.generateEntities(Arrive, 0, 4);
+        this.generateEntities(Wander, 0, this.entityCount);
+        this.generateEntities(Arrive, 0, this.entityCount);
     }
 }
 
@@ -238,8 +258,8 @@ class Steering extends Simulation {
  * periodically updating their direction and speed.
  */
 class Wander extends SteeringVehicle {
-    steerChange = new Uniform(-5, +5);
-    speedChange = new Uniform(-20, +20);
+    steerChange = new Uniform(-20, +20);
+    speedChange = new Uniform(-50, +50);
 
     async script() {
         const sim = this.simulation;
@@ -251,11 +271,11 @@ class Wander extends SteeringVehicle {
         this.speed = this.speedMin + Math.random() * (this.speedMax - this.speedMin);
         this.steerAngleMax = 45;
         this.angle = Math.round(Math.random() * 360);
-        this.position = new Point(Math.random() * sim.bounds[1].x, Math.random() * sim.bounds[1].y);
+        this.position = sim.getRandomPosition();
 
         // start endless loop
         this.enterQueue(sim.q);
-        for (let step = 0; ;step++) {
+        for (let step = 0; ; step++) {
 
             // change speed and steering angle every 10 steps
             if (step % 10 == 0) {
@@ -350,7 +370,7 @@ class Arrive extends SteeringVehicle {
  export class SteeringChase extends Steering {
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.generateEntities(Chase, 0, 8);
+        this.generateEntities(Chase, 0, this.entityCount);
     }
 }
 
@@ -398,94 +418,129 @@ class Chase extends SteeringVehicle {
 //------------------------------------------------------------------------------------
 // SteeringAvoid
 
+interface IObstacle {
+    x: number,
+    y: number,
+    radius: number
+}
+
 /**
  * Steering simulation with Avoid entities.
  */
 export class SteeringAvoid extends Steering {
-    obstacles = [
-        { x: 100, y: 400, r: 50 },
-        { x: 150, y: 300, r: 30 },
-        { x: 200, y: 150, r: 80 },
-        { x: 500, y: 350, r: 100 },
-        { x: 800, y: 200, r: 50 },
-        { x: 800, y: 400, r: 75 },
+    obstacles: IObstacle[] = [
+        { x: 100, y: 400, radius: 50 },
+        { x: 150, y: 300, radius: 30 },
+        { x: 200, y: 150, radius: 80 },
+        { x: 500, y: 350, radius: 100 },
+        { x: 800, y: 200, radius: 50 },
+        { x: 800, y: 400, radius: 75 },
     ];
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-        this.generateEntities(Avoid, 0, 1);
+        this.generateEntities(Avoid, 0, this.entityCount);
+    }
+
+    /**
+     * Gets a random position within the animation surface,
+     * away from any obstacles.
+     */
+    getRandomPosition(): IPoint {
+        return Math.random() < 0.5
+            ? new Point(Math.round(Math.random() * this.bounds[1].x), 0)
+            : new Point(0, Math.round(Math.random() * this.bounds[1].y));
     }
 }
 
+/**
+ * A steering entity that avoids obstacles.
+ */
 class Avoid extends Wander {
-    avoiding = false;
-    
+    obstacle = null;
+
     // avoid obstacles
     updatePosition(dt: number) {
         const
-            sim = this.simulation as SteeringAvoid,
-            avoidDistance = 50,
-            avoidAngle = 10,
-            slowDown = 0.75;
+            slowDown = 0.75,
+            turnAngle = 1;
 
         // update speed/position/angle
         this.steerAngle = 0;
         super.updatePosition(dt);
 
-        // get current position
-        const p = this.position;
+        // find nearest obstacle
+        const obstacle = this.getNearestObstacle();
+
+        // change obstacle
+        if (obstacle != this.obstacle) {
+            if (this.obstacle == null && obstacle != null) { // start avoiding
+                this.color = 'red';
+                this.speed *= slowDown;
+            } else if (this.obstacle != null && obstacle == null) { // done avoiding
+                this.color = 'orange';
+                this.speed /= slowDown;
+            }
+            this.obstacle = obstacle;
+        }
         
-        // find obstacle
-        let nearest = null;
-        let minDist = null;
+        // avoid obstacle
+        if (obstacle != null) {
+            const direction = this.getAvoidDirection(obstacle);
+            this.angle = this.getTurnAngle(this.angle + turnAngle * direction, dt);
+        }
+    }
+
+    // checks an obstacle and returns -1 to turn left, +1 to turn right
+    getAvoidDirection(obstacle: IObstacle): number {
+        const
+            p = this.position,
+            d = Point.distance(p, obstacle),
+            pStraight = {
+                x: p.x + d * this._cos,
+                y: p.y + d * this._sin,
+            },
+            pLeft = this.getBoundaryPoint(obstacle, -obstacle.radius),
+            pRight = this.getBoundaryPoint(obstacle, +obstacle.radius);
+        return Point.distance(pStraight, pLeft) < Point.distance(pStraight, pRight)
+            ? -1 // turn left
+            : +1; // turn right
+    }
+
+    // gets a point on an obstacle's boundary
+    getBoundaryPoint(obstacle: IObstacle, side: number): IPoint {
+        const
+            p = this.position,
+            d = Point.distance(p, obstacle),
+            a = Point.angle(p, obstacle, true) + Math.atan2(side, d);
+        return {
+            x: p.x + d * Math.cos(a),
+            y: p.y + d * Math.sin(a)
+        };
+    }
+
+    // gets the nearest obstacle to this entity
+    getNearestObstacle(): IObstacle {
+        const
+            sim = this.simulation as SteeringAvoid,
+            avoidDistance = 20,
+            pNow = this.position,
+            pNext = {
+                x: pNow.x + this._cos,
+                y: pNow.y + this._sin
+            };
+        let obstacle = null,
+            minDist = null;
         sim.obstacles.forEach(o => {
-            const dist = Point.distance(p, o) - o.r;
-            if (minDist == null || dist < minDist) {
-                if (dist < avoidDistance) {
-                    minDist = dist;
-                    nearest = o;
+            const dist = Point.distance(pNow, o) - o.radius;
+            if (minDist == null || dist < minDist) { // closer
+                if (dist < avoidDistance) { // and close enough...
+                    if (Point.distance(pNext, o) - o.radius < dist) { // and getting closer...
+                        minDist = dist;
+                        obstacle = o;
+                    }
                 }
             }
         });
-
-        // avoid it
-        if (nearest == null) {
-            if (this.avoiding) {
-                console.log('*** not avoiding');
-                this.color = 'orange';
-                this.speed /= slowDown;
-                this.avoiding = false;
-            }
-        } else {
-
-            // slow down
-            if (!this.avoiding) {
-                console.log('*** avoiding');
-                this.color = 'red';
-                this.speed *= slowDown;
-                this.avoiding = true;
-            }
-
-            // steer away
-            const
-                a = this.angle,
-
-                aLeft = (a - avoidAngle) * Math.PI / 180,
-                pLeft = {
-                    x: p.x + Math.sin(aLeft),// * avoidDistance,
-                    y: p.y + Math.cos(aLeft),// * avoidDistance
-                },
-                dLeft = Point.distance(pLeft, nearest),
-
-                aRight = (a + avoidAngle) * Math.PI / 180,
-                pRight = {
-                    x: p.x + Math.sin(aRight),// * avoidDistance,
-                    y: p.y + Math.cos(aRight),// * avoidDistance
-                },
-                dRight = Point.distance(pRight, nearest);
-        
-            console.log(`dLeft: ${dLeft}, dRight: ${dRight}, turning ${Math.sign(dRight - dLeft) > 0 ? 'right': 'left'}`)
-            const targetAngle = this.angle + avoidAngle * Math.sign(dRight - dLeft);
-            this.angle = this.getTurnAngle(targetAngle, dt);
-        }
+        return obstacle;
     }
 }

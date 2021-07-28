@@ -242,13 +242,13 @@ export class Simulation {
      */
     async start(reset = false) {
 
-        // sanity
-        if (this.state == SimulationState.Running) {
-            return;
-        };
-
         // always reset if we're done
         reset = reset || this._fec.length == 0;
+
+        // sanity
+        if (this.state == SimulationState.Running && !reset) {
+            return;
+        };
 
         // reset
         if (reset) {

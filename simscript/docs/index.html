@@ -85,8 +85,9 @@
 					methods that contain instructions for entities.
 					Typical actions include entering and leaving <strong>queues</strong>, going through
 				<strong>delays</strong>, and sending or waiting for <strong>signals</strong>.</p>
-				<p>The <strong>Entity</strong> class is abstract. In most cases, you will create one of more
-					classes that extend it to perform the actions required by your simulations.
+				<p>The <strong>Entity</strong> class is abstract. In most cases, you will create one
+					or more classes that extend it to perform the actions required by your
+					simulations.
 					The <strong>Entity</strong> class has an optional generic parameter that contains the
 				type of <strong>Simulation</strong> it refers to.</p>
 				<a href="#queue-class" id="queue-class" style="color: inherit; text-decoration: none;">
@@ -110,12 +111,13 @@
 					<h2>Network Class</h2>
 				</a>
 				<p>Networks are defined by sets of nodes and links.</p>
-				<p>The <strong>Network</strong> class provides a <strong>shortestPath</strong> method that returns a
-				list of links so entities may travel along the network.</p>
-				<p>The <strong>Network</strong> class has a <strong>getLinkDistance</strong> that returns the distance
-					represented by a link.
-					You may create classes that extend <strong>Network</strong> and override this method
-					to provide custom behaviors such as congestion and turning costs.
+				<p>The <strong>Network</strong> class provides a <strong>shortestPath</strong> method that returns
+				a list of links so entities may travel along the network.</p>
+				<p>The <strong>Network</strong> class has a <strong>getLinkDistance</strong> that returns the
+					distance represented by a link.
+					You may create classes that extend <strong>Network</strong> and override this
+					method to provide custom behaviors such as congestion and turning
+					costs.
 				For example:</p>
 				<pre><code class="language-typescript"><span style="color: #008000">// network with congestion cost</span>
 <span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CongestionNetwork</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Network</span><span style="color: #000000"> {</span>
@@ -177,6 +179,11 @@
 					<h2>New Samples</h2>
 				</a>
 				<ul>
+					<li><p><a href="https://stackblitz.com/edit/typescript-fhrhfm">GPSS-inspired samples</a><br>  Shows samples inspired by the article
+							<a href="http://www.red3d.com/cwr/steer/">Steering Behaviors For Autonomous Characters</a>.
+							The samples show you can implement entities that navigate around their
+						world in a life-like, improvisational, and composable manner.</p>
+					</li>
 					<li><p><a href="https://stackblitz.com/edit/typescript-mapmna">GPSS-inspired samples</a><br>  Shows several samples inspired by traditional
 							<a href="http://www.minutemansoftware.com/tutorial/tutorial_manual.htm">GPSS samples</a>
 							published by Minuteman software.

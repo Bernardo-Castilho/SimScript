@@ -153,6 +153,41 @@
 									<h5>seed: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = null</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Optional value used to initialize the random sequence.</p>
+										<p>If you omit the <strong>seed</strong> value, a random seed will be generated
+											automatically and the random sequences will be different every time
+											you run the simulation.
+											If you do provide a <strong>seed</strong> value, be careful to avoid unintended
+										correlations between different random variables. For example:</p>
+										<pre><code class="language-typescript"><span style="color: #008000">// M/M/1: https://en.wikipedia.org/wiki/M/M/1_queue</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MM1</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Simulation</span><span style="color: #000000"> {</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// service times are exponentially distributed with mean 10 min and seed 1:</span>
+<span style="color: #000000">    </span><span style="color: #001080">serviceTime</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Exponential</span><span style="color: #000000">(</span><span style="color: #098658">10</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// inter-arrival times are exponentially distributed with mean 15 min</span>
+<span style="color: #000000">    </span><span style="color: #008000">// and the seed is 2 (to avoid correlations with the service times):</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">interArrival</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Exponential</span><span style="color: #000000">(</span><span style="color: #098658">15</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// System and Server queues</span>
+<span style="color: #000000">    </span><span style="color: #001080">system</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Queue</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;System&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">server</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Queue</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Server&#039;</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #795E26">onStarting</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">super</span><span style="color: #000000">.</span><span style="color: #795E26">onStarting</span><span style="color: #000000">();</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">generateEntities</span><span style="color: #000000">(</span><span style="color: #001080">MM1Entity</span><span style="color: #000000">, </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">interArrival</span><span style="color: #000000">, </span><span style="color: #098658">1e4</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MM1Entity</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Entity</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MM1</span><span style="color: #000000">&gt; {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">script</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">sim</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">simulation</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueueImmediately</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">system</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">enterQueue</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">server</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">serviceTime</span><span style="color: #000000">.</span><span style="color: #795E26">sample</span><span style="color: #000000">());</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">server</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">leaveQueue</span><span style="color: #000000">(</span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">system</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 									</div>
 								</li>
 							</ul>
@@ -173,7 +208,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in random.ts:27</li>
+									<li>Defined in random.ts:65</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

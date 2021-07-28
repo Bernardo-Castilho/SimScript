@@ -23,9 +23,12 @@
 
 # Change Log
 
-SimScript 1.0.30    (?/?/21)
+SimScript 1.0.30    (7/28/21)
 - Added **Simulation.name** and **Simulation.timeUnit** properties
   (used by the **Simulation.getStatsTable** method).
+- Allow using zero as an inter-arrival value for the **Simulation.generateEntities** method.
+- Improved the behavior of the **Simulation.start(true)** method.
+- Added Steering samples.
 
 SimScript 1.0.29    (7/9/21)
 - Added **Entity.seize** method (condenses enterQueue/delay/leaveQueue and provides preemptive behavior).

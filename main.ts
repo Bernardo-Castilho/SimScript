@@ -1035,7 +1035,7 @@ if (true) {
             </label>
             <label>
                 Sample size:
-                <input id='rand-size' type='range' data='size' min='10' max='100000'>
+                <input id='rand-size' type='range' min='10' max='100000'>
             </label>
             <label>
                 Seeded:
@@ -2708,10 +2708,15 @@ if (true) {
             <span class='light red'></span>Red entities travel towards the center
             of the simulation surface, <b>arrive</b> there with speed zero, and
             then start a new trip from a random location.</p>
+        <label>
+            Entity Count
+            <input id='arrive-cnt' type='range' min='1' max='100'>
+        </label>
         <svg class='ss-anim' viewBox='0 0 1000 500'>
             <circle class='ss-queue'/>
         </svg>`,
         (sim: SteeringArrive, animationHost: HTMLElement) => {
+            bind('arrive-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             new Animation(sim, animationHost, {
                 rotateEntities: true,
                 getEntityHtml: e => {
@@ -2742,10 +2747,15 @@ if (true) {
             entities.
             The yellow entities wrap around the animation surface and red ones don't,
             which makes the chase more interesting.</p>
+        <label>
+            Entity Count
+        <input id='chase-cnt' type='range' min='1' max='100'>
+        </label>
         <svg class='ss-anim' viewBox='0 0 1000 500'>
             <circle class='ss-queue'/>
         </svg>`,
         (sim: SteeringChase, animationHost: HTMLElement) => {
+            bind('chase-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             new Animation(sim, animationHost, {
                 rotateEntities: true,
                 getEntityHtml: e => {
@@ -2774,12 +2784,18 @@ if (true) {
         <p>
             <span class='light red'></span>They turn red when they find obstacles,
             and change direction to <b>avoid</b> them.</p>
+        <label>
+            Entity Count
+            <input id='avoid-cnt' type='range' min='1' max='100'>
+        </label>
         <svg class='ss-anim' viewBox='0 0 1000 500'>
             <circle class='ss-queue'/>
         </svg>`,
         (sim: SteeringAvoid, animationHost: HTMLElement) => {
+            bind('avoid-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+
             sim.obstacles.forEach(o => {
-                animationHost.innerHTML += `<circle cx='${o.x}' cy='${o.y}' r='${o.r}' fill='lightgrey' />`;
+                animationHost.innerHTML += `<circle cx='${o.x}' cy='${o.y}' r='${o.radius}' fill='lightgrey' />`;
             });
             new Animation(sim, animationHost, {
                 rotateEntities: true,
