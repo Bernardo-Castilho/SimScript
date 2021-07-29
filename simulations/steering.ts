@@ -5,14 +5,18 @@ import { EventArgs } from '../simscript/event';
 import { Uniform } from '../simscript/random';
 import { IPoint, Point, setOptions, clamp } from '../simscript/util';
 
+const
+    FAST_MODE_FRAMEDELAY = 1,
+    SLOW_MODE_FRAMEDELAY = 60;
+
 /**
  * Simulation used to show various steering behaviors.
  */
 export class Steering extends Simulation {
     q = new Queue();
-    step = 1;
-    bounds = [new Point(), new Point(1000, 500)];
-    _eCnt = 8;
+    step = 0.01; // simulated time step
+    bounds = [new Point(), new Point(1000, 500)]; // simulation bounds
+    _eCnt = 16; // start with 8 entities
 
     /**
      * Initializes a new instance of the {@link Steering} class.
@@ -20,11 +24,18 @@ export class Steering extends Simulation {
      */
     constructor(options?: any) {
         super();
-        this.frameDelay = 20;
-        this.maxTimeStep = 0.01;
+        this.slowMode = false;
         setOptions(this, options);
     }
-
+    /**
+     * Gets or sets a value that determines the simulation speed.
+     */
+    get slowMode(): boolean {
+        return this.frameDelay == SLOW_MODE_FRAMEDELAY;
+    }
+    set slowMode(value: boolean) {
+        this.frameDelay = value ? SLOW_MODE_FRAMEDELAY : FAST_MODE_FRAMEDELAY;
+    }
     /**
      * Gets or sets the number of entities to generate.
      */
@@ -213,13 +224,33 @@ export class SteeringVehicle extends Entity<Steering> {
         // get closer
         return this.angle + step * Math.sign(delta);
     }
-
-    // gets the entity's current animation position and angle.
+    /**
+     * Gets the entity's current animation position and angle.
+     */
     getAnimationPosition(q: Queue, start: IPoint, end: IPoint): IAnimationPosition {
         const timeNow = this.simulation.timeNow;
         this.updatePosition(timeNow - this._lastUpdate);
         this._lastUpdate = timeNow;
         return this;
+    }
+    /**
+     * Wraps the entity's position around the animation bounds.
+     */
+    wrapPosition() {
+        const bounds = this.simulation.bounds;
+        if (bounds) {
+            const p = this.position;
+            if (p.x < bounds[0].x) {
+                p.x = bounds[1].x;
+            } else if (p.x > bounds[1].x) {
+                p.x = bounds[0].x;
+            }
+            if (p.y < bounds[0].y) {
+                p.y = bounds[1].y;
+            } else if (p.y > bounds[1].y) {
+                p.y = bounds[0].y;
+            }
+        }
     }
 
     // normalizes the angle and updates the sin and cos values.
@@ -239,25 +270,11 @@ export class SteeringVehicle extends Entity<Steering> {
     }
 }
 
-//------------------------------------------------------------------------------------
-// SteeringArrive
-
-/**
- * Steering simulation with Wander and Arrive entities.
- */
-export class SteeringArrive extends Steering {
-    onStarting(e?: EventArgs) {
-        super.onStarting(e);
-        this.generateEntities(Wander, 0, this.entityCount);
-        this.generateEntities(Arrive, 0, this.entityCount);
-    }
-}
-
 /**
  * Entities that wander around the simulation surface, 
  * periodically updating their direction and speed.
  */
-class Wander extends SteeringVehicle {
+ class Wander extends SteeringVehicle {
     steerChange = new Uniform(-20, +20);
     speedChange = new Uniform(-50, +50);
 
@@ -295,20 +312,21 @@ class Wander extends SteeringVehicle {
         super.updatePosition(dt);
 
         // wrap position around simulation bounds
-        const bounds = this.simulation.bounds;
-        if (bounds) {
-            const p = this.position;
-            if (p.x < bounds[0].x) {
-                p.x = bounds[1].x;
-            } else if (p.x > bounds[1].x) {
-                p.x = bounds[0].x;
-            }
-            if (p.y < bounds[0].y) {
-                p.y = bounds[1].y;
-            } else if (p.y > bounds[1].y) {
-                p.y = bounds[0].y;
-            }
-        }
+        this.wrapPosition();
+    }
+}
+
+//------------------------------------------------------------------------------------
+// SteeringArrive
+
+/**
+ * Steering simulation with Wander and Arrive entities.
+ */
+export class SteeringArrive extends Steering {
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+        this.generateEntities(Wander, 0, this.entityCount);
+        this.generateEntities(Arrive, 0, this.entityCount);
     }
 }
 
@@ -418,9 +436,11 @@ class Chase extends SteeringVehicle {
 //------------------------------------------------------------------------------------
 // SteeringAvoid
 
+/**
+ * Interface implemented by objects that acts as obstacles.
+ */
 interface IObstacle {
-    x: number,
-    y: number,
+    position: IPoint,
     radius: number
 }
 
@@ -428,19 +448,26 @@ interface IObstacle {
  * Steering simulation with Avoid entities.
  */
 export class SteeringAvoid extends Steering {
-    obstacles: IObstacle[] = [
-        { x: 100, y: 400, radius: 50 },
-        { x: 150, y: 300, radius: 30 },
-        { x: 200, y: 150, radius: 80 },
-        { x: 500, y: 350, radius: 100 },
-        { x: 800, y: 200, radius: 50 },
-        { x: 800, y: 400, radius: 75 },
+    staticObstacles: IObstacle[] = [
+        { position: { x: 100, y: 400 }, radius: 50 },
+        { position: { x: 150, y: 300 }, radius: 30 },
+        { position: { x: 200, y: 150 }, radius: 80 },
+        { position: { x: 500, y: 250 }, radius: 125 },
+        { position: { x: 800, y: 200 }, radius: 50 },
+        { position: { x: 800, y: 400 }, radius: 75 },
     ];
-    onStarting(e?: EventArgs) {
+    onStarting(e?: EventArgs, generateEntities = true) {
         super.onStarting(e);
-        this.generateEntities(Avoid, 0, this.entityCount);
+        if (generateEntities) {
+            this.generateEntities(Avoid, 0, this.entityCount);
+        }
     }
-
+    /**
+     * Gets an array containing the {@link IObstacle} objects in this simulation.
+     */
+    getObstacles() {
+        return this.staticObstacles;
+    }
     /**
      * Gets a random position within the animation surface,
      * away from any obstacles.
@@ -494,7 +521,7 @@ class Avoid extends Wander {
     getAvoidDirection(obstacle: IObstacle): number {
         const
             p = this.position,
-            d = Point.distance(p, obstacle),
+            d = Point.distance(p, obstacle.position),
             pStraight = {
                 x: p.x + d * this._cos,
                 y: p.y + d * this._sin,
@@ -510,8 +537,8 @@ class Avoid extends Wander {
     getBoundaryPoint(obstacle: IObstacle, side: number): IPoint {
         const
             p = this.position,
-            d = Point.distance(p, obstacle),
-            a = Point.angle(p, obstacle, true) + Math.atan2(side, d);
+            d = Point.distance(p, obstacle.position),
+            a = Point.angle(p, obstacle.position, true) + Math.atan2(side, d);
         return {
             x: p.x + d * Math.cos(a),
             y: p.y + d * Math.sin(a)
@@ -530,17 +557,65 @@ class Avoid extends Wander {
             };
         let obstacle = null,
             minDist = null;
-        sim.obstacles.forEach(o => {
-            const dist = Point.distance(pNow, o) - o.radius;
-            if (minDist == null || dist < minDist) { // closer
-                if (dist < avoidDistance) { // and close enough...
-                    if (Point.distance(pNext, o) - o.radius < dist) { // and getting closer...
-                        minDist = dist;
-                        obstacle = o;
+        sim.getObstacles().forEach(o => {
+            if (this.isValidObstacle(o)) {
+                const dist = Point.distance(pNow, o.position) - o.radius;
+                if (minDist == null || dist < minDist) { // closer
+                    if (dist < avoidDistance) { // and close enough...
+                        if (Point.distance(pNext, o.position) - o.radius < dist) { // and getting closer...
+                            minDist = dist;
+                            obstacle = o;
+                        }
                     }
                 }
             }
         });
         return obstacle;
+    }
+    isValidObstacle(o: IObstacle): boolean {
+        return true;
+    }
+}
+
+//------------------------------------------------------------------------------------
+// SteeringAvoid Dynamic
+
+/**
+ * Steering simulation with Avoid entities that avoid each other.
+ */
+export class SteeringAvoidDynamic extends SteeringAvoid {
+    obstacles: IObstacle[];
+
+    // boostrap simulation
+    onStarting(e?: EventArgs) {
+        super.onStarting(e, false);
+
+        // copy static obstacles
+        this.obstacles = [...this.staticObstacles];
+
+        // create entities and add them to obstacles array
+        for (let i = 0; i < this.entityCount; i++) {
+            const e = new AvoidObstacle();
+            this.obstacles.push(e);
+            this.activate(e);
+        }
+    }
+
+    // return a list with all obstacles (static and entities)
+    getObstacles(): IObstacle[] {
+        return this.obstacles;
+    }
+}
+
+class AvoidObstacle extends Avoid {
+
+    // need a radius to act as an obstacle
+    get radius(): number {
+        return 25;
+    }
+
+    // this entity is not an obstacle to itself
+    isValidObstacle(o: IObstacle): boolean {
+        return o != this;
     }
 }

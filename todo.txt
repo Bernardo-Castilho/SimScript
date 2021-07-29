@@ -3,10 +3,10 @@
     * wander
     * arrive
     * chase
-    - avoid
-    - flee
-    - follow
-    - traverse
+    * avoid (static/dynamic)
+    - flock
+    - contain
+    - path
 - intro docs/samples
 - more docs/examples
     - pac-man

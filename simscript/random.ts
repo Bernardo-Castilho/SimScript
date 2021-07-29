@@ -291,6 +291,9 @@ export class Exponential extends RandomVar {
  * Represents a random variable with an Erlang distribution 
  * with given **shape** and **scale** parameters.
  * 
+ * The expected (mean) value of an Erlang random variable is 
+ * equal to the product of its **shape** and **scale** parameters.
+ * 
  * The Erlang distribution corresponds to the sum of **shape**
  * independent Exponential variables.
  * 
@@ -340,6 +343,9 @@ export class Erlang extends Exponential {
 /**
  * Represents a random variable with a Gamma distribution with
  * given **shape** and **scale** parameters.
+ * 
+ * The expected (mean) value of a Gamma random variable is 
+ * equal to the product of its **shape** and **scale** parameters.
  * 
  * The Gamma distribution is a generalization of the Erlang distribution
  * where the shape parameter doesn't have to be an integer.
