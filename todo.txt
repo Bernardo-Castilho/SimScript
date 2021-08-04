@@ -1,12 +1,12 @@
 # Todo
 - steering behaviors (http://www.red3d.com/cwr/steer/)
-    * wander
-    * arrive
-    * chase
-    * avoid (static/dynamic)
-    - flock
-    - contain
-    - path
+    * Wander
+    * Seek
+    * Chase
+    * Avoid (static/dynamic)
+    * Follow (chase + avoid)
+    - Contain
+    - Path
 - intro docs/samples
 - more docs/examples
     - pac-man
@@ -28,7 +28,7 @@ SimScript 1.0.30    (7/28/21)
   (used by the **Simulation.getStatsTable** method).
 - Allow using zero as an inter-arrival value for the **Simulation.generateEntities** method.
 - Improved the behavior of the **Simulation.start(true)** method.
-- Added Steering samples.
+- Added "Custom Steering Behavior" samples.
 
 SimScript 1.0.29    (7/9/21)
 - Added **Entity.seize** method (condenses enterQueue/delay/leaveQueue and provides preemptive behavior).

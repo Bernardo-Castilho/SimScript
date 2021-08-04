@@ -24,8 +24,7 @@ import { CarFollow } from './simulations/car-follow';
 import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
-    SteeringArrive, SteeringChase, SteeringAvoid, SteeringAvoidDynamic,
-    SteeringVehicle
+    SteeringWander, SteeringSeek, SteeringChase, SteeringAvoid, SteeringFollow
 } from './simulations/steering';
 import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
@@ -1563,7 +1562,7 @@ if (true) {
         <div class='x3d ss-time-now'>
             Time: <b><span>0.00</span></b> hours
         </div>
-        <x3d class='ss-anim anim-host'> 
+        <x3d class='ss-anim'> 
             <scene>
 
                 <!-- default viewpoint -->
@@ -1965,7 +1964,7 @@ if (true) {
             <input id='x3-frame-delay' type='range' min='0' max='250' step='10'>
         </label>
 
-        <x3d class='ss-anim anim-host'> 
+        <x3d class='ss-anim'> 
             <scene>
 
                 <!-- default viewpoint -->
@@ -2177,7 +2176,7 @@ if (true) {
             Requests Missed: <b><span id='network-svg-missed'>0</span></b>
         </label>
         <p></p>
-        <svg class='ss-anim anim-host'
+        <svg class='ss-anim'
             viewbox='0 0 800 400'
             fill='orange'
             stroke='black'
@@ -2279,7 +2278,7 @@ if (true) {
             Requests Missed: <b><span id='network-x3d-missed'>0</span></b>
         </label>
         <p></p>
-        <x3d class='ss-anim anim-host network'> 
+        <x3d class='ss-anim network'> 
             <scene>
 
                 <!-- default viewpoint -->
@@ -2389,7 +2388,7 @@ if (true) {
             Average Speed:
             <b><span id='carfollow-speed'>0</span></b> km/h
         </label>
-        <svg class='anim-host ss-anim car-follow' viewBox='0 0 1000 500'>
+        <svg class='ss-anim car-follow' viewBox='0 0 1000 500'>
             <line class='strip'
                 x1='0%' y1='90%'
                 x2='100%' y2='10%'
@@ -2481,7 +2480,7 @@ if (true) {
             <b><span id='carfollowing-speed'>0</span></b> km/h
         </label>
         <p></p>
-        <x3d class='ss-anim anim-host car-following'> 
+        <x3d class='ss-anim car-following'> 
             <scene>
 
                 <!-- default viewpoint -->
@@ -2601,7 +2600,7 @@ if (true) {
                 /
                 <span id='asteroids-cnt'>0</span>
         </label>
-        <svg class='ss-anim anim-host asteroids' viewBox='0 0 1000 500'>
+        <svg class='ss-anim asteroids' viewBox='0 0 1000 500'>
             <radialGradient id='jetGradient' fx='1'>
                 <stop offset='0%' stop-color='yellow'/>
                 <stop offset='100%' stop-color='transparent'/>
@@ -2691,119 +2690,204 @@ startSampleGroup(
     <p>
         These "steering behaviors" are largely independent of the particulars of the
         character's means of locomotion. Combinations of steering behaviors can be used
-        to achieve higher level goals.</p>`
+        to achieve higher level goals.</p>
+    <p>
+        To implement steering behaviors in SimScript, the samples define a
+        <b>SteeringVehicle</b> class that extends <b>Entity</b>.</p>
+    <p>
+        The <b>SteeringVehicle</b> class exposes properties that represent the 
+        entity's current <b>position</b>, <b>angle</b>, and <b>speed</b>.</p>
+    <p>
+        The <b>SteeringVehicle</b> class also exposes a <b>behaviors</b> property
+        that contains custom steering behaviors represented by
+        <b>SteeringBehavior</b> objects.</p>`
 );
 if (true) {
 
+    // animation options for all steering samples
+    const getAnimationOptions = (sim) => {
+        return {
+            rotateEntities: true,
+            getEntityHtml: e => `<polygon
+                    stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
+                    points='0 0, 40 0, 50 10, 40 20, 0 20' />`
+            ,
+            queues: [
+                { queue: sim.q, element: 'svg .ss-queue' }
+            ]
+        }
+    };
+
     //----------------------------------------------------------
-    // Arrive
+    // Wander/Wrap
     showSimulation(
-        new SteeringArrive(),
-        'Arrive (SVG)',
+        new SteeringWander(),
+        'Wander',
         `<p>
-            Shows how to implement an <b>Arrive</b> steering behavior,
-            where entities move towards a target and arrive with zero
-            speed.</p>
-        <p>
-            <span class='light yellow'></span>Yellow entities <b>wander</b> around
-            the simulation surface, periodically updating their direction and
-            speed.</p>
-        <p>
-            <span class='light red'></span>Red entities travel towards the center
-            of the simulation surface, <b>arrive</b> there with speed zero, and
-            then start a new trip from a random location.</p>
+            This sample shows entities that implement two behaviors:</p>
+        <ul>
+            <li>
+                <b>WanderBehavior</b>: causes entities to change speed and
+                direction periodically, and</li>
+            <li>
+                <b>WrapBehavior</b>: causes entities to wrap around the
+                simulation surface as they move.</li>
+        </ul>
         <label>
             Entity Count
-            <input id='arrive-cnt' type='range' min='1' max='100'>
+            <input id='wander-cnt' type='range' min='1' max='100'>
         </label>
         <label>
             Slow Mode
-            <input id='arrive-slow' type='checkbox'>
+            <input id='wander-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim' viewBox='0 0 1000 500'>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
             <circle class='ss-queue'/>
         </svg>`,
-        (sim: SteeringArrive, animationHost: HTMLElement) => {
-            bind('arrive-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
-            bind('arrive-slow', sim.slowMode, v => sim.slowMode = v);
-            new Animation(sim, animationHost, {
-                rotateEntities: true,
-                getEntityHtml: e => {
-                    return (e instanceof SteeringVehicle)
-                        ? `<polygon
-                            stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
-                            points='0 0, 40 0, 50 10, 40 20, 0 20' />`
-                        : '';
-                },
-                queues: [
-                    { queue: sim.q, element: 'svg .ss-queue' }
-                ]
-            });
+        (sim: SteeringWander, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('wander-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('wander-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptions(sim));
         }
     );
 
     //----------------------------------------------------------
+    // Seek
+    showSimulation(
+        new SteeringSeek(),
+        'Seek',
+        `<p>
+            This sample shows entities that implement a <b>SeekBehavior</b>.
+            They move towards the center of the animation, slow down as they
+            approach the target, and restart from a random position when they
+            reach the target.</p>
+        <label>
+            Entity Count
+            <input id='seek-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='seek-slow' type='checkbox'>
+        </label>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle cx='50%' cy='50%' r='20' fill='none' stroke='orange'/>
+            <circle cx='50%' cy='50%' r='80' fill='none' stroke='orange'/>
+            <circle cx='50%' cy='50%' r='140' fill='none' stroke='orange'/>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringSeek, animationHost: HTMLElement) => {
+            bind('seek-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('seek-slow', sim.slowMode, v => sim.slowMode = v);
+            new Animation(sim, animationHost, getAnimationOptions(sim));
+        }
+    );
+    
+    //----------------------------------------------------------
     // Chase
     showSimulation(
         new SteeringChase(),
-        'Chase (SVG)',
+        'Chase',
         `<p>
-            Shows how to implement a <b>Chase</b> steering behavior, where
-            entities chase a moving target.</p>
-        <p>
-            <span class='light yellow'></span>Yellow entities <b>wander</b> around
-            the simulation surface, periodically updating their direction and
-            speed.</p>
-        <p>
-            <span class='light red'></span>Red entities <b>chase</b> the yellow
-            entities.
-            The yellow entities wrap around the animation surface and red ones don't,
-            which makes the chase more interesting.</p>
+            This sample shows two types of entity:</p>
+        <ul>
+            <li>
+                <span class='light red'></span> Red entities implement a
+                <b>SeekBehavior</b> and follow yellow entities.</li>
+            <li>
+                <span class='light yellow'></span> Yellow entities
+                wander and wrap around to make the chase interesting.</li>
+        </ul>
         <label>
             Entity Count
-        <input id='chase-cnt' type='range' min='1' max='100'>
+            <input id='chase-cnt' type='range' min='1' max='100'>
         </label>
         <label>
             Slow Mode
             <input id='chase-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim' viewBox='0 0 1000 500'>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
             <circle class='ss-queue'/>
         </svg>`,
         (sim: SteeringChase, animationHost: HTMLElement) => {
+
+            // bind parameters
             bind('chase-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('chase-slow', sim.slowMode, v => sim.slowMode = v);
-            new Animation(sim, animationHost, {
-                rotateEntities: true,
-                getEntityHtml: e => {
-                    return (e instanceof SteeringVehicle)
-                        ? `<polygon
-                        stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
-                        points='0 0, 40 0, 50 10, 40 20, 0 20' />`
-                        : '';
-                },
-                queues: [
-                    { queue: sim.q, element: 'svg .ss-queue' }
-                ]
-            });
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptions(sim));
         }
     );
 
     //----------------------------------------------------------
-    // Avoid
+    // Avoid Static Obstacles
     showSimulation(
         new SteeringAvoid(),
-        'Avoid Static Obstacles (SVG)',
+        'Avoid Static Obstacles',
         `<p>
-            Shows how to implement an <b>Avoid</b> steering behavior
-            where entities avoid static obstacles.</p>
-        <p>
-            <span class='light yellow'></span>Yellow entities <b>wander</b>
-            around the simulation surface, periodically updating their
-            direction and speed.</p>
-        <p>
-            <span class='light red'></span>They turn red when they find
-            obstacles, and change direction to <b>avoid</b> them.</p>
+            Shows how to implement an <b>AvoidBehavior</b> that causes
+            entities to avoid obstacles.
+            In this example, all obstacles are static and are
+            shown as grey circles.</p>
+        <ul>
+            <li>
+                <span class='light yellow'></span> Yellow entities use an
+                <b>AvoidBehavior</b> to avoid obstacles.</li>
+            <li>
+                <span class='light red'></span> Entities turn red and change
+                speed and direction when they detect obstacles.</li>
+            </ul>
+        <label>
+            Entity Count
+            <input id='avoid-static-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='avoid-static-slow' type='checkbox'>
+        </label>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringAvoid, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('avoid-static-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('avoid-static-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstables
+            sim.obstacles.forEach(o => {
+                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
+            });
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptions(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Avoid Static and Moving Obstacles
+    showSimulation(
+        new SteeringAvoid({
+            avoidEntities: true
+        }),
+        'Avoid Static and Moving Obstacles',
+        `<p>
+            Shows how to implement an <b>AvoidBehavior</b> that causes
+            entities to avoid obstacles.
+            In this example, in addition to the static obstacles shown
+            as grey circles, other entities are also treated as obstacles.</p>
+        <ul>
+            <li>
+                <span class='light yellow'></span> Yellow entities use an
+                <b>AvoidBehavior</b> to avoid obstacles.</li>
+            <li>
+                <span class='light red'></span> Entities turn red and change
+                speed and direction when they detect obstacles.</li>
+        </ul>
         <label>
             Entity Count
             <input id='avoid-cnt' type='range' min='1' max='100'>
@@ -2812,78 +2896,61 @@ if (true) {
             Slow Mode
             <input id='avoid-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim' viewBox='0 0 1000 500'>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
             <circle class='ss-queue'/>
         </svg>`,
         (sim: SteeringAvoid, animationHost: HTMLElement) => {
+
+            // bind parameters
             bind('avoid-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('avoid-slow', sim.slowMode, v => sim.slowMode = v);
-            sim.staticObstacles.forEach(o => {
-                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey' />`;
+
+            // show static obstables
+            sim.obstacles.forEach(o => {
+                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
             });
-            new Animation(sim, animationHost, {
-                rotateEntities: true,
-                getEntityHtml: e => {
-                    return (e instanceof SteeringVehicle)
-                        ? `<polygon
-                            stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
-                            points='0 0, 40 0, 50 10, 40 20, 0 20' />`
-                        : '';
-                },
-                queues: [
-                    { queue: sim.q, element: 'svg .ss-queue' }
-                ]
-            });
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptions(sim));
         }
     );
 
     //----------------------------------------------------------
-    // Avoid Dynamic
+    // Follow
     showSimulation(
-        new SteeringAvoidDynamic(),
-        'Avoid All Obstacles (SVG)',
+        new SteeringFollow(),
+        'Follow Target, Avoid Followers',
         `<p>
-            Shows how to implement an <b>Avoid</b> steering behavior
-            where entities avoid static obstacles and other moving
-            entities.</p>
-        <p>
-            <span class='light yellow'></span>Yellow entities <b>wander</b>
-            around the simulation surface, periodically updating their
-            direction and speed.</p>
-        <p>
-            <span class='light red'></span>They turn red when they find
-            static obstacles or other entities, and change direction to
-            <b>avoid</b> them.</p>
+            This example shows how you can use <b>SeekBehavior</b> and
+            <b>AvoidBehavior</b> to have entities follow a target while
+            avoiding other entities.</p>
+        <ul>
+        <li>
+            <span class='light green'></span> The green entity wanders
+            around the simulation surface.</li>
+        <li>
+            <span class='light yellow'></span> Yellow entities follow it
+            and avoid other entities.</li>
+        </ul>
         <label>
             Entity Count
-            <input id='avoid-dyn-cnt' type='range' min='1' max='100'>
+            <input id='follow-cnt' type='range' min='1' max='100'>
         </label>
         <label>
             Slow Mode
-            <input id='avoid-dyn-slow' type='checkbox'>
+            <input id='follow-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim' viewBox='0 0 1000 500'>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
             <circle class='ss-queue'/>
         </svg>`,
-        (sim: SteeringAvoidDynamic, animationHost: HTMLElement) => {
-            bind('avoid-dyn-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
-            bind('avoid-dyn-slow', sim.slowMode, v => sim.slowMode = v);
-            sim.staticObstacles.forEach(o => {
-                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey' />`;
-            });
-            new Animation(sim, animationHost, {
-                rotateEntities: true,
-                getEntityHtml: e => {
-                    return (e instanceof SteeringVehicle)
-                        ? `<polygon
-                            stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
-                            points='0 0, 40 0, 50 10, 40 20, 0 20' />`
-                        : '';
-                },
-                queues: [
-                    { queue: sim.q, element: 'svg .ss-queue' }
-                ]
-            });
+        (sim: SteeringFollow, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('follow-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('follow-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptions(sim));
         }
     );
 }
