@@ -1,4 +1,4 @@
-import { Simulation, SimulationState } from '../simscript/simulation';
+import { Simulation } from '../simscript/simulation';
 import { Entity, IAnimationPosition } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Event, EventArgs } from '../simscript/event';
@@ -399,7 +399,7 @@ export class AvoidBehavior extends SteeringBehavior {
     obstacles: IObstacle[] = [];
     avoidColor = '';
     slowDown = 0.75;
-    turnAngle = 2;
+    turnAngle = 1;
     _currentObstacle: IObstacle = null;
     _saveColor = '';
 
@@ -454,7 +454,7 @@ export class AvoidBehavior extends SteeringBehavior {
             if (o != e) {
                 const dist = Point.distance(pNow, o.position) - o.radius;
                 if (minDist == null || dist < minDist) { // closer
-                    if (dist < e.radius) { // and close enough...
+                    if (dist < e.radius) { // close enough...
                         if (Point.distance(pNext, o.position) - o.radius < dist) { // and getting closer...
                             minDist = dist;
                             obstacle = o;
@@ -710,7 +710,8 @@ export class SteeringFollow extends SteeringBehaviors {
                     new AvoidBehavior({ // avoid other followers
                         obstacles: obstacles,
                         avoidColor: 'red',
-                        turnAngle: 60
+                        turnAngle: 60,
+                        slowDown: .5
                     })
                 ],
             });

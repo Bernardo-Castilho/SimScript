@@ -2930,7 +2930,7 @@ if (true) {
             around the simulation surface.</li>
         <li>
             <span class='light yellow'></span> Yellow entities follow it
-            and avoid other entities.</li>
+            and avoid other entities, turning red while avoiding them.</li>
         </ul>
         <label>
             Entity Count
