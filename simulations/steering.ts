@@ -7,7 +7,7 @@ import { IPoint, Point, setOptions, clamp } from '../simscript/util';
 
 const
     FAST_MODE_FRAMEDELAY = 1,
-    SLOW_MODE_FRAMEDELAY = 30;
+    SLOW_MODE_FRAMEDELAY = 20;
 
 /**
  * Simulation used to show various steering behaviors.
@@ -18,7 +18,7 @@ const
  */
 export class SteeringBehaviors extends Simulation {
     q = new Queue();
-    step = 0.01; // simulated time step
+    step = 0.02; // simulated time step
     bounds = [new Point(), new Point(1000, 500)]; // simulation bounds
     _eCnt = 8; // start with 8 entities
 
@@ -494,8 +494,9 @@ export class AvoidBehavior extends SteeringBehavior {
                 x: p.x + d * e._cos,
                 y: p.y + d * e._sin,
             },
-            pLeft = this._getBoundaryPoint(obstacle, -obstacle.radius),
-            pRight = this._getBoundaryPoint(obstacle, +obstacle.radius);
+            sumRadii = e.radius + obstacle.radius,
+            pLeft = this._getBoundaryPoint(obstacle, -sumRadii),
+            pRight = this._getBoundaryPoint(obstacle, +sumRadii);
         return Point.distance(pStraight, pLeft) < Point.distance(pStraight, pRight)
             ? -1 // turn left
             : +1; // turn right

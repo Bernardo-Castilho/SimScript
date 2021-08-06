@@ -1,5 +1,7 @@
 # Todo
 - steering behaviors (http://www.red3d.com/cwr/steer/)
+    * Wrap
+    * Bounce
     * Wander
     * Seek
     * Chase

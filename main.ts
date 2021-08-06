@@ -1,7 +1,11 @@
 import './simscript/simscript.css';
 import './style.css';
 
-import { startSampleGroup, endSampleGroup, showSimulation, setText, getLineChart } from './util';
+import {
+    startSampleGroup, endSampleGroup,
+    showSimulation, setText, getLineChart,
+    createX3Queue, createX3Car, createX3Person
+} from './util';
 
 import { SimulationState } from './simscript/simulation';
 import { Animation, IAnimatedQueue } from './simscript/animation';
@@ -1485,41 +1489,41 @@ if (true) {
         </div>
         <svg class='ss-anim' viewBox='0 0 1000 500'>
             <g class='light'>
-                <rect class='light' x='47.5%' y='0%' width='5%' height='25%' rx='2%' />
-                <circle class='red' cx='50%' cy='5%' r='2%' />
-                <circle class='yellow' cx='50%' cy='12.5%' r='2%' />
-                <circle class='green' cx='50%' cy='20%' r='2%' />
+                <rect class='light' x='47.5%' y='0%' width='5%' height='25%' rx='2%'/>
+                <circle class='red' cx='50%' cy='5%' r='2%'/>
+                <circle class='yellow' cx='50%' cy='12.5%' r='2%'/>
+                <circle class='green' cx='50%' cy='20%' r='2%'/>
             </g>
 
-            <rect class='street' x='10%' y='50%' width='80%' height='20%' />
-            <rect class='crosswalk' x='45%' y='50%' width='10%' height='20%' />
+            <rect class='street' x='10%' y='50%' width='80%' height='20%'/>
+            <rect class='crosswalk' x='45%' y='50%' width='10%' height='20%'/>
 
-            <circle class='ss-queue car-arr' cx='10%' cy='60%' r='10' />
-            <circle class='ss-queue car-xing' cx='40%' cy='60%' r='10' />
-            <circle class='ss-queue car-xed' cx='90%' cy='60%' r='10' />
+            <circle class='ss-queue car-arr' cx='10%' cy='60%' r='10'/>
+            <circle class='ss-queue car-xing' cx='40%' cy='60%' r='10'/>
+            <circle class='ss-queue car-xed' cx='90%' cy='60%' r='10'/>
 
-            <circle class='ss-queue ped-arr' cx='10%' cy='85%' r='10' />
-            <circle class='ss-queue ped-xing' cx='50%' cy='75%' r='10' />
-            <circle class='ss-queue ped-xed' cx='50%' cy='45%' r='10' />
-            <circle class='ss-queue ped-leave' cx='90%' cy='35%' r='10' />
+            <circle class='ss-queue ped-arr' cx='10%' cy='85%' r='10'/>
+            <circle class='ss-queue ped-xing' cx='50%' cy='75%' r='10'/>
+            <circle class='ss-queue ped-xed' cx='50%' cy='45%' r='10'/>
+            <circle class='ss-queue ped-leave' cx='90%' cy='35%' r='10'/>
         </svg>`,
         (sim: Crosswalk, animationHost: HTMLElement) => {
             new Animation(sim, animationHost, {
                 getEntityHtml: e => {
                     if (e instanceof Pedestrian) {
                         return `<g class='ped' fill='black' stroke='black' opacity='0.8' transform='scale(1,0.8)'>
-                        <circle cx='1%' cy='1%' r='0.5%' fill='orange' />
-                        <rect x='.4%' y='2%' width='1.3%' height='4%' fill='green' rx='0.7%' />
-                        <rect x='.66%' y='4%' width='.8%' height='3%' fill='blue' />
-                        <rect x='.4%' y='7%' width='1.3%' height='.75%' rx='0.5%' />
+                        <circle cx='1%' cy='1%' r='0.5%' fill='orange'/>
+                        <rect x='.4%' y='2%' width='1.3%' height='4%' fill='green' rx='0.7%'/>
+                        <rect x='.66%' y='4%' width='.8%' height='3%' fill='blue'/>
+                        <rect x='.4%' y='7%' width='1.3%' height='.75%' rx='0.5%'/>
                     </g>`;
                     } else {
                         return `<g class='car' fill='black' stroke='black'>
-                        <rect x='1%' y='0' width='5%' height='4%' rx='1%' />
-                        <rect x='0' y='1.5%' width='9%' height='3%' fill='red' rx='0.5%' />
-                        <circle cx='1.5%' cy='4%' r='.9%' opacity='0.8' />
-                        <circle cx='7.5%' cy='4%' r='.9%' opacity='0.8' />
-                        <rect x='0' y='0' width='10%' height='1%' opacity='0' />
+                        <rect x='1%' y='0' width='5%' height='4%' rx='1%'/>
+                        <rect x='0' y='1.5%' width='9%' height='3%' fill='red' rx='0.5%'/>
+                        <circle cx='1.5%' cy='4%' r='.9%' opacity='0.8'/>
+                        <circle cx='7.5%' cy='4%' r='.9%' opacity='0.8'/>
+                        <rect x='0' y='0' width='10%' height='1%' opacity='0'/>
                     </g>`;
                     }
                 },
@@ -1578,7 +1582,7 @@ if (true) {
                         <appearance> 
                             <material diffuseColor='0.1 0.3 0.1' transparency='0.2'></material>
                         </appearance>
-                        <box></box>
+                        <box/>
                     </shape>
                 </transform>
 
@@ -1588,7 +1592,7 @@ if (true) {
                         <appearance> 
                             <material diffuseColor='.95 .95 .95'></material>
                         </appearance>
-                        <box></box>
+                        <box/>
                     </shape>
                 </transform>
 
@@ -1598,7 +1602,7 @@ if (true) {
                         <appearance> 
                             <material diffuseColor='.6 .6 .6'></material>
                         </appearance>
-                        <box></box>
+                        <box/>
                     </shape>
                 </transform>
 
@@ -1624,7 +1628,7 @@ if (true) {
                                 <appearance> 
                                     <material diffuseColor='.5 .5 .0'></material>
                                 </appearance>
-                                <box size='22 65 20'></box>
+                                <box size='22 65 20'/>
                             </shape>
                         </transform>
                         <transform translation='0 75 5'>
@@ -1632,7 +1636,7 @@ if (true) {
                                 <appearance> 
                                     <material class='light red' diffuseColor='1 0 0'></material>
                                 </appearance>
-                                <sphere radius='10'></sphere>
+                                <sphere radius='10'/>
                             </shape>
                         </transform>
                         <transform translation='0 55 5'>
@@ -1640,7 +1644,7 @@ if (true) {
                                 <appearance> 
                                     <material class='light yellow' diffuseColor='1 1 0'></material>
                                 </appearance>
-                                <sphere radius='10'></sphere>
+                                <sphere radius='10'/>
                             </shape>
                         </transform>
                         <transform translation='0 35 5'>
@@ -1648,7 +1652,7 @@ if (true) {
                                 <appearance> 
                                     <material class='light green' diffuseColor='0 1 0'></material>
                                 </appearance>
-                                <sphere radius='10'></sphere>
+                                <sphere radius='10'/>
                             </shape>
                         </transform>
                     </transform>
@@ -1736,26 +1740,26 @@ if (true) {
         <svg class='ss-anim' viewBox='0 0 1000 500'>
 
             <!-- one rotating queue -->
-            <rect class='ss-queue rotate' x='98%' y='23%' width='4%' height='4%' />
-            <line x1='100%' y1='15%' x2='100%' y2='35%' stroke='black' />
-            <line x1='90%' y1='25%' x2='110%' y2='25%' stroke='black' />
+            <rect class='ss-queue rotate' x='98%' y='23%' width='4%' height='4%'/>
+            <line x1='100%' y1='15%' x2='100%' y2='35%' stroke='black'/>
+            <line x1='90%' y1='25%' x2='110%' y2='25%' stroke='black'/>
 
             <!-- one queue at the center -->
-            <rect class='ss-queue center' x='38%' y='48%' width='4%' height='4%' />
+            <rect class='ss-queue center' x='38%' y='48%' width='4%' height='4%'/>
 
             <!-- twelve queues around it -->
-            <rect class='ss-queue q1' x='58%' y='83%' width='4%' height='4%' />
-            <rect class='ss-queue q2' x='73%' y='68%' width='4%' height='4%' />
-            <rect class='ss-queue q3' x='78%' y='48%' width='4%' height='4%' />
-            <rect class='ss-queue q4' x='73%' y='28%' width='4%' height='4%' />
-            <rect class='ss-queue q5' x='58%' y='13%' width='4%' height='4%' />
-            <rect class='ss-queue q6' x='38%' y='8%' width='4%' height='4%' />
-            <rect class='ss-queue q7' x='18%' y='13%' width='4%' height='4%' />
-            <rect class='ss-queue q8' x='3%' y='28%' width='4%' height='4%' />
-            <rect class='ss-queue q9' x='-2%' y='48%' width='4%' height='4%' />
-            <rect class='ss-queue q10' x='3%' y='68%' width='4%' height='4%' />
-            <rect class='ss-queue q11' x='18%' y='83%' width='4%' height='4%' />
-            <rect class='ss-queue q12' x='38%' y='88%' width='4%' height='4%' />
+            <rect class='ss-queue q1' x='58%' y='83%' width='4%' height='4%'/>
+            <rect class='ss-queue q2' x='73%' y='68%' width='4%' height='4%'/>
+            <rect class='ss-queue q3' x='78%' y='48%' width='4%' height='4%'/>
+            <rect class='ss-queue q4' x='73%' y='28%' width='4%' height='4%'/>
+            <rect class='ss-queue q5' x='58%' y='13%' width='4%' height='4%'/>
+            <rect class='ss-queue q6' x='38%' y='8%' width='4%' height='4%'/>
+            <rect class='ss-queue q7' x='18%' y='13%' width='4%' height='4%'/>
+            <rect class='ss-queue q8' x='3%' y='28%' width='4%' height='4%'/>
+            <rect class='ss-queue q9' x='-2%' y='48%' width='4%' height='4%'/>
+            <rect class='ss-queue q10' x='3%' y='68%' width='4%' height='4%'/>
+            <rect class='ss-queue q11' x='18%' y='83%' width='4%' height='4%'/>
+            <rect class='ss-queue q12' x='38%' y='88%' width='4%' height='4%'/>
         </svg>`,
         (sim: AnimationOptions, animationHost: HTMLElement) => {
             const anim = new Animation(sim, animationHost, {
@@ -1763,12 +1767,12 @@ if (true) {
                 getEntityHtml: (e: Entity) => {
                     if (e instanceof RoamEntity) {
                         return e.fast
-                            ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='yellow' opacity='0.5' />`
+                            ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='yellow' opacity='0.5'/>`
                             : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='red' opacity='0.5'/>`;
                     } else { // EnterLeaveEntity
                         return e.serial % 2 // long/short images
-                            ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='blue' />`
-                            : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='green' />`;
+                            ? `<polygon points='0 0, 40 0, 50 10, 40 20, 0 20' stroke='black' fill='blue'/>`
+                            : `<polygon points='0 0, 20 0, 30 20, 20 40, 0 40' stroke='black' fill='green'/>`;
                     }
                 },
                 queues: [
@@ -1980,7 +1984,7 @@ if (true) {
                         <appearance> 
                             <material diffuseColor='0 .9 1'></material>
                         </appearance>
-                        <box></box>
+                        <box/>
                     </shape>
                 </transform>
 
@@ -2051,87 +2055,6 @@ if (true) {
             bind('x3-frame-delay', sim.frameDelay, v => sim.frameDelay = v, ' ms');
         }
     );
-    function createX3Queue(name: string, x: number, y: number, z = 0): string {
-        return `
-        <transform class='ss-queue ${name}' translation='${x} ${y} ${z}'>
-            <shape>
-                <appearance>
-                    <material diffuseColor='1 1 0' transparency='0.6'></material>
-                </appearance>
-                <sphere radius='4'></sphere>
-            </shape>
-        </transform>`;
-    }
-    function createX3Car(name: string, w: number, h: number, d: number, rgb: number[]): string {
-        return `<transform class='ss-car ${name}' translation='0 0 ${h / 2}'>
-        <transform>
-            <shape> <!-- body -->
-                <appearance>
-                    <material diffuseColor='${rgb[0]} ${rgb[1]} ${rgb[2]}'></material>
-                </appearance>
-                <box size='${w} ${h} ${d}'></box>
-            </shape>
-            <shape render='false'> <!-- 5 unit padding -->
-                <box size='${w * 1.1} ${h * 1.1} ${d * 1.1}'></box>
-            </shape>
-        </transform>
-        <transform translation='${-w * .2} 0 ${+d * .5}'>
-            <shape> <!-- cabin -->
-                <appearance>
-                    <material diffuseColor='${rgb[0] / 3} ${rgb[1] / 3} ${rgb[2] / 3}'></material>
-                </appearance>
-                <box size='${w * .5} ${h * .75} ${d}'></box>
-            </shape>
-        </transform>
-        <transform translation='${-w / 2 + 4} 0 -2'>
-            <shape> <!-- front wheels -->
-                <appearance>
-                    <material diffuseColor='0 0 0'></material>
-                </appearance>
-                <cylinder radius='3' height='${h + 2}'></cylinder>
-            </shape>
-        </transform>
-        <transform translation='${+w / 2 - 4} 0 -2'>
-            <shape> <!-- rear wheels -->
-                <appearance>
-                    <material diffuseColor='0 0 0'></material>
-                </appearance>
-                <cylinder radius='3' height='${h + 2}'></cylinder>
-            </shape>
-        </transform>
-    </transform>`;
-    }
-    function createX3Person(name: string) {
-        return `<transform class='${name}'>
-        <transform>
-            <shape>
-                <appearance> 
-                    <material diffuseColor='0 0 .5'></material>
-                </appearance>
-                <box size='5 5 8'></box>
-            </shape>
-            <shape render='false'> <!-- padding -->
-                <box size='7 10 8'></box>
-            </shape>
-        </transform>
-        <transform translation='0 0 8'>
-            <shape>
-                <appearance> 
-                    <material diffuseColor='0 1 0'></material>
-                </appearance>
-                <box size='5 8 8'></box>
-            </shape>
-        </transform>
-        <transform translation='0 0 16'>
-            <shape>
-                <appearance> 
-                    <material diffuseColor='.5 .5 0'></material>
-                </appearance>
-                <sphere radius='3'></sphere>
-            </shape>
-        </transform>
-    </transform>`;
-    }
 
     //----------------------------------------------------------
     // NetworkIntro (SVG)
@@ -2202,11 +2125,11 @@ if (true) {
                 getEntityHtml: e => {
                     if (e instanceof ServiceVehicle) {
                         return `<g opacity='0.5'>
-                        <circle r='20' stroke='black' fill=${e.busy ? 'yellow' : 'green'} />
+                        <circle r='20' stroke='black' fill=${e.busy ? 'yellow' : 'green'}/>
                         <polygon
                             stroke='none'
                             fill=${e.busy ? 'none' : 'black'}
-                            points='20 0, -13 -18, -13 18' />
+                            points='20 0, -13 -18, -13 18'/>
                     </g>`;
                     } else {
                         return `<g opacity='0.5'>
@@ -2294,7 +2217,7 @@ if (true) {
                         <appearance> 
                             <material diffuseColor='0 .5 .5'></material>
                         </appearance>
-                        <box size='1200 800 .1'></box>
+                        <box size='1200 800 .1'/>
                     </shape>
                 </transform>
             </transform>                
@@ -2321,7 +2244,7 @@ if (true) {
                         <appearance>
                             <material transparency='0.5' diffuseColor='1 0 0'/>
                         </appearance>
-                        <sphere radius='40'></sphere>
+                        <sphere radius='40'/>
                     </shape>`;
                     }
                 }
@@ -2393,9 +2316,9 @@ if (true) {
                 x1='0%' y1='90%'
                 x2='100%' y2='10%'
                 stroke='lightgrey'
-                stroke-width='5%' />
-            <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5' />
-            <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5' />
+                stroke-width='5%'/>
+            <circle class='strip-start' cx='0%' cy='90%' r='1%' fill='orange' opacity='0.5'/>
+            <circle class='strip-end' cx='100%' cy='10%' r='1%' fill='orange' opacity='0.5'/>
         </svg>`,
         (sim: CarFollow, animationHost: HTMLElement) => {
             const colors = ['red', 'green', 'blue', 'white'];
@@ -2410,10 +2333,10 @@ if (true) {
                         stroke-width='1'
                         stroke='black'
                         fill='${colors[e.serial % colors.length]}'
-                        points='0 0, 40 0, 42 3, 42 17, 40 20, 0 20' />
+                        points='0 0, 40 0, 42 3, 42 17, 40 20, 0 20'/>
                     <polygon
                         fill='black'
-                        points='20 2, 30 2, 30 18, 20 18' />
+                        points='20 2, 30 2, 30 18, 20 18'/>
                 </g>`;
                 },
             });
@@ -2496,7 +2419,7 @@ if (true) {
                         <appearance> 
                             <material diffuseColor='0 .5 .5'></material>
                         </appearance>
-                        <box size='1200 800 .1'></box>
+                        <box size='1200 800 .1'/>
                     </shape>
                 </transform>
             </transform>                
@@ -2618,19 +2541,19 @@ if (true) {
                             fill='none'
                             stroke='white'
                             stroke-width='2'
-                            points='0 0, -20 30, 40 0, -20 -30' />
+                            points='0 0, -20 30, 40 0, -20 -30'/>
                         <circle
                             r='25'
                             cx='-30'
                             fill='url(#jetGradient)'
-                            opacity=${e.engineOn ? '1' : '0'} />
+                            opacity=${e.engineOn ? '1' : '0'}/>
                     </g>`;
                     } else if (e instanceof Missile) {
                         return `<g>
                         <line
                             x1='-10' y1='0' x2='10' y2='0'
                             stroke='red'
-                            stroke-width='6' />
+                            stroke-width='6'/>
                     </g>`;
                     } else if (e instanceof Asteroid) {
                         const scale = e.small ? `transform='scale(0.5, 0.5)'` : ``;
@@ -2639,7 +2562,7 @@ if (true) {
                             fill='none'
                             stroke='white'
                             stroke-width='2'
-                            points='0 49, 17 29, 41 24, 46 0, 29 -17, 21 -36, 0 -50, -20 -35, -26 -15, -53 0, -29 17, -27 46' />
+                            points='0 49, 17 29, 41 24, 46 0, 29 -17, 21 -36, 0 -50, -20 -35, -26 -15, -53 0, -29 17, -27 46'/>
                     </g>`
                     } else {
                         throw 'unknown entity type'
@@ -2704,13 +2627,13 @@ startSampleGroup(
 );
 if (true) {
 
-    // animation options for all steering samples
-    const getAnimationOptions = (sim) => {
+    // animation options for SVG steering samples
+    const getAnimationOptionsSVG = (sim) => {
         return {
             rotateEntities: true,
             getEntityHtml: e => `<polygon
                     stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
-                    points='0 0, 40 0, 50 10, 40 20, 0 20' />`
+                    points='0 0, 40 0, 50 10, 40 20, 0 20'/>`
             ,
             queues: [
                 { queue: sim.q, element: 'svg .ss-queue' }
@@ -2718,11 +2641,27 @@ if (true) {
         }
     };
 
+    // animation options for X3DOM steering samples
+    const getAnimationOptionsX3D = (sim) => {
+        const carColors = {
+            red: [1, 0, 0],
+            orange: [1, 1, 0],
+            green: [0, 1, 0]
+        };
+        return {
+            rotateEntities: true,
+            getEntityHtml: e => createX3Car('car', 40, 20, 10, carColors[e.color] || [0, 0, 0]),
+            queues: [
+                { queue: sim.q, element: 'x3d .ss-queue' }
+            ]
+        }
+    };
+
     //----------------------------------------------------------
-    // Wander/Wrap
+    // Wander/Wrap (SVG)
     showSimulation(
         new SteeringWander(),
-        'Wander + Wrap',
+        'Wander + Wrap (SVG)',
         `<p>
             This sample shows entities that implement two behaviors:</p>
         <ul>
@@ -2751,17 +2690,75 @@ if (true) {
             bind('wander-slow', sim.slowMode, v => sim.slowMode = v);
 
             // show animation
-            new Animation(sim, animationHost, getAnimationOptions(sim));
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
         }
     );
 
     //----------------------------------------------------------
-    // Wander/Bounce
+    // Wander/Wrap (X3DOM)
+    showSimulation(
+        new SteeringWander(),
+        'Wander + Wrap (X3DOM)',
+        `<p>
+            This sample shows entities that implement two behaviors:</p>
+        <ul>
+            <li>
+                <b>WanderBehavior</b>: causes entities to change speed and
+                direction periodically, and</li>
+            <li>
+                <b>WrapBehavior</b>: causes entities to wrap around the
+                simulation surface as they move.</li>
+        </ul>
+        <label>
+            Entity Count
+            <input id='wander-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='wander-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringWander, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('wander-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('wander-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Wander/Bounce (SVG)
     showSimulation(
         new SteeringWander({
             bounce: true
         }),
-        'Wander + Bounce',
+        'Wander + Bounce (SVG)',
         `<p>
             This sample shows entities that implement two behaviors:</p>
         <ul>
@@ -2790,15 +2787,75 @@ if (true) {
             bind('bounce-slow', sim.slowMode, v => sim.slowMode = v);
 
             // show animation
-            new Animation(sim, animationHost, getAnimationOptions(sim));
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
         }
     );
 
     //----------------------------------------------------------
-    // Seek
+    // Wander/Bounce (X3DOM)
+    showSimulation(
+        new SteeringWander({
+            bounce: true
+        }),
+        'Wander + Bounce (X3DOM)',
+        `<p>
+            This sample shows entities that implement two behaviors:</p>
+        <ul>
+            <li>
+                <b>WanderBehavior</b>: causes entities to change speed and
+                direction periodically, and</li>
+            <li>
+                <b>BounceBehavior</b>: causes entities to bounce off the
+                edges of the simulation surface.</li>
+        </ul>
+        <label>
+            Entity Count
+            <input id='bounce-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='bounce-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringWander, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('bounce-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('bounce-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Seek (SVG)
     showSimulation(
         new SteeringSeek(),
-        'Seek',
+        'Seek (SVG)',
         `<p>
             This sample shows entities that implement a <b>SeekBehavior</b>.
             They move towards the center of the animation, slow down as they
@@ -2821,24 +2878,73 @@ if (true) {
         (sim: SteeringSeek, animationHost: HTMLElement) => {
             bind('seek-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('seek-slow', sim.slowMode, v => sim.slowMode = v);
-            new Animation(sim, animationHost, getAnimationOptions(sim));
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
         }
     );
     
     //----------------------------------------------------------
-    // Chase
+    // Seek (X3DOM)
+    showSimulation(
+        new SteeringSeek(),
+        'Seek (X3DOM)',
+        `<p>
+            This sample shows entities that implement a <b>SeekBehavior</b>.
+            They move towards the center of the animation, slow down as they
+            approach the target, and restart from a random position when they
+            reach the target.</p>
+        <label>
+            Entity Count
+            <input id='seek-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='seek-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringSeek, animationHost: HTMLElement) => {
+            bind('seek-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('seek-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Chase (SVG)
     showSimulation(
         new SteeringChase(),
-        'Chase',
+        'Chase (SVG)',
         `<p>
             This sample shows two types of entity:</p>
         <ul>
             <li>
-                <span class='light red'></span> Red entities implement a
-                <b>SeekBehavior</b> and follow yellow entities.</li>
-            <li>
                 <span class='light yellow'></span> Yellow entities
-                wander and wrap around to make the chase interesting.</li>
+                wander and wrap around the simulation surface.</li>
+            <li>
+                <span class='light red'></span> Red entities implement a
+                <b>SeekBehavior</b> and chase the yellow entities.</li>
         </ul>
         <label>
             Entity Count
@@ -2858,15 +2964,73 @@ if (true) {
             bind('chase-slow', sim.slowMode, v => sim.slowMode = v);
 
             // show animation
-            new Animation(sim, animationHost, getAnimationOptions(sim));
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
         }
     );
 
     //----------------------------------------------------------
-    // Avoid Static Obstacles
+    // Chase (X3DOM)
+    showSimulation(
+        new SteeringChase(),
+        'Chase (X3DOM)',
+        `<p>
+            This sample shows two types of entity:</p>
+        <ul>
+            <li>
+                <span class='light yellow'></span> Yellow entities
+                wander and wrap around the simulation surface.</li>
+            <li>
+                <span class='light red'></span> Red entities implement a
+                <b>SeekBehavior</b> and chase the yellow entities.</li>
+        </ul>
+        <label>
+            Entity Count
+            <input id='chase-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='chase-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringChase, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('chase-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('chase-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Avoid Static Obstacles (SVG)
     showSimulation(
         new SteeringAvoid(),
-        'Avoid Static Obstacles',
+        'Avoid Static Obstacles (SVG)',
         `<p>
             Shows how to implement an <b>AvoidBehavior</b> that causes
             entities to avoid obstacles.
@@ -2903,17 +3067,93 @@ if (true) {
             });
 
             // show animation
-            new Animation(sim, animationHost, getAnimationOptions(sim));
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
         }
     );
 
     //----------------------------------------------------------
-    // Avoid Static and Moving Obstacles
+    // Avoid Static Obstacles (X3DOM)
     showSimulation(
         new SteeringAvoid({
             avoidEntities: true
         }),
-        'Avoid Static and Moving Obstacles',
+        'Avoid Static Obstacles (X3DOM)',
+        `<p>
+            Shows how to implement an <b>AvoidBehavior</b> that causes
+            entities to avoid obstacles.
+            In this example, all obstacles are static and are
+            shown as orange cylinders.</p>
+        <ul>
+            <li>
+                <span class='light yellow'></span> Yellow entities use an
+                <b>AvoidBehavior</b> to avoid obstacles.</li>
+            <li>
+                <span class='light red'></span> Entities turn red and change
+                speed and direction when they detect obstacles.</li>
+        </ul>
+        <label>
+            Entity Count
+            <input id='avoid-static-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='avoid-static-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringAvoid, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('avoid-static-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('avoid-static-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstables
+            sim.obstacles.forEach(o => {
+                animationHost.firstElementChild.innerHTML += `
+                    <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} 15'>
+                        <shape>
+                            <appearance>
+                                <material diffuseColor='.5 .5 0'/>
+                            </appearance>
+                            <cylinder height='30' radius='${o.radius}'/>
+                        </shape>
+                    </transform>`;
+            });
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Avoid Static and Moving Obstacles (SVG)
+    showSimulation(
+        new SteeringAvoid({
+            avoidEntities: true
+        }),
+        'Avoid Static and Moving Obstacles (SVG)',
         `<p>
             Shows how to implement an <b>AvoidBehavior</b> that causes
             entities to avoid obstacles.
@@ -2950,15 +3190,92 @@ if (true) {
             });
 
             // show animation
-            new Animation(sim, animationHost, getAnimationOptions(sim));
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
         }
     );
 
     //----------------------------------------------------------
-    // Follow
+    // Avoid Static and Moving Obstacles (X3DOM)
+    showSimulation(
+        new SteeringAvoid({
+            avoidEntities: true
+        }),
+        'Avoid Static and Moving Obstacles (X3DOM)',
+        `<p>
+            Shows how to implement an <b>AvoidBehavior</b> that causes
+            entities to avoid obstacles.
+            In this example, in addition to the static obstacles shown
+            as orange cylinders, other entities are also treated as
+            obstacles.</p>
+        <ul>
+            <li>
+                <span class='light yellow'></span> Yellow entities use an
+                <b>AvoidBehavior</b> to avoid obstacles.</li>
+            <li>
+                <span class='light red'></span> Entities turn red and change
+                speed and direction when they detect obstacles.</li>
+        </ul>
+        <label>
+            Entity Count
+            <input id='avoid-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='avoid-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringAvoid, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('avoid-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('avoid-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstables
+            sim.obstacles.forEach(o => {
+                animationHost.firstElementChild.innerHTML += `
+                    <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} 15'>
+                        <shape>
+                            <appearance>
+                                <material diffuseColor='.5 .5 0'/>
+                            </appearance>
+                            <cylinder height='30' radius='${o.radius}'/>
+                        </shape>
+                    </transform>`;
+            });
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Follow (SVG)
     showSimulation(
         new SteeringFollow(),
-        'Follow Target, Avoid Followers',
+        'Follow Target, Avoid Followers (SVG)',
         `<p>
             This example shows how you can use <b>SeekBehavior</b> and
             <b>AvoidBehavior</b> to have entities follow a target while
@@ -2989,7 +3306,67 @@ if (true) {
             bind('follow-slow', sim.slowMode, v => sim.slowMode = v);
 
             // show animation
-            new Animation(sim, animationHost, getAnimationOptions(sim));
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Follow (X3DOM)
+    showSimulation(
+        new SteeringFollow(),
+        'Follow Target, Avoid Followers (X3DOM)',
+        `<p>
+            This example shows how you can use <b>SeekBehavior</b> and
+            <b>AvoidBehavior</b> to have entities follow a target while
+            avoiding other entities.</p>
+        <ul>
+        <li>
+            <span class='light green'></span> The green entity wanders
+            around the simulation surface.</li>
+        <li>
+            <span class='light yellow'></span> Yellow entities follow it
+            and avoid other entities, turning red while avoiding them.</li>
+        </ul>
+        <label>
+            Entity Count
+            <input id='follow-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='follow-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringFollow, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('follow-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('follow-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
         }
     );
 }

@@ -309,3 +309,85 @@ export function getLineChart(title: string, ...series: IChartSeries[]): string {
     return svg;
 }
 
+//----------------------------------------------------------
+// X3Dom utility functions
+export function createX3Queue(name: string, x: number, y: number, z = 0): string {
+    return `<transform class='ss-queue ${name}' translation='${x} ${y} ${z}'>
+        <shape>
+            <appearance>
+                <material diffuseColor='1 1 0' transparency='0.6'></material>
+            </appearance>
+            <sphere radius='4'></sphere>
+        </shape>
+    </transform>`;
+}
+export function createX3Car(name: string, w: number, h: number, d: number, rgb: number[]): string {
+    return `<transform class='ss-car ${name}' translation='0 0 ${h / 2}'>
+        <transform>
+            <shape> <!-- body -->
+                <appearance>
+                    <material diffuseColor='${rgb[0]} ${rgb[1]} ${rgb[2]}'></material>
+                </appearance>
+                <box size='${w} ${h} ${d}'></box>
+            </shape>
+            <shape render='false'> <!-- 5 unit padding -->
+                <box size='${w * 1.1} ${h * 1.1} ${d * 1.1}'></box>
+            </shape>
+        </transform>
+        <transform translation='${-w * .2} 0 ${+d * .5}'>
+            <shape> <!-- cabin -->
+                <appearance>
+                    <material diffuseColor='${rgb[0] / 3} ${rgb[1] / 3} ${rgb[2] / 3}'></material>
+                </appearance>
+                <box size='${w * .5} ${h * .75} ${d}'></box>
+            </shape>
+        </transform>
+        <transform translation='${-w / 2 + 4} 0 -2'>
+            <shape> <!-- front wheels -->
+                <appearance>
+                    <material diffuseColor='0 0 0'></material>
+                </appearance>
+                <cylinder radius='3' height='${h + 2}'></cylinder>
+            </shape>
+        </transform>
+        <transform translation='${+w / 2 - 4} 0 -2'>
+            <shape> <!-- rear wheels -->
+                <appearance>
+                    <material diffuseColor='0 0 0'></material>
+                </appearance>
+                <cylinder radius='3' height='${h + 2}'></cylinder>
+            </shape>
+        </transform>
+    </transform>`;
+}
+export function createX3Person(name: string) {
+    return `<transform class='${name}'>
+        <transform>
+            <shape>
+                <appearance> 
+                    <material diffuseColor='0 0 .5'></material>
+                </appearance>
+                <box size='5 5 8'></box>
+            </shape>
+            <shape render='false'> <!-- padding -->
+                <box size='7 10 8'></box>
+            </shape>
+        </transform>
+        <transform translation='0 0 8'>
+            <shape>
+                <appearance> 
+                    <material diffuseColor='0 1 0'></material>
+                </appearance>
+                <box size='5 8 8'></box>
+            </shape>
+        </transform>
+        <transform translation='0 0 16'>
+            <shape>
+                <appearance> 
+                    <material diffuseColor='.5 .5 0'></material>
+                </appearance>
+                <sphere radius='3'></sphere>
+            </shape>
+        </transform>
+    </transform>`;
+}
