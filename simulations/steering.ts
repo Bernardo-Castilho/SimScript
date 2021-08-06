@@ -325,6 +325,24 @@ export class WrapBehavior extends SteeringBehavior {
 }
 
 /**
+ * BounceBehavior: Entity bounces around the simulation surface.
+ */
+export class BounceBehavior extends SteeringBehavior {
+    applyBehavior(e: SteeringVehicle, dt: number) {
+        super.applyBehavior(e, dt);
+        const bounds = e.simulation.bounds;
+        if (bounds) {
+            const p = e.position;
+            if (p.x < bounds[0].x || p.x > bounds[1].x) {
+                e.angle = 180 - e.angle;
+            } else if (p.y < bounds[0].y || p.y > bounds[1].y) {
+                e.angle = -e.angle;
+            }
+        }
+    }
+}
+
+/**
  * WanderBehavior: Entity wanders around the simulation surface.
  */
 export class WanderBehavior extends SteeringBehavior {
@@ -513,9 +531,16 @@ export function getWanderProps(sim: SteeringBehaviors) {
 
 /**
  * Steering simulation with entities that wander around the animation
- * (wrapping at the edges).
+ * (wrapping or bouncing at the edges).
  */
 export class SteeringWander extends SteeringBehaviors {
+    bounce = false;
+    
+    constructor(options?: any) {
+        super();
+        setOptions(this, options);
+    }
+
     onStarting(e?: EventArgs) {
         super.onStarting(e);
 
@@ -527,7 +552,9 @@ export class SteeringWander extends SteeringBehaviors {
                         steerChange: new Uniform(-20, +20),
                         speedChange: new Uniform(-20, +20)
                     }),
-                    new WrapBehavior()
+                    this.bounce // wrap or bounce at the edges
+                        ? new BounceBehavior()
+                        : new WrapBehavior()
                 ],
             });
             this.activate(e);

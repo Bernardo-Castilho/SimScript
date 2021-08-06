@@ -2722,7 +2722,7 @@ if (true) {
     // Wander/Wrap
     showSimulation(
         new SteeringWander(),
-        'Wander',
+        'Wander + Wrap',
         `<p>
             This sample shows entities that implement two behaviors:</p>
         <ul>
@@ -2749,6 +2749,45 @@ if (true) {
             // bind parameters
             bind('wander-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('wander-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptions(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Wander/Bounce
+    showSimulation(
+        new SteeringWander({
+            bounce: true
+        }),
+        'Wander + Bounce',
+        `<p>
+            This sample shows entities that implement two behaviors:</p>
+        <ul>
+            <li>
+                <b>WanderBehavior</b>: causes entities to change speed and
+                direction periodically, and</li>
+            <li>
+                <b>BounceBehavior</b>: causes entities to bounce off the
+                edges of the simulation surface.</li>
+        </ul>
+        <label>
+            Entity Count
+            <input id='bounce-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='bounce-slow' type='checkbox'>
+        </label>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringWander, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('bounce-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('bounce-slow', sim.slowMode, v => sim.slowMode = v);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptions(sim));
