@@ -2644,7 +2644,7 @@ if (true) {
     // animation options for X3DOM steering samples
     const getAnimationOptionsX3D = (sim) => {
         const carColors = {
-            red: [1, 0, 0],
+            red: [1, 1, 0], //[1, 0, 0], // changing colors too often hurts performance
             orange: [1, 1, 0],
             green: [0, 1, 0]
         };
@@ -3083,14 +3083,6 @@ if (true) {
             entities to avoid obstacles.
             In this example, all obstacles are static and are
             shown as orange cylinders.</p>
-        <ul>
-            <li>
-                <span class='light yellow'></span> Yellow entities use an
-                <b>AvoidBehavior</b> to avoid obstacles.</li>
-            <li>
-                <span class='light red'></span> Entities turn red and change
-                speed and direction when they detect obstacles.</li>
-        </ul>
         <label>
             Entity Count
             <input id='avoid-static-x3d-cnt' type='range' min='1' max='100'>
@@ -3207,14 +3199,6 @@ if (true) {
             In this example, in addition to the static obstacles shown
             as orange cylinders, other entities are also treated as
             obstacles.</p>
-        <ul>
-            <li>
-                <span class='light yellow'></span> Yellow entities use an
-                <b>AvoidBehavior</b> to avoid obstacles.</li>
-            <li>
-                <span class='light red'></span> Entities turn red and change
-                speed and direction when they detect obstacles.</li>
-        </ul>
         <label>
             Entity Count
             <input id='avoid-x3d-cnt' type='range' min='1' max='100'>
@@ -3325,7 +3309,7 @@ if (true) {
             around the simulation surface.</li>
         <li>
             <span class='light yellow'></span> Yellow entities follow it
-            and avoid other entities, turning red while avoiding them.</li>
+            and avoid other entities.</li>
         </ul>
         <label>
             Entity Count

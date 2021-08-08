@@ -1,4 +1,4 @@
-# SimScript
+t# SimScript
 
 A **Discrete Event Simulation** Library in TypeScript with
 support for 2D and 3D animations.
@@ -10,7 +10,7 @@ shows several simulations, including 2D and 3D animations.
 
 **SimScript** uses JavaScript's
 [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
-features to make simulations easy to write and understand.
+features to make simulation code easy to write and understand.
 
 **SimScript** simulations are built using these classes:
 
@@ -20,7 +20,7 @@ Simulations create resources (queues) and entities which execute an async
 **script** method that describes the actions each entity should perform.
 
 The **Simulation** class is abstract. In most cases, you will create classes 
-that extends it to create the queues and entities you need.
+that extend it to create the queues and entities you need.
 
 ## Entity Class
 

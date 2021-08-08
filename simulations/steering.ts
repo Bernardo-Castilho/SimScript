@@ -63,8 +63,14 @@ export class SteeringBehaviors extends Simulation {
 }
 
 /**
- * Entities with a position, angle, speed, and an
- * {@link updatePosition} method.
+ * Entities with a {@link position}, {@link angle}, {@link speed},
+ * {@link acceleration}, {@link steerAngle}, and an 
+ * {@link updatePosition} method that updates the current position
+ * and angle after a time interval.
+ * 
+ * This class also has a {@link behaviors} property that contains
+ * an array of {@link SteeringBehavior} objects which are applied
+ * in sequence to update the entity state after each time increment.
  */
 export class SteeringVehicle extends Entity<SteeringBehaviors> {
     _speed = 0;
@@ -209,7 +215,13 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
 
         // apply all behaviors
         if (this.behaviors) {
-            this.behaviors.forEach(b => b.applyBehavior(this, dt));
+            //this.behaviors.forEach(b => b.applyBehavior(this, dt));
+            for (let i = 0; i < this.behaviors.length; i++) {
+                const b = this.behaviors[i];
+                if (b.applyBehavior(this, dt)) {
+                    break; // stop iterating if applyBehavior returned true
+                }
+            }
         }
 
         // update angle
@@ -284,12 +296,22 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
 export abstract class SteeringBehavior {
     entity: SteeringVehicle;
 
+    /**
+     * Initializes a new instance of the SteeringBehavior class.
+     */
     constructor(options?: any) {
         setOptions(this, options);
     }
 
-    applyBehavior(e: SteeringVehicle, dt: number): void {
+    /**
+     * Applies the behavior to the entity, updating its speed and
+     * angle to achieve the desired behavior.
+     * @returns False to continue iterating through the remaining behaviors,
+     * false to stop and not apply any remaining behaviors.
+     */
+    applyBehavior(e: SteeringVehicle, dt: number): boolean {
         this.entity = e;
+        return false;
     }
 }
 
@@ -305,7 +327,7 @@ export abstract class SteeringBehavior {
  * WrapBehavior: Entity wraps around the simulation surface.
  */
 export class WrapBehavior extends SteeringBehavior {
-    applyBehavior(e: SteeringVehicle, dt: number) {
+    applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
         const bounds = e.simulation.bounds;
         if (bounds) {
@@ -321,6 +343,7 @@ export class WrapBehavior extends SteeringBehavior {
                 p.y = bounds[0].y;
             }
         }
+        return false;
     }
 }
 
@@ -328,7 +351,7 @@ export class WrapBehavior extends SteeringBehavior {
  * BounceBehavior: Entity bounces around the simulation surface.
  */
 export class BounceBehavior extends SteeringBehavior {
-    applyBehavior(e: SteeringVehicle, dt: number) {
+    applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
         const bounds = e.simulation.bounds;
         if (bounds) {
@@ -339,6 +362,7 @@ export class BounceBehavior extends SteeringBehavior {
                 e.angle = -e.angle;
             }
         }
+        return false;
     }
 }
 
@@ -356,7 +380,7 @@ export class WanderBehavior extends SteeringBehavior {
         setOptions(this, options);
     }
 
-    applyBehavior(e: SteeringVehicle, dt: number) {
+    applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
         const now = e.simulation.timeNow;
         if (now - this._timeLastChange >= this.changeInterval) {
@@ -368,6 +392,7 @@ export class WanderBehavior extends SteeringBehavior {
             }
             this._timeLastChange = now;
         }
+        return false;
     }
 }
 
@@ -384,7 +409,7 @@ export class SeekBehavior extends SteeringBehavior {
         setOptions(this, options);
     }
 
-    applyBehavior(e: SteeringVehicle, dt: number) {
+    applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
         if (this.target) {
             const sim = e.simulation;
@@ -404,6 +429,7 @@ export class SeekBehavior extends SteeringBehavior {
                 this.onArrive();
             }
         }
+        return false;
     }
     onArrive(e?: EventArgs) {
         this.arrive.raise(this, e);
@@ -417,20 +443,21 @@ export class AvoidBehavior extends SteeringBehavior {
     obstacles: IObstacle[] = [];
     avoidColor = '';
     slowDown = 0.75;
-    turnAngle = 1;
+    turnAngle = 0.5; // degrees per time step;
     _currentObstacle: IObstacle = null;
-    _saveColor = '';
+    _saveColor = ''; // original color
+    _saveSpeed = 0; // original speed
 
     constructor(options?: any) {
         super();
         setOptions(this, options);
     }
 
-    applyBehavior(e: SteeringVehicle, dt: number) {
+    applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
 
         // find nearest obstacle
-        const obstacle = this._getNearestObstacle();
+        const obstacle = this._getNearestObstacle(dt);
 
         // change obstacle
         if (obstacle != this._currentObstacle) {
@@ -439,12 +466,13 @@ export class AvoidBehavior extends SteeringBehavior {
                     this._saveColor = e.color;
                     e.color = this.avoidColor;
                 }
+                this._saveSpeed = e.speed;
                 e.speed *= this.slowDown;
             } else if (this._currentObstacle != null && obstacle == null) { // done avoiding
                 if (this._saveColor) {
                     e.color = this._saveColor;
                 }
-                e.speed /= this.slowDown;
+                e.speed = this._saveSpeed;
             }
             this._currentObstacle = obstacle;
         }
@@ -455,10 +483,13 @@ export class AvoidBehavior extends SteeringBehavior {
             e.angle = e.getTurnAngle(e.angle + this.turnAngle * direction, dt);
             e.steerAngle = 0; // don't turn while avoiding
         }
+
+        // return true if we are in avoiding mode
+        return obstacle != null;
     }
 
     // gets the nearest obstacle to an entity
-    _getNearestObstacle(): IObstacle {
+    _getNearestObstacle(dt: number): IObstacle {
         const
             e = this.entity as SteeringVehicle,
             pNow = e.position,
@@ -470,10 +501,12 @@ export class AvoidBehavior extends SteeringBehavior {
             minDist = null;
         this.obstacles.forEach(o => {
             if (o != e) {
-                const dist = Point.distance(pNow, o.position) - o.radius;
+                const
+                    offset = o.radius + e.radius + e.speed * dt,
+                    dist = Point.distance(pNow, o.position) - offset;
                 if (minDist == null || dist < minDist) { // closer
                     if (dist < e.radius) { // close enough...
-                        if (Point.distance(pNext, o.position) - o.radius < dist) { // and getting closer...
+                        if (Point.distance(pNext, o.position) - offset < dist) { // and getting closer...
                             minDist = dist;
                             obstacle = o;
                         }
@@ -494,9 +527,9 @@ export class AvoidBehavior extends SteeringBehavior {
                 x: p.x + d * e._cos,
                 y: p.y + d * e._sin,
             },
-            sumRadii = e.radius + obstacle.radius,
-            pLeft = this._getBoundaryPoint(obstacle, -sumRadii),
-            pRight = this._getBoundaryPoint(obstacle, +sumRadii);
+            side = e.radius + obstacle.radius,
+            pLeft = this._getBoundaryPoint(obstacle, -side),
+            pRight = this._getBoundaryPoint(obstacle, +side);
         return Point.distance(pStraight, pLeft) < Point.distance(pStraight, pRight)
             ? -1 // turn left
             : +1; // turn right
@@ -672,15 +705,15 @@ export class SteeringAvoid extends SteeringBehaviors {
             const e = new SteeringVehicle({
                 ...getWanderProps(this),
                 behaviors: [
-                    new AvoidBehavior({
+                    new AvoidBehavior({ // avoid obstacles
                         obstacles: obstacles,
                         avoidColor: 'red'
                     }),
-                    new WanderBehavior({
+                    new WanderBehavior({ // wander (if not avoiding obstacles)
                         steerChange: new Uniform(-20, +20),
                         speedChange: new Uniform(-50, +50)
                     }),
-                    new WrapBehavior()
+                    new WrapBehavior() // wrap at the edges
                 ],
             });
             e.position.y = 0; // start away from static obstacles
@@ -712,13 +745,12 @@ export class SteeringFollow extends SteeringBehaviors {
         const target = new SteeringVehicle({
             ...getWanderProps(this),
             behaviors: [
-                new WanderBehavior({ // wander around
-                    steerChange: new Uniform(-10, +10),
-                    speedChange: new Uniform(-50, +50)
-                }),
                 new AvoidBehavior({ // avoid followers
                     obstacles: obstacles,
-                    turnAngle: 60
+                }),
+                new WanderBehavior({ // wander around (if not avoiding followers)
+                    steerChange: new Uniform(-10, +10),
+                    speedChange: new Uniform(-50, +50)
                 }),
                 new WrapBehavior() // wrap around
             ],
@@ -727,20 +759,25 @@ export class SteeringFollow extends SteeringBehaviors {
         target.steerAngleMax = 30; // avoid sharp turns
         this.activate(target);
 
+        // add target to obstacle array 
+        // (so other entities will follow it but avoid hitting it)
+        if (obstacles) {
+            obstacles.push(target);
+        }
+
         // create entities that follow the target and avoid other entities
         for (let i = 0; i < this.entityCount; i++) {
             const e = new SteeringVehicle({
                 ...getWanderProps(this),
                 behaviors: [
-                    new SeekBehavior({ // seek target
-                        target: target.position
-                    }),
                     new AvoidBehavior({ // avoid other followers
                         obstacles: obstacles,
                         avoidColor: 'red',
-                        turnAngle: 60,
                         slowDown: .5
-                    })
+                    }),
+                    new SeekBehavior({ // seek target (if not avoiding other followers)
+                        target: target.position
+                    }),
                 ],
             });
             this.activate(e);
