@@ -84,9 +84,6 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
     _steerAngle = 0;
     _steerAngleMax = 90;
     _lastUpdate = 0;
-    color = 'black';
-    radius = 25; // to detect collisions
-    behaviors: SteeringBehavior[] = []; // no behaviors by default
   
     /**
      * Initializes a new instance of the {@link SteeringVehicle} class.
@@ -96,6 +93,23 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
         setOptions(this, options);
     }
 
+    /**
+     * Gets or sets the entity's current color.
+     * 
+     * The default value for this property is **'black'**.
+     */
+    color = 'black';
+    /**
+     * Gets or sets the entity's radius (used to detect collisions).
+     * 
+     * The default value for this property is **20**.
+     */
+    radius = 20;
+    /**
+     * Gets or sets an array containing {@link SteeringBehavior} objects
+     * that determine how the entity moves within the simulation.
+     */
+    behaviors: SteeringBehavior[] = []; // no behaviors by default
     /**
      * Gets or sets the entity's current position.
      */
@@ -128,8 +142,8 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
 
         // save angle, sin, and cos
         this._angle = value;
-        this._sin = Math.sin((value) * Math.PI / 180);
-        this._cos = Math.cos((value) * Math.PI / 180);
+        this._sin = Math.sin(value * Math.PI / 180);
+        this._cos = Math.cos(value * Math.PI / 180);
     }
     /**
      * Gets or sets a value that represents the change, in degrees,
@@ -401,13 +415,22 @@ export class WanderBehavior extends SteeringBehavior {
  */
 export class SeekBehavior extends SteeringBehavior {
     target: IPoint = null;
-    maxTurnAngle = 2; // turn up to 2 degrees per time step
     readonly arrive = new Event();
 
     constructor(options?: any) {
         super();
         setOptions(this, options);
     }
+
+    /**
+     * Gets or sets a value that represents the maximum change in
+     * angle per unit time while seeking the target.
+     * 
+     * The default value for this property is **0.5**, which
+     * corresponds to a 0.5 degree change in direction per unit
+     * time while seeking a target.
+     */
+    seekAngle = 0.5;
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
@@ -422,7 +445,7 @@ export class SeekBehavior extends SteeringBehavior {
 
             // adjust angle
             let angTarget = Point.angle(e.position, this.target);
-            e.angle = e.getTurnAngle(angTarget, dt, this.maxTurnAngle);
+            e.angle = e.getTurnAngle(angTarget, dt, this.seekAngle);
 
             // re-start when close to center
             if (dist < e.radius) {
@@ -440,10 +463,6 @@ export class SeekBehavior extends SteeringBehavior {
  * AvoidBehavior: Entity avoids obstacles.
  */
 export class AvoidBehavior extends SteeringBehavior {
-    obstacles: IObstacle[] = [];
-    avoidColor = '';
-    slowDown = 0.75;
-    turnAngle = 0.5; // degrees per time step;
     _currentObstacle: IObstacle = null;
     _saveColor = ''; // original color
     _saveSpeed = 0; // original speed
@@ -452,6 +471,49 @@ export class AvoidBehavior extends SteeringBehavior {
         super();
         setOptions(this, options);
     }
+
+    /**
+     * Gets or sets the list of obstacles, represented by
+     * an array of {@link IObstacle} objects.
+     */
+    obstacles: IObstacle[] = [];
+    /**
+     * Gets or sets the color used to represent the entity
+     * while it is avoiding other entities.
+     * 
+     * The default value for this property is an empty string,
+     * which preserves the original entity color while it is
+     * avoiding other entities.
+     */
+    avoidColor = '';
+    /**
+     * Gets or sets a value that represents the slow-down factor
+     * used to reduce the entity's speed while it is avoiding other 
+     * entities.
+     * 
+     * The default value for this property is **0.75**, which
+     * corresponds to a 25% speed reduction while avoiding other
+     * entities.
+     */
+    slowDown = 0.75; // slow down factor while avoiding
+    /**
+     * Gets or sets a value that represents the maximum change in
+     * angle per unit time while the entity is avoiding other 
+     * entities.
+     * 
+     * The default value for this property is **2**, which
+     * corresponds to a 2 degree change in direction per unit
+     * time while avoiding other entities.
+     */
+    avoidAngle = 2;
+    /**
+     * Gets or sets a value that determines whether the behavior
+     * should prevent other behaviors from being applied while 
+     * avoiding an obstacle.
+     * 
+     * The default value for this property is **true**.
+     */
+    preventOthersWhileAvoiding = true;
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
@@ -480,12 +542,12 @@ export class AvoidBehavior extends SteeringBehavior {
         // avoid obstacle
         if (obstacle != null) {
             const direction = this._getAvoidDirection(obstacle);
-            e.angle = e.getTurnAngle(e.angle + this.turnAngle * direction, dt);
+            e.angle = e.getTurnAngle(e.angle + this.avoidAngle * direction, dt);
             e.steerAngle = 0; // don't turn while avoiding
         }
 
         // return true if we are in avoiding mode
-        return obstacle != null;
+        return obstacle != null && this.preventOthersWhileAvoiding;
     }
 
     // gets the nearest obstacle to an entity
@@ -616,7 +678,7 @@ export class SteeringSeek extends SteeringBehaviors {
                             x: this.bounds[1].x / 2,
                             y: this.bounds[1].y / 2
                         },
-                        maxTurnAngle: 0.5, // turn up to 0.5 degrees/unit time
+                        seekAngle: 0.5, // turn up to 0.5 degrees/unit time
                         arrive: s => { // re-start at random position on arrival
                             s.entity.position = this.getRandomPosition();
                         }
@@ -707,7 +769,7 @@ export class SteeringAvoid extends SteeringBehaviors {
                 behaviors: [
                     new AvoidBehavior({ // avoid obstacles
                         obstacles: obstacles,
-                        avoidColor: 'red'
+                        //avoidColor: 'red', // this slows down the 3D animations
                     }),
                     new WanderBehavior({ // wander (if not avoiding obstacles)
                         steerChange: new Uniform(-20, +20),
@@ -772,11 +834,11 @@ export class SteeringFollow extends SteeringBehaviors {
                 behaviors: [
                     new AvoidBehavior({ // avoid other followers
                         obstacles: obstacles,
-                        avoidColor: 'red',
-                        slowDown: .5
+                        slowDown: .75,
+                        //avoidColor: 'red', // this slows down the 3D animations
                     }),
                     new SeekBehavior({ // seek target (if not avoiding other followers)
-                        target: target.position
+                        target: target.position,
                     }),
                 ],
             });

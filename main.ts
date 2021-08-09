@@ -2644,7 +2644,7 @@ if (true) {
     // animation options for X3DOM steering samples
     const getAnimationOptionsX3D = (sim) => {
         const carColors = {
-            red: [1, 1, 0], //[1, 0, 0], // changing colors too often hurts performance
+            red: [1, 0, 0],
             orange: [1, 1, 0],
             green: [0, 1, 0]
         };
