@@ -37,875 +37,6 @@ import {
 } from './simulations/gpss';
 
 //----------------------------------------------------------
-// GPSS sample Group
-startSampleGroup(
-    'GPSS-Inspired Samples',
-    `<p>
-        These samples were inspired by the
-        <a href="http://www.minutemansoftware.com/tutorial/tutorial_manual.htm">GPSS samples</a>
-        published by Minuteman software.</p>
-    <p>
-        They show how you can use SimScript to simulate a wide range of practical
-        applications and allow you to compare results obtained by GPSS and SimScript.</p>`
-);
-if (true) {
-
-    //----------------------------------------------------------
-    // Telephone
-    showSimulation(
-        new Telephone(),
-        'Telephone',
-        `<p>
-        A simple telephone system has two external lines.
-        Calls, which originate externally, arrive every 100±60 seconds.
-        When the line is occupied, the caller redials after 5±1 minutes have elapsed.
-        Call duration is 3±1 minutes.</p>
-    <p>
-        A tabulation of the distribution of the time each caller takes to make a
-        successful call is required.</p>
-    <ol>
-        <li>
-            How long will it take for 200 calls to be completed?
-            GPSS says <b>359.16</b> minutes,
-            SimScript says <b><span id='gpss-tel-total'>?</span></b> minutes.</li>
-        <li>
-            How long did it take callers to complete their calls?
-            GPSS says most calls were completed in less than <b>9.5</b> minutes,
-            but <i>many took much longer</i>.
-            SimScript says the average call took
-            <b><span id='gpss-tel-complete'>?</span></b> minutes.</li>
-        <li>
-            What is the utilization of the phone lines?
-            GPSS says the lines are utilized at <b>84%</b> of capacity,
-            SimScript says <b><span id='gpss-tel-utz'>?</span>%</b>.</li>
-    </ol>`,
-        (sim: Telephone, log: HTMLElement) => {
-            setText('#gpss-tel-total', format(sim.timeNow / 60));
-            setText('#gpss-tel-complete', format(sim.totalDuration.averageDwell / 60));
-            setText('#gpss-tel-utz', format(sim.lines.utilization * 100, 0));
-            log.innerHTML = sim.totalDuration.grossDwell.getHistogramChart('Call Duration (min)', 1 / 60);
-        }
-    )
-
-    //----------------------------------------------------------
-    // Inventory
-    showSimulation(
-        new Inventory(),
-        'Inventory',
-        `<p>
-        A finished product inventory is controlled by means of a weekly
-        review system.
-        The initial stock is 1,000 units.
-        The daily demand varies between 40 and 63 units with equal probability.
-        The target inventory is 1,000 units, that is, the order is placed for the
-        difference between the current stock and 1,000 units.
-        If the current stock is 800 or more, no order is placed for that week.
-        The company operates a five-day week. The lead time for delivery of an
-        order is one week.</p>
-    <p>
-        Simulate the inventory system for 200 days and determine if any stockouts occur.
-        GPSS says there won't be any. SimScript says there will be
-        <b><span id='gpss-inv-stockout'>?</span></b>.</p>`,
-        (sim: Inventory, log: HTMLElement) => {
-            setText('#gpss-inv-stockout', format(sim.stockOuts, 0));
-            log.innerHTML = getLineChart('Stock',
-                { data: sim.stockHistory, color: 'green', showPoints: true }
-            );
-        }
-    )
-
-    //----------------------------------------------------------
-    // TVRepairShop
-    showSimulation(
-        new TVRepairShop(),
-        'TV Repair Shop',
-        `<p>
-        A television shop employs a single repairman to overhaul its
-        rented television sets, service customers’ sets and do
-        on-the-spot repairs.</p>
-    <ul>
-        <li>
-            Overhaul of company owned television sets commences every 40±8
-            hours and takes 10±1 hours to complete.</li>
-        <li>
-            On-the-spot repairs, such as fuse replacement, tuning and
-            adjustments are done immediately. These arrive every 90±10 minutes
-            and take 15±5 minutes.</li>
-        <li>
-            Customers’ television sets requiring normal service arrive every
-            5±1 hours and take 120±30 minutes to complete.</li>
-    </ul>
-    <p>
-        Normal service of television sets has a higher priority than the 
-        overhaul of company owned, rented sets; on-the-spot repairs have
-        the highest priority.</p>
-    <p>
-        After 50 days of operation, determine the following:</p>
-    <ol>
-        <li>
-            The repairman utilization. GPSS says <b>78%</b>,
-            SimScript says <b><span id='tv-utz'>?</span>%</b>.</li>
-        <li>
-            The average waiting times for each type of job.<br/>
-            GPSS says <b>12</b> min overall, <b>25</b> for overhaul jobs,
-            <b>51</b> for customer jobs, and <b>zero</b> for on-the-spot jobs;<br/>
-            SimScript says <b><span id='tv-wait'>?</span></b> min overall,
-            <b><span id='tv-wait-overhaul'>?</span></b> for overhaul jobs,
-            <b><span id='tv-wait-customer'>?</span></b> for customer jobs, and
-            <b><span id='tv-wait-ots'>?</span></b> for on-the-spot jobs.</li>
-    </ol>`,
-        (sim: TVRepairShop, log: HTMLElement) => {
-            setText('#tv-utz', format(sim.qRepairMan.utilization * 100, 0));
-            setText('#tv-wait', format(sim.qAllJobs.averageDwell, 0));
-            setText('#tv-wait-overhaul', format(sim.qOverhaulJobs.averageDwell, 0));
-            setText('#tv-wait-customer', format(sim.qCustomerJobs.averageDwell, 0));
-            setText('#tv-wait-ots', format(sim.qOnTheSpotJobs.averageDwell, 0));
-            log.innerHTML = sim.getStatsTable();
-        }
-    )
-
-    //----------------------------------------------------------
-    // QualityControl
-    showSimulation(
-        new QualityControl(),
-        'Quality Control',
-        `<p>
-        A component is manufactured by a sequence of three processes, 
-        each followed by a short two minute inspection.</p>
-    <p>
-        The first process requires 20% of components to be reworked.
-        The second and third processes require 15% and 5% of components reworked.</p>
-    <p>
-        Sixty percent of components reworked are scrapped and the remaining forty
-        percent need reprocessing on the process from which they were rejected.</p>
-    <p>
-        Manufacturing of a new component commences on average, every 30 minutes,
-        exponentially distributed.</p>
-    <p>
-        Simulate the manufacturing processes for 100 completed components.
-        Determine the time taken
-        (GPSS says about <b>69</b> hours,
-        Simscript says <b><span id='qc-tm'>?</span></b> hours)
-        and the number of components rejected
-        (GPSS says <b>21</b>,
-        Simscript says <b><span id='qc-rejected'>?</span></b>).</p>`,
-        (sim: QualityControl, log: HTMLElement) => {
-            log.innerHTML = sim.getStatsTable();
-            setText('#qc-tm', format(sim.timeNow / 60, 0))
-            setText('#qc-rejected', format(sim.cntRejected, 0));
-        }
-    );
-
-    //-------------------------------------------------------------------------
-    // OrderPoint
-    showSimulation(
-        new OrderPoint(),
-        'Order Point',
-        `<p>
-        An inventory system is controlled by an order point, set at 600 units,
-        and an economic order quantity of 500 units.</p>
-    <p>
-        The initial stock quantity is 700. Daily demand is in the range 40 to 63
-        units, evenly distributed.
-        The lead-time from ordering to delivery of goods is one week (5 days).</p>
-    <p>
-        Simulate the inventory system for a period of 100 days.
-        Determine the distribution of inventory and the actual daily sales.</p>`,
-        (sim: OrderPoint, log: HTMLElement) => {
-
-            // show inventory chart and stats
-            log.innerHTML = getLineChart('Demand and Inventory',
-                { data: [sim.stockTally.min, sim.stockTally.min], color: '#d0d0d0', width: '1' },
-                { data: [sim.stockTally.max, sim.stockTally.max], color: '#d0d0d0', width: '1' },
-                { data: [sim.stockTally.avg, sim.stockTally.avg], color: '#d0d0d0', width: '1' },
-                { name: 'Inventory', data: sim.inventoryLevel, color: 'blue', showPoints: true },
-                { name: 'Daily Orders', data: sim.dailyOrders, color: 'green' },
-            ) + `
-            Minimum Inventory: <b>${format(sim.stockTally.min, 0)}</b> units.<br/>
-            Maximum Inventory: <b>${format(sim.stockTally.max, 0)}</b> units.<br/>
-            Average Inventory: <b>${format(sim.stockTally.avg, 0)}</b> units.<br/>
-        `;
-        }
-    );
-
-    //-------------------------------------------------------------------------
-    // Manufacturing
-    showSimulation(
-        new Manufacturing(),
-        'Manufacturing',
-        `<p>
-        A manufacturing department of an electronics company makes digital
-        watches. In the dispatch department, the watches are packed by an
-        automatic packing machine, in display packets, in the quantities
-        ordered by retailers.</p>
-    <p>
-        The order size is given by an empirical function. The mean time
-        between order arrivals is 15 minutes, exponentially distributed.
-        The packing time per order is 120 seconds plus 10 seconds per watch
-        packed in the order.</p>
-    <p>
-        The manufacturing department produces the digital watches in lot
-        sizes of 60 units, in 40±5 minutes.</p>
-    <p>
-        Simulate 5 days of the company operation to provide the following
-        information:</p>
-    <ol>
-        <li>
-            The average number of orders waiting in the packing department.<br/>
-            GPSS says <b>0.12</b>,
-            SimScript says <b><span id='man-wait'>?</span></b> orders.</li>
-        <li>
-            The quantity of watches dispatched each day.<br/>
-            SimScript says <b><span id='man-dispatched'>?</span></b>
-            watches per day.</li>
-        <li>
-            The distribution of transit times of orders.
-            SimScript says orders take <b><span id='man-transit'>?</span></b>
-            minutes to process on average.</li>
-    </ol>`,
-        (sim: Manufacturing, log: HTMLElement) => {
-            setText('#man-wait', format(sim.qPacking.averageLength, 2));
-            setText('#man-dispatched', format(sim.dispatched / 5, 0));
-            setText('#man-transit', format(sim.qOrderTransit.averageDwell));
-            //log.innerHTML = sim.getStatsTable();
-            log.innerHTML = sim.qOrderTransit.grossDwell.getHistogramChart('Order Transit Times (min)');
-        }
-    );
-
-    //----------------------------------------------------------
-    // Textile
-    showSimulation(
-        new Textile(),
-        'Textile',
-        `<p>
-        A textile factory produces fine mohair yarn in three departments.
-        The first department draws and blends the raw material, in sliver form,
-        and reduces it to a suitable thickness for spinning, in 5 reducer frames.
-        The second department spins the yarn in one of 40 spinning frames.
-        The final process is in the winding department, where the yarn is wound
-        from spinning bobbins onto cones for dispatch.</p>
-    <p>
-        There are 8 winding frames to perform the winding operation.
-        The factory works 8 hours per day.
-        The unit of production is 10 kilograms of yarn.
-        Reducing frames produce one unit every 38±2 minutes, while the spinning 
-        frames and winding frames produce one unit in 320±20 minutes and 64±4
-        minutes, respectively.</p>
-    <p>
-        The initial inventory of reduced material is 50 units, spun material
-        is 25 units and finished yarn is 25 units.
-        The finished material is dispatched, in a container of capacity 200
-        units, every two days.</p>
-    <ol>
-        <li>
-            Simulate the production process in the textile factory for 5 days.</li>
-        <li>
-            Find the distribution of the in-process inventories.</li>
-        <li>
-            Determine the utilization of each of the three types of machine.<br/>
-            GPSS says the utilization of reducers was about <b>39%</b>,
-            spinners <b>36%</b>, and winders <b>32%</b>.<br/>
-            SimScript says the utilization of
-            reducers was <b><span id='txt-utz-red'>?</span>%</b>,
-            spinners <b><span id='txt-utz-spin'>?</span>%</b>, and
-            winders <b><span id='txt-utz-wind'>?</span>%</b>.</li>
-    </ol>`,
-        (sim: Textile, log: HTMLElement) => {
-            setText('#txt-utz-red', format(sim.qReducers.utilization * 100, 0));
-            setText('#txt-utz-spin', format(sim.qSpinners.utilization * 100, 0));
-            setText('#txt-utz-wind', format(sim.qWinders.utilization * 100, 0));
-            //log.innerHTML = sim.getStatsTable();
-            log.innerHTML =
-                getLineChart('In-Process Inventories',
-                    { name: 'Reduced', data: sim.recReduced, color: 'red', showPoints: true },
-                    { name: 'Wound', data: sim.recWound, color: 'green', showPoints: true },
-                    { name: 'Spun', data: sim.recSpun, color: 'blue', showPoints: true },
-                ) +
-                sim.getStatsTable();
-        }
-    )
-
-    //----------------------------------------------------------
-    // Oil Depot
-    showSimulation(
-        new OilDepot(),
-        'Oil Depot',
-        `<p>
-        An oil storage depot distributes three grades of fuel: a) home heating
-        oil, b) light industrial fuel oil, and c) diesel fuel for road vehicles.
-        There is one pump for each grade of fuel, and the demand for each is the same.
-        Orders for fuel oil vary between 3,000 and 5,000 gallons, in increments of 10
-        gallons, evenly distributed.</p>
-    <p>
-        The time required to fill fuel trucks is a function of the following:</p>
-    <ol>
-        <li>The order size.</li>
-        <li>The pumping rate (6, 5 and 7 minutes per 1,000 gallons).</li>
-        <li>The number of vehicles in the depot (30 seconds extra per vehicle).</li>
-        <li>A two-minute fixed setup time.</li>
-    </ol>
-    <p>
-        The depot can hold a maximum of twelve trucks.
-        The mean arrival rate of trucks is 18 minutes, modified by the following
-        function:</p>
-    <table>
-        <tr>
-            <td>Frequency</td>
-            <td>.20</td>
-            <td>.40</td>
-            <td>.25</td>
-            <td>.15</td>
-        </tr>
-        <tr>
-            <td>Ratio to mean</td>
-            <td>.45</td>
-            <td>.60</td>
-            <td>1.5</td>
-            <td>2.0</td>
-        </tr>
-    </table>
-    <p>
-        Simulate the operation of the oil storage depot for 5 days and find:</p>
-    <ul>
-        <li>
-            The distribution of transit times of trucks.<br/>
-            GPSS says the mean is about <b>35</b> min with
-            standard deviation <b>14</b> min.<br/>
-            SimScript says the mean is <b><span id="oil-mean">?</span></b> min and
-            standard deviation <b><span id="oil-std">?</span> min</b>.</li>
-        <li>
-            The total quantity of fuel sold each day.<br/>
-            GPSS says <b>109,490</b> gallons,
-            SimScript says <b><span id="oil-sales">?</span></b> gallons.</li>
-    </ul>`,
-        (sim: OilDepot, log: HTMLElement) => {
-            setText('#oil-mean', format(sim.depot.grossDwell.avg, 0));
-            setText('#oil-std', format(sim.depot.grossDwell.stdev, 0));
-            setText('#oil-sales', format(sim.gallonsSoldPerDay, 0));
-            log.innerHTML = sim.getStatsTable();
-        }
-    )
-
-    //-------------------------------------------------------------------------
-    // Pump Assembly
-    showSimulation(
-        new PumpAssembly(),
-        'Pump Assembly',
-        `<p>
-        A manufacturer makes centrifugal pump units which are assembled to
-        customer orders. The orders arrive on average, every 5 hours,
-        exponentially distributed.</p>
-    <p>
-        When the order arrives, two copies are made:</p>
-    <ol>
-        <li>
-            The original order is used to obtain a motor from stock and
-            prepare it for assembly (200±100 minutes).</li>
-        <li>
-            The first copy is used to order and adapt a pump
-            (180±120 minutes),</li>
-        <li>
-            The second copy is used to initiate the manufacture of the
-            baseplate (80±20 minutes).</li>
-    </ol>
-    <p>
-        When the pump and the baseplate are ready, a test fitting is
-        carried out (50±10 minutes).
-        All three components are assembled when they are available.
-        The unit is then dismantled, and the pump and motor are painted,
-        and the baseplate is galvanized.
-        Final assembly then takes place (150±30 minutes).</p>
-    <ol>
-        <li>
-            Investigate the utilization of the manufacturing facilities.</li>
-        <li>
-            Determine the transit times and delays, of customers’ orders.</li>
-        <li>
-            What Facility will be a bottleneck if orders increase significantly?</li>
-        <li>
-            Simulate the assembly of 50 motor-pump units.</li>
-    </ol>
-    <p>
-        GPSS says the facilities representing capital equipment have utilizations
-        from <b>31</b>% to <b>73%</b>.<br/>
-        SimScript says the utilizations range from
-        <b><span id='pump-utz-min'>?</span>%</b> to
-        <b><span id='pump-utz-max'>?</span>%</b>.</p>
-    <p>
-        GPSS says the mean order completion time was <b>878</b> min, with
-        a standard deviation of about <b>257</b> min.<br/>
-        SimScript says the mean value was
-        <b><span id='pump-tm-avg'>?</span></b> min, and the standard deviation was
-        <b><span id='pump-tm-std'>?</span></b> min.</p>
-    <p>
-        The pump station and the base station have the highest utilizations
-        (<b><span id='pump-utz-pump'>?</span>%</b> and <b><span id='pump-utz-base'>?</span>%</b>).
-        If all activity is increased proportionately, they will be the first to
-        saturate.</p>
-    `,
-        (sim: PumpAssembly, log: HTMLElement) => {
-            const utz = [];
-            sim.queues.forEach(q => {
-                if (q.capacity == 1) {
-                    utz.push(q.utilization);
-                }
-            });
-            setText('#pump-utz-min', format(Math.min(...utz) * 100, 0));
-            setText('#pump-utz-max', format(Math.max(...utz) * 100, 0));
-            setText('#pump-tm-avg', format(sim.qOrders.grossDwell.avg, 0));
-            setText('#pump-tm-std', format(sim.qOrders.grossDwell.stdev, 0));
-            setText('#pump-utz-pump', format(sim.qPumps.utilization * 100, 0));
-            setText('#pump-utz-base', format(sim.qBaseStation.utilization * 100, 0));
-            log.innerHTML = sim.getStatsTable();
-        }
-    );
-
-    //-------------------------------------------------------------------------
-    // RobotFMS
-    showSimulation(
-        new RobotFMS(),
-        'Robot FMS',
-        `<p>
-        An experimental, robot operated, flexible manufacturing system has
-        two computer numerical control machine tools, an arrival area, and
-        a finished parts area.</p>
-    <p>
-        Components arrive every 150 seconds, exponentially distributed, and
-        are machined on both machines in sequence.</p>
-    <p>
-        The robot takes 8±1 seconds to grip or release components, and 6
-        seconds to move components from the arrival area to the first machine.
-        Processing time on the first machine is normally distributed, with a
-        mean of 60 seconds and a standard deviation of 10 seconds.</p>
-    <p>
-        The robot takes 7 seconds to move from the first machine to the second
-        machine. Machining time on the second machine is 100 seconds,
-        exponentially distributed.</p>
-    <p>
-        Finally, the robot takes 5 seconds to move components from the second
-        machine to the finished parts storage area.</p>
-    <p>
-        Simulate the manufacturing cell operation, for 75 completed parts,
-        and find:</p>
-    <ol>
-        <li>
-            The distribution of transit times of jobs.<br/>
-            GPSS says the mean time was <b>452</b> seconds, with a
-            standard deviation of around <b>251</b> seconds;<br/>
-            SimScript says <b><span id='fms-tm-mean'>?</span></b> and
-            <b><span id='fms-tm-std'>?</span></b> seconds.</li>
-        <li>
-            The utilization of the robot and the machine tools.<br/>
-            GPSS says the Robot, Machine 1, and Machine 2 had utilizations
-            of <b>36%</b>, <b>33%</b> and <b>64%</b>;<br/>
-            SimScript says
-            <b><span id='fms-utz-robot'>?</span>%</b>,
-            <b><span id='fms-utz-m1'>?</span>%</b>, and
-            <b><span id='fms-utz-m2'>?</span>%</b>.</li>
-        <li>
-            The maximum storage areas required in the cell.<br/>
-            GPSS says the maximum storage required totals <b>13</b>;<br/>
-            SimScript says <b><span id='fms-stg'>?</span></b>.</li>
-    </ol>`,
-        (sim: RobotFMS, log: HTMLElement) => {
-            setText('#fms-tm-mean', format(sim.qJobs.grossDwell.avg, 0));
-            setText('#fms-tm-std', format(sim.qJobs.grossDwell.stdev, 0));
-            setText('#fms-utz-robot', format(sim.qRobot.utilization * 100, 0));
-            setText('#fms-utz-m1', format(sim.qMachine1.utilization * 100, 0));
-            setText('#fms-utz-m2', format(sim.qMachine2.utilization * 100, 0));
-            setText('#fms-stg', format(sim.qJobs.grossPop.max, 0));
-            log.innerHTML = sim.getStatsTable();
-        }
-    )
-
-    //-------------------------------------------------------------------------
-    // Bicycle Factory
-    showSimulation(
-        new BicycleFactory(),
-        'Bicycle Factory',
-        `<p>
-        A factory assembles bicycles employing the following staff: 2 clerks,
-        3 framers, 1 saddler, 1 handler, 1 wheeler, 1 pedaler, 4 assemblers,
-        and 3 packers.</p>
-    <p>
-        The company commences to assemble a bicycle every 50±10 minutes.
-        The clerical department prepares the delivery documents, instructions, 
-        toolkit and invoice.</p>
-    <p>
-        Each department withdraws the component required for a particular order
-        from stock, inspects (3±1 minutes) and prepares it for assembly.
-        The frame is manufactured and takes 65 minutes, exponentially distributed.
-        When the components are available, they are assembled.
-        This takes on average 90 minutes, with a standard deviation of
-        10 minutes.</p>
-    <p>
-        When the delivery documents, toolkit, and the assembled bicycle are
-        ready, they are packed (40±5 minutes) in preparation for delivery.</p>
-    <p>
-        Simulate the bicycle factory assembly operation for 5 days and find:</p>
-    <ol>
-        <li>
-            The utilization of the staff in each department.<br/>
-            GPSS says the Clerks are busiest with a utilization of <b>78%</b>.<br/>
-            SimScript says their utilization is <b><span id='bike-clerk-utz'>?</span>%</b>.</li>
-        <li>
-            The transit times of customers’ orders.<br/>
-            GPSS says the average was <b>236</b> min with a standard deviation of <b>51</b> min.<br/>
-            SimScript says the average was <b><span id='bike-tm-mean'>?</span></b> min with a
-            <b><span id='bike-tm-std'>?</span></b> min standard deviation.</li>
-    </ol>`,
-        (sim: BicycleFactory, log: HTMLElement) => {
-            setText('#bike-clerk-utz', format(sim.qClerks.utilization * 100, 0));
-            setText('#bike-tm-mean', format(sim.qTransit.grossDwell.avg, 0));
-            setText('#bike-tm-std', format(sim.qTransit.grossDwell.stdev, 0));
-            log.innerHTML = sim.getStatsTable();
-        }
-    );
-
-    //-------------------------------------------------------------------------
-    // Stock Control
-    showSimulation(
-        new StockControl(),
-        'Stock Control',
-        `<p>
-        A manufacturing company makes waste disposal units, which it sells for
-        $200 each. Total annual demand is for 20,000 units. Distribution is
-        through three branches from a factory warehouse.</p>
-    <p>
-        The lead-time for delivery of an order from the manufacturing plant to
-        the factory warehouse is 4 weeks. The lead-time for delivery of an order
-        from the factory warehouse to the branches is 1 week.</p>
-    <p>
-        The proposed inventory control method is by an economic order quantity 
-        and order point system. The initial stocks, order points, economic order
-        quantities, weekly demand and standard deviation are shown in the table
-        below:</p>
-    <table class='params'>
-        <tr>
-            <th>Location</th> <th>Initial Stock</th> <th>Order Point</th>
-            <th>Order Qty</th> <th>Demand Avg</th> <th>Demand Stdev</th>
-        </tr>
-        <tr>
-            <th>Warehouse</th> <td>3,400</td> <td>2,100</td> <td>2,300</td>
-        </tr>
-        <tr>
-            <th>Branch 1</th>  <td>430</td>  <td>240</td>  <td>115</td>  <td>64</td>  <td>24</td>
-        </tr>
-        <tr>
-            <th>Branch 2</th>  <td>600</td>  <td>430</td>  <td>165</td>  <td>128</td>  <td>32</td>
-        </tr>
-        <tr>
-            <th>Branch 3</th>  <td>1,000</td>  <td>630</td>  <td>200</td> <td>192</td>  <td>48</td>
-        </tr>
-    </table>
-    <p>
-        Simulate the inventory control system for 75 weeks and determine:</p>
-    <ol>
-        <li>
-            The distribution of inventories at the three branches and the warehouse.</li>
-        <li>
-            The distribution of actual monthly sales.<br/>
-            GPSS says the monthly sales average was about <b>1,542</b>.<br/>
-            SimScript says <b><span id='ctl-sales-avg'>?</span></b>.</li>
-        <li>
-            The average value of the inventories at the branches and at the warehouse.<br/>
-            GPSS says the inventories were about <b>172</b>, <b>269</b>, <b>183</b>, and <b>1,831</b>.<br/>
-            SimScript says
-            <b><span id='ctl-stock1-avg'>?</span></b>,
-            <b><span id='ctl-stock2-avg'>?</span></b>,
-            <b><span id='ctl-stock3-avg'>?</span></b>, and
-            <b><span id='ctl-stock0-avg'>?</span></b>.
-            </li>
-        <li>
-            Does the system meet the company’s service policy of one stockout in eight years?<br/>
-            GPSS says there were some stockouts at Branch 3 during the 75-week simulated period.<br/>
-            SimScript detected <b><span id='ctl-stockouts'>?</span></b> stockouts.
-    </ol>`,
-        (sim: StockControl, log: HTMLElement) => {
-            setText('#ctl-sales-avg', format(sim.salesTally.avg * 4, 0)); // one month ~ 4 weeks
-            setText('#ctl-stock1-avg', format(sim.stockTallies[1].avg, 0));
-            setText('#ctl-stock2-avg', format(sim.stockTallies[2].avg, 0));
-            setText('#ctl-stock3-avg', format(sim.stockTallies[3].avg, 0));
-            setText('#ctl-stock0-avg', format(sim.stockTallies[0].avg, 0));
-            setText('#ctl-stockouts', format(sim.stockouts, 0));
-            log.innerHTML = getLineChart('Inventory Distribution',
-                { data: sim.stockHistory[0], name: 'Warehouse', color: 'black', showPoints: true },
-                { data: sim.stockHistory[1], name: 'Branch 1', color: 'red' },
-                { data: sim.stockHistory[2], name: 'Branch 2', color: 'green' },
-                { data: sim.stockHistory[3], name: 'Branch 3', color: 'blue' },
-            );
-        }
-    )
-
-    //-------------------------------------------------------------------------
-    // QTheory
-    showSimulation(
-        new QTheory(),
-        'Queueing Theory',
-        `<p>
-        When feasible, an analytical solution to queuing systems provides a 
-        useful means of estimating the performance of simple systems.</p>
-    <p>
-        This program simulates a system for which the queuing parameters are
-        calculated using the appropriate Pollaczek and Khintchin (P-K) equations.
-        The objective is to verify the results obtained by simulation using GPSS
-        and SimScript.</p>
-    <p>
-        The program simulates an interarrival time of 5 seconds (500 time units),
-        exponentially distributed, and a single service channel.
-        The mean service time is 3 seconds (300 time units).
-        The average utilization of the server is consequently 60%.</p>
-    <p>
-        Three modes of service times are investigated:</p>
-    <ol>
-        <li>Constant service time.</li>
-        <li>Exponentially distributed service time.</li>
-        <li>Erlang (k=2) service time.</li>
-    </ol>
-    <p>
-        Run the simulation for 5,000 minutes and compare the simulation
-        results with the predictions of queuing theory.</p>
-    <table class='params'>
-        <tr>
-            <th>Service</th> <th>Constant</th> <th>Exp</th> <th>Erlang</th>
-        </tr>
-        <tr>
-            <th>Mean Queue Time<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
-                <td>525.0<br/><span class='gpss'>526.7</span><br/><span class='ss' id='qt-wait-ct'>?</span></td>
-                <td>750.0<br/><span class='gpss'>757.5</span><br/><span class='ss' id='qt-wait-exp'>?</span></td>
-                <td>637.5<br/><span class='gpss'>649.4</span><br/><span class='ss' id='qt-wait-erl'>?</span></td>
-        <tr>
-            <th>Mean Queue Length<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
-                <td>1.05<br/><span class='gpss'>1.05</span><br/><span class='ss' id='qt-len-ct'>?</span></td>
-                <td>1.50<br/><span class='gpss'>1.50</span><br/><span class='ss' id='qt-len-exp'>?</span></td>
-                <td>1.28<br/><span class='gpss'>1.05</span><br/><span class='ss' id='qt-len-erl'>?</span></td>
-        </tr>
-        <tr>
-            <th>StDev Queue Time<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
-                <td>319<br/><span class='gpss'>278</span><br/><span class='ss' id='qt-tdev-ct'>?</span></td>
-                <td>750<br/><span class='gpss'>740</span><br/><span class='ss' id='qt-tdev-exp'>?</span></td>
-                <td>415<br/><span class='gpss'>595</span><br/><span class='ss' id='qt-tdev-erl'>?</span></td>
-        </tr>
-        <tr>
-            <th>StDev Queue Length<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
-                <td><br/><span class='gpss'>1.43</span><br/><span class='ss' id='qt-ldev-ct'>?</span></td>
-                <td><br/><span class='gpss'>1.94</span><br/><span class='ss' id='qt-ldev-exp'>?</span></td>
-                <td><br/><span class='gpss'>1.57</span><br/><span class='ss' id='qt-ldev-erl'>?</span></td>
-        </tr>
-    </table>`,
-        (sim: QTheory, log: HTMLElement) => {
-            setText('#qt-wait-ct', format(sim.qCt.averageDwell, 1));
-            setText('#qt-wait-exp', format(sim.qExp.averageDwell, 1));
-            setText('#qt-wait-erl', format(sim.qErl.averageDwell, 1));
-
-            setText('#qt-len-ct', format(sim.qCt.averageLength, 2));
-            setText('#qt-len-exp', format(sim.qExp.averageLength, 2));
-            setText('#qt-len-erl', format(sim.qErl.averageLength, 2));
-
-            setText('#qt-tdev-ct', format(sim.qCt.grossDwell.stdev, 0));
-            setText('#qt-tdev-exp', format(sim.qExp.grossDwell.stdev, 0));
-            setText('#qt-tdev-erl', format(sim.qErl.grossDwell.stdev, 0));
-        
-            setText('#qt-ldev-ct', format(sim.qCt.grossPop.stdev, 2));
-            setText('#qt-ldev-exp', format(sim.qExp.grossPop.stdev, 2));
-            setText('#qt-ldev-erl', format(sim.qErl.grossPop.stdev, 2));
-        }
-    );
-
-    //-------------------------------------------------------------------------
-    // Traffic
-    showSimulation(
-        new Traffic(),
-        'Traffic',
-        `<p>
-        Cars arrive at a T-junction every 6.28 seconds hyperexponentially
-        distributed. The cars then make a left turn northbound onto a
-        highway.</p>
-    <p>
-        When cars cross the southbound lanes, they must wait in a center
-        aisle which can accommodate a maximum of 8 cars.
-        Each car takes 3.6 seconds (Erlang k=4) to cross the traffic lanes.
-        It takes 4 seconds (Erlang k=5) to merge with northbound traffic.</p>
-    <p>
-        Southbound traffic arrives every 55±5 seconds and takes 15±5 seconds
-        to pass the T-junction.
-        Northbound traffic arrives every 60±5 seconds and takes 15±5 seconds
-        to pass.</p>
-    <p>
-        Simulate the traffic at the T-junction for 10 minutes and find:</p>
-    <ol>
-        <li>
-            The transit time of northbound cars turning at the T-junction.<br/>
-            GPSS says the transit time is nearly <b>25</b> seconds.<br/>
-            SimScript says the transit  time is
-            <b><span id='traffic-transit-time'>?</span></b> seconds.</li>
-        <li>
-            The actual Erlang service times.<br/>
-            GPSS says the times were <b>3.6</b> seconds to cross and <b>4.1</b>
-            seconds to merge.<br/>
-            SimScript says the times were <b><span id='traffic-cross-time'>?</span></b>
-            seconds to cross and <b><span id='traffic-merge-time'>?</span></b>
-            seconds to merge.</li>
-        <li>
-            The maximum number of cars queuing in the lane waiting to make a
-            left turn.<br/>
-            GPSS says the maximum number of cars was <b>8</b> cars, and the
-            mean wait to turn was <b>11.5</b> seconds.<br/>
-            SimScript says the maximum number of cars was
-            <b><span id='traffic-turn-cnt'>?</span></b>
-            cars, and the mean wait to turn was
-            <b><span id='traffic-turn-cross'>?</span></b> seconds.<br/>
-            </li>
-    </ol>`,
-        (sim: Traffic, log: HTMLElement) => {
-            setText('#traffic-transit-time', format(sim.qTransit.averageDwell / 100, 0));
-            setText('#traffic-cross-time', format(sim.tCross.avg / 100, 1));
-            setText('#traffic-merge-time', format(sim.tMerge.avg / 100, 1));
-            setText('#traffic-turn-cnt', format(sim.qAisle.grossPop.max, 0));
-            setText('#traffic-turn-cross', format(sim.qCross.averageDwell / 100, 1));
-            log.innerHTML = sim.getStatsTable();
-        });
-
-    //----------------------------------------------------------
-    // Supermarket
-    showSimulation(
-        new Supermarket(),
-        'Supermarket',
-        `<p>
-        Customers arrive by car to shop at a supermarket.</p>
-    <p>
-        The parking lot has space for 650 parked cars.
-        If a customer fails to find a parking space, that customer leaves 
-        immediately without shopping.</p>
-    <p>
-        On average a customer can walk to the supermarket from the parking lot
-        in 60 seconds.
-        Shoppers purchase between 5 and 100 items, uniformly distributed.
-        Customers buying 10 items or less will generally use a basket (70 provided).
-        Customers buying more than 10 items will generally use a cart (650 provided).</p>
-    <p>
-        Shopping time per customer depends on the number of items purchased 
-        (10 seconds per item).
-        Customers select items and then join the shortest queue at one of 17 checkouts.
-        Customers purchasing less than 10 items may choose the express checkout.
-        Checkout time takes 2 seconds per item purchased, plus a time of 25, 30, or 
-        35 seconds. This time depends on the method of payment (cash, check or
-        credit card which are assumed equally likely or probable).
-        After checking out a customer walks to the car (60 seconds), loads goods
-        and leaves the parking lot.</p>
-    <p>
-        The arrival rate of customers is exponentially distributed, starting at 600
-        per hour for half an hour, 900 per hour for one hour, 450 per hour for 
-        one hour and 300 per hour thereafter.</p>
-    <p>
-        Run the simulation for 3 hours and determine:</p>
-    <ol>
-        <li>
-            The transit time of customers.<br/>
-            GPSS says the time was <b>39.4</b> minutes.<br/>
-            SimScript says <b><span id='market-transit'>?</span></b> minutes.</li>
-        <li>
-            The utilization of the parking lot, carts, baskets and checkouts.<br/>
-            GPSS says the checkouts are near capacity.<br/>
-            SimScript says the utilizations are
-            <b><span id='market-utz-park'>?</span>%</b> (parking),
-            <b><span id='market-utz-cart'>?</span>%</b> (carts),
-            <b><span id='market-utz-basket'>?</span>%</b> (baskets),
-            <b><span id='market-utz-checkout'>?</span>%</b> (checkout), and
-            <b><span id='market-utz-checkoutx'>?</span>%</b> (checkout express).</li>
-        <li>
-            The number of customers in the supermarket at one minute intervals<br/>
-            GPSS says there were <b>399</b> shoppers on average, most waiting to check out.<br/>
-            SimScript says there were <b><span id='market-transit-avg'>?</span></b> shoppers on average.
-            The chart below shows the number of customers grew in the periods of high
-            traffic, and decreased later. At the end of the simulation, there were still
-            <b><span id='market-transit-last'>?</span></b> customers waiting to check out.</li>
-    </ol>
-    <div id='market-customers'></div>`,
-        (sim: Supermarket, log: HTMLElement) => {
-            setText('#market-transit', format(sim.qTransit.averageDwell / 600, 1));
-            setText('#market-utz-park', format(sim.qParking.utilization * 100, 0));
-            setText('#market-utz-cart', format(sim.qCart.utilization * 100, 0));
-            setText('#market-utz-basket', format(sim.qBasket.utilization * 100, 0));
-            setText('#market-utz-checkout', format(sim.qCheckout.utilization * 100, 0));
-            setText('#market-utz-checkoutx', format(sim.qCheckoutX.utilization * 100, 0));
-            
-            const transit = sim.qTransit.grossPop;
-            setText('#market-transit-avg', format(transit.avg, 0));
-            setText('#market-transit-last', format(sim.qTransit.pop, 0));
-            setText('#market-customers', getLineChart('Customers/minute',
-                { data: sim.customers, name: 'Total', color: 'black', showPoints: true },
-                { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green', width: '1' },
-                { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red', width: '1' },
-            ), true);
-            //log.innerHTML = sim.getStatsTable();
-        }
-    );
-
-    //-------------------------------------------------------------------------
-    // Port
-    showSimulation(
-        new Port(),
-        'Port',
-        `<p>
-        A harbor port has three berths 1, 2 and 3.</p>
-    <p>
-        At any given time Berth1 can accommodate two small ships, or one
-        medium ship. Berth2 and Berth3 can each handle one large ship,
-        two medium ships or four small ships.</p>
-    <p>
-        The interarrival time of ships is 26 hours, exponentially distributed. 
-        Small, medium, and large ships are in the proportions 5:3:2.</p>
-    <p>
-        Queuing for berths is on a first-come first-serve basis, except that no
-        medium or small ship may go to a berth for which a large ship is waiting,
-        and medium ships have a higher priority than small ships.</p>
-    <p>
-        Unloading times for ships are exponentially distributed with mean times
-        as follows: small ships, 15 hours; medium ships, 30 hours; large ships,
-        45 hours.</p>
-    <p>
-        The loading times are as follows: small ships, 24±6 hours uniformly distributed;
-        medium ships, 36±10 hours uniformly distributed; large ships 56±12 hours uniformly
-        distributed.</p>
-    <p>
-        The tide must be high for large ships to enter or leave Berths 2 and 3.
-        Low tide lasts 3 hours, high tide, 10 hours.</p>
-    <p>
-        Run the simulation for 500 days and determine:</p>
-    <ol>
-        <li>
-            The distribution of transit times of each type of ship.<br/>
-            GPSS says the average transit times were about <b>44</b>, <b>74</b>,
-            and <b>115</b> hours<br/>
-            SimScript says the times were <b><span id='port-transit-small'>?</span></b>,
-            <b><span id='port-transit-medium'>?</span></b>, and
-            <b><span id='port-transit-large'>?</span></b> hours.</li>
-        <li>
-            The utilization of the three berths.<br/>
-            GPSS says the utilizations were <b>52%</b>, <b>49%</b>, and <b>54%</b>.<br/>
-            SimScript says the utilizations were <b><span id='port-utz-berth1'>?</span>%</b>,
-            <b><span id='port-utz-berth2'>?</span>%</b>, and
-            <b><span id='port-utz-berth3'>?</span>%</b>.</li>
-    </ol>`,
-        (sim: Port, log: HTMLElement) => {
-            setText('#port-transit-small', format(sim.qTransit[0].averageDwell, 0));
-            setText('#port-transit-medium', format(sim.qTransit[1].averageDwell, 0));
-            setText('#port-transit-large', format(sim.qTransit[2].averageDwell, 0));
-            setText('#port-utz-berth1', format(sim.qBerths[0].utilization * 100, 0));
-            setText('#port-utz-berth2', format(sim.qBerths[1].utilization * 100, 0));
-            setText('#port-utz-berth3', format(sim.qBerths[2].utilization * 100, 0));
-            //log.innerHTML = sim.getStatsTable();
-        }
-    );
-
-}
-
-//----------------------------------------------------------
-// GPSS sample Group end
-endSampleGroup();
-
-//----------------------------------------------------------
 // SimScript sample Group
 startSampleGroup(
     'SimScript Samples',
@@ -2594,9 +1725,872 @@ if (true) {
         }
     );
 }
+endSampleGroup();
 
 //----------------------------------------------------------
-// SimScript sample Group end
+// GPSS sample Group
+startSampleGroup(
+    'GPSS-Inspired Samples',
+    `<p>
+        These samples were inspired by the
+        <a href="http://www.minutemansoftware.com/tutorial/tutorial_manual.htm">GPSS samples</a>
+        published by Minuteman software.</p>
+    <p>
+        They show how you can use SimScript to simulate a wide range of practical
+        applications and allow you to compare results obtained by GPSS and SimScript.</p>`
+);
+if (true) {
+
+    //----------------------------------------------------------
+    // Telephone
+    showSimulation(
+        new Telephone(),
+        'Telephone',
+        `<p>
+        A simple telephone system has two external lines.
+        Calls, which originate externally, arrive every 100±60 seconds.
+        When the line is occupied, the caller redials after 5±1 minutes have elapsed.
+        Call duration is 3±1 minutes.</p>
+    <p>
+        A tabulation of the distribution of the time each caller takes to make a
+        successful call is required.</p>
+    <ol>
+        <li>
+            How long will it take for 200 calls to be completed?
+            GPSS says <b>359.16</b> minutes,
+            SimScript says <b><span id='gpss-tel-total'>?</span></b> minutes.</li>
+        <li>
+            How long did it take callers to complete their calls?
+            GPSS says most calls were completed in less than <b>9.5</b> minutes,
+            but <i>many took much longer</i>.
+            SimScript says the average call took
+            <b><span id='gpss-tel-complete'>?</span></b> minutes.</li>
+        <li>
+            What is the utilization of the phone lines?
+            GPSS says the lines are utilized at <b>84%</b> of capacity,
+            SimScript says <b><span id='gpss-tel-utz'>?</span>%</b>.</li>
+    </ol>`,
+        (sim: Telephone, log: HTMLElement) => {
+            setText('#gpss-tel-total', format(sim.timeNow / 60));
+            setText('#gpss-tel-complete', format(sim.totalDuration.averageDwell / 60));
+            setText('#gpss-tel-utz', format(sim.lines.utilization * 100, 0));
+            log.innerHTML = sim.totalDuration.grossDwell.getHistogramChart('Call Duration (min)', 1 / 60);
+        }
+    )
+
+    //----------------------------------------------------------
+    // Inventory
+    showSimulation(
+        new Inventory(),
+        'Inventory',
+        `<p>
+        A finished product inventory is controlled by means of a weekly
+        review system.
+        The initial stock is 1,000 units.
+        The daily demand varies between 40 and 63 units with equal probability.
+        The target inventory is 1,000 units, that is, the order is placed for the
+        difference between the current stock and 1,000 units.
+        If the current stock is 800 or more, no order is placed for that week.
+        The company operates a five-day week. The lead time for delivery of an
+        order is one week.</p>
+    <p>
+        Simulate the inventory system for 200 days and determine if any stockouts occur.
+        GPSS says there won't be any. SimScript says there will be
+        <b><span id='gpss-inv-stockout'>?</span></b>.</p>`,
+        (sim: Inventory, log: HTMLElement) => {
+            setText('#gpss-inv-stockout', format(sim.stockOuts, 0));
+            log.innerHTML = getLineChart('Stock',
+                { data: sim.stockHistory, color: 'green', showPoints: true }
+            );
+        }
+    )
+
+    //----------------------------------------------------------
+    // TVRepairShop
+    showSimulation(
+        new TVRepairShop(),
+        'TV Repair Shop',
+        `<p>
+        A television shop employs a single repairman to overhaul its
+        rented television sets, service customers’ sets and do
+        on-the-spot repairs.</p>
+    <ul>
+        <li>
+            Overhaul of company owned television sets commences every 40±8
+            hours and takes 10±1 hours to complete.</li>
+        <li>
+            On-the-spot repairs, such as fuse replacement, tuning and
+            adjustments are done immediately. These arrive every 90±10 minutes
+            and take 15±5 minutes.</li>
+        <li>
+            Customers’ television sets requiring normal service arrive every
+            5±1 hours and take 120±30 minutes to complete.</li>
+    </ul>
+    <p>
+        Normal service of television sets has a higher priority than the 
+        overhaul of company owned, rented sets; on-the-spot repairs have
+        the highest priority.</p>
+    <p>
+        After 50 days of operation, determine the following:</p>
+    <ol>
+        <li>
+            The repairman utilization. GPSS says <b>78%</b>,
+            SimScript says <b><span id='tv-utz'>?</span>%</b>.</li>
+        <li>
+            The average waiting times for each type of job.<br/>
+            GPSS says <b>12</b> min overall, <b>25</b> for overhaul jobs,
+            <b>51</b> for customer jobs, and <b>zero</b> for on-the-spot jobs;<br/>
+            SimScript says <b><span id='tv-wait'>?</span></b> min overall,
+            <b><span id='tv-wait-overhaul'>?</span></b> for overhaul jobs,
+            <b><span id='tv-wait-customer'>?</span></b> for customer jobs, and
+            <b><span id='tv-wait-ots'>?</span></b> for on-the-spot jobs.</li>
+    </ol>`,
+        (sim: TVRepairShop, log: HTMLElement) => {
+            setText('#tv-utz', format(sim.qRepairMan.utilization * 100, 0));
+            setText('#tv-wait', format(sim.qAllJobs.averageDwell, 0));
+            setText('#tv-wait-overhaul', format(sim.qOverhaulJobs.averageDwell, 0));
+            setText('#tv-wait-customer', format(sim.qCustomerJobs.averageDwell, 0));
+            setText('#tv-wait-ots', format(sim.qOnTheSpotJobs.averageDwell, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    )
+
+    //----------------------------------------------------------
+    // QualityControl
+    showSimulation(
+        new QualityControl(),
+        'Quality Control',
+        `<p>
+        A component is manufactured by a sequence of three processes, 
+        each followed by a short two minute inspection.</p>
+    <p>
+        The first process requires 20% of components to be reworked.
+        The second and third processes require 15% and 5% of components reworked.</p>
+    <p>
+        Sixty percent of components reworked are scrapped and the remaining forty
+        percent need reprocessing on the process from which they were rejected.</p>
+    <p>
+        Manufacturing of a new component commences on average, every 30 minutes,
+        exponentially distributed.</p>
+    <p>
+        Simulate the manufacturing processes for 100 completed components.
+        Determine the time taken
+        (GPSS says about <b>69</b> hours,
+        Simscript says <b><span id='qc-tm'>?</span></b> hours)
+        and the number of components rejected
+        (GPSS says <b>21</b>,
+        Simscript says <b><span id='qc-rejected'>?</span></b>).</p>`,
+        (sim: QualityControl, log: HTMLElement) => {
+            log.innerHTML = sim.getStatsTable();
+            setText('#qc-tm', format(sim.timeNow / 60, 0))
+            setText('#qc-rejected', format(sim.cntRejected, 0));
+        }
+    );
+
+    //-------------------------------------------------------------------------
+    // OrderPoint
+    showSimulation(
+        new OrderPoint(),
+        'Order Point',
+        `<p>
+        An inventory system is controlled by an order point, set at 600 units,
+        and an economic order quantity of 500 units.</p>
+    <p>
+        The initial stock quantity is 700. Daily demand is in the range 40 to 63
+        units, evenly distributed.
+        The lead-time from ordering to delivery of goods is one week (5 days).</p>
+    <p>
+        Simulate the inventory system for a period of 100 days.
+        Determine the distribution of inventory and the actual daily sales.</p>`,
+        (sim: OrderPoint, log: HTMLElement) => {
+
+            // show inventory chart and stats
+            log.innerHTML = getLineChart('Demand and Inventory',
+                { data: [sim.stockTally.min, sim.stockTally.min], color: '#d0d0d0', width: '1' },
+                { data: [sim.stockTally.max, sim.stockTally.max], color: '#d0d0d0', width: '1' },
+                { data: [sim.stockTally.avg, sim.stockTally.avg], color: '#d0d0d0', width: '1' },
+                { name: 'Inventory', data: sim.inventoryLevel, color: 'blue', showPoints: true },
+                { name: 'Daily Orders', data: sim.dailyOrders, color: 'green' },
+            ) + `
+            Minimum Inventory: <b>${format(sim.stockTally.min, 0)}</b> units.<br/>
+            Maximum Inventory: <b>${format(sim.stockTally.max, 0)}</b> units.<br/>
+            Average Inventory: <b>${format(sim.stockTally.avg, 0)}</b> units.<br/>
+        `;
+        }
+    );
+
+    //-------------------------------------------------------------------------
+    // Manufacturing
+    showSimulation(
+        new Manufacturing(),
+        'Manufacturing',
+        `<p>
+        A manufacturing department of an electronics company makes digital
+        watches. In the dispatch department, the watches are packed by an
+        automatic packing machine, in display packets, in the quantities
+        ordered by retailers.</p>
+    <p>
+        The order size is given by an empirical function. The mean time
+        between order arrivals is 15 minutes, exponentially distributed.
+        The packing time per order is 120 seconds plus 10 seconds per watch
+        packed in the order.</p>
+    <p>
+        The manufacturing department produces the digital watches in lot
+        sizes of 60 units, in 40±5 minutes.</p>
+    <p>
+        Simulate 5 days of the company operation to provide the following
+        information:</p>
+    <ol>
+        <li>
+            The average number of orders waiting in the packing department.<br/>
+            GPSS says <b>0.12</b>,
+            SimScript says <b><span id='man-wait'>?</span></b> orders.</li>
+        <li>
+            The quantity of watches dispatched each day.<br/>
+            SimScript says <b><span id='man-dispatched'>?</span></b>
+            watches per day.</li>
+        <li>
+            The distribution of transit times of orders.
+            SimScript says orders take <b><span id='man-transit'>?</span></b>
+            minutes to process on average.</li>
+    </ol>`,
+        (sim: Manufacturing, log: HTMLElement) => {
+            setText('#man-wait', format(sim.qPacking.averageLength, 2));
+            setText('#man-dispatched', format(sim.dispatched / 5, 0));
+            setText('#man-transit', format(sim.qOrderTransit.averageDwell));
+            //log.innerHTML = sim.getStatsTable();
+            log.innerHTML = sim.qOrderTransit.grossDwell.getHistogramChart('Order Transit Times (min)');
+        }
+    );
+
+    //----------------------------------------------------------
+    // Textile
+    showSimulation(
+        new Textile(),
+        'Textile',
+        `<p>
+        A textile factory produces fine mohair yarn in three departments.
+        The first department draws and blends the raw material, in sliver form,
+        and reduces it to a suitable thickness for spinning, in 5 reducer frames.
+        The second department spins the yarn in one of 40 spinning frames.
+        The final process is in the winding department, where the yarn is wound
+        from spinning bobbins onto cones for dispatch.</p>
+    <p>
+        There are 8 winding frames to perform the winding operation.
+        The factory works 8 hours per day.
+        The unit of production is 10 kilograms of yarn.
+        Reducing frames produce one unit every 38±2 minutes, while the spinning 
+        frames and winding frames produce one unit in 320±20 minutes and 64±4
+        minutes, respectively.</p>
+    <p>
+        The initial inventory of reduced material is 50 units, spun material
+        is 25 units and finished yarn is 25 units.
+        The finished material is dispatched, in a container of capacity 200
+        units, every two days.</p>
+    <ol>
+        <li>
+            Simulate the production process in the textile factory for 5 days.</li>
+        <li>
+            Find the distribution of the in-process inventories.</li>
+        <li>
+            Determine the utilization of each of the three types of machine.<br/>
+            GPSS says the utilization of reducers was about <b>39%</b>,
+            spinners <b>36%</b>, and winders <b>32%</b>.<br/>
+            SimScript says the utilization of
+            reducers was <b><span id='txt-utz-red'>?</span>%</b>,
+            spinners <b><span id='txt-utz-spin'>?</span>%</b>, and
+            winders <b><span id='txt-utz-wind'>?</span>%</b>.</li>
+    </ol>`,
+        (sim: Textile, log: HTMLElement) => {
+            setText('#txt-utz-red', format(sim.qReducers.utilization * 100, 0));
+            setText('#txt-utz-spin', format(sim.qSpinners.utilization * 100, 0));
+            setText('#txt-utz-wind', format(sim.qWinders.utilization * 100, 0));
+            //log.innerHTML = sim.getStatsTable();
+            log.innerHTML =
+                getLineChart('In-Process Inventories',
+                    { name: 'Reduced', data: sim.recReduced, color: 'red', showPoints: true },
+                    { name: 'Wound', data: sim.recWound, color: 'green', showPoints: true },
+                    { name: 'Spun', data: sim.recSpun, color: 'blue', showPoints: true },
+                ) +
+                sim.getStatsTable();
+        }
+    )
+
+    //----------------------------------------------------------
+    // Oil Depot
+    showSimulation(
+        new OilDepot(),
+        'Oil Depot',
+        `<p>
+        An oil storage depot distributes three grades of fuel: a) home heating
+        oil, b) light industrial fuel oil, and c) diesel fuel for road vehicles.
+        There is one pump for each grade of fuel, and the demand for each is the same.
+        Orders for fuel oil vary between 3,000 and 5,000 gallons, in increments of 10
+        gallons, evenly distributed.</p>
+    <p>
+        The time required to fill fuel trucks is a function of the following:</p>
+    <ol>
+        <li>The order size.</li>
+        <li>The pumping rate (6, 5 and 7 minutes per 1,000 gallons).</li>
+        <li>The number of vehicles in the depot (30 seconds extra per vehicle).</li>
+        <li>A two-minute fixed setup time.</li>
+    </ol>
+    <p>
+        The depot can hold a maximum of twelve trucks.
+        The mean arrival rate of trucks is 18 minutes, modified by the following
+        function:</p>
+    <table>
+        <tr>
+            <td>Frequency</td>
+            <td>.20</td>
+            <td>.40</td>
+            <td>.25</td>
+            <td>.15</td>
+        </tr>
+        <tr>
+            <td>Ratio to mean</td>
+            <td>.45</td>
+            <td>.60</td>
+            <td>1.5</td>
+            <td>2.0</td>
+        </tr>
+    </table>
+    <p>
+        Simulate the operation of the oil storage depot for 5 days and find:</p>
+    <ul>
+        <li>
+            The distribution of transit times of trucks.<br/>
+            GPSS says the mean is about <b>35</b> min with
+            standard deviation <b>14</b> min.<br/>
+            SimScript says the mean is <b><span id="oil-mean">?</span></b> min and
+            standard deviation <b><span id="oil-std">?</span> min</b>.</li>
+        <li>
+            The total quantity of fuel sold each day.<br/>
+            GPSS says <b>109,490</b> gallons,
+            SimScript says <b><span id="oil-sales">?</span></b> gallons.</li>
+    </ul>`,
+        (sim: OilDepot, log: HTMLElement) => {
+            setText('#oil-mean', format(sim.depot.grossDwell.avg, 0));
+            setText('#oil-std', format(sim.depot.grossDwell.stdev, 0));
+            setText('#oil-sales', format(sim.gallonsSoldPerDay, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    )
+
+    //-------------------------------------------------------------------------
+    // Pump Assembly
+    showSimulation(
+        new PumpAssembly(),
+        'Pump Assembly',
+        `<p>
+        A manufacturer makes centrifugal pump units which are assembled to
+        customer orders. The orders arrive on average, every 5 hours,
+        exponentially distributed.</p>
+    <p>
+        When the order arrives, two copies are made:</p>
+    <ol>
+        <li>
+            The original order is used to obtain a motor from stock and
+            prepare it for assembly (200±100 minutes).</li>
+        <li>
+            The first copy is used to order and adapt a pump
+            (180±120 minutes),</li>
+        <li>
+            The second copy is used to initiate the manufacture of the
+            baseplate (80±20 minutes).</li>
+    </ol>
+    <p>
+        When the pump and the baseplate are ready, a test fitting is
+        carried out (50±10 minutes).
+        All three components are assembled when they are available.
+        The unit is then dismantled, and the pump and motor are painted,
+        and the baseplate is galvanized.
+        Final assembly then takes place (150±30 minutes).</p>
+    <ol>
+        <li>
+            Investigate the utilization of the manufacturing facilities.</li>
+        <li>
+            Determine the transit times and delays, of customers’ orders.</li>
+        <li>
+            What Facility will be a bottleneck if orders increase significantly?</li>
+        <li>
+            Simulate the assembly of 50 motor-pump units.</li>
+    </ol>
+    <p>
+        GPSS says the facilities representing capital equipment have utilizations
+        from <b>31</b>% to <b>73%</b>.<br/>
+        SimScript says the utilizations range from
+        <b><span id='pump-utz-min'>?</span>%</b> to
+        <b><span id='pump-utz-max'>?</span>%</b>.</p>
+    <p>
+        GPSS says the mean order completion time was <b>878</b> min, with
+        a standard deviation of about <b>257</b> min.<br/>
+        SimScript says the mean value was
+        <b><span id='pump-tm-avg'>?</span></b> min, and the standard deviation was
+        <b><span id='pump-tm-std'>?</span></b> min.</p>
+    <p>
+        The pump station and the base station have the highest utilizations
+        (<b><span id='pump-utz-pump'>?</span>%</b> and <b><span id='pump-utz-base'>?</span>%</b>).
+        If all activity is increased proportionately, they will be the first to
+        saturate.</p>
+    `,
+        (sim: PumpAssembly, log: HTMLElement) => {
+            const utz = [];
+            sim.queues.forEach(q => {
+                if (q.capacity == 1) {
+                    utz.push(q.utilization);
+                }
+            });
+            setText('#pump-utz-min', format(Math.min(...utz) * 100, 0));
+            setText('#pump-utz-max', format(Math.max(...utz) * 100, 0));
+            setText('#pump-tm-avg', format(sim.qOrders.grossDwell.avg, 0));
+            setText('#pump-tm-std', format(sim.qOrders.grossDwell.stdev, 0));
+            setText('#pump-utz-pump', format(sim.qPumps.utilization * 100, 0));
+            setText('#pump-utz-base', format(sim.qBaseStation.utilization * 100, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    );
+
+    //-------------------------------------------------------------------------
+    // RobotFMS
+    showSimulation(
+        new RobotFMS(),
+        'Robot FMS',
+        `<p>
+        An experimental, robot operated, flexible manufacturing system has
+        two computer numerical control machine tools, an arrival area, and
+        a finished parts area.</p>
+    <p>
+        Components arrive every 150 seconds, exponentially distributed, and
+        are machined on both machines in sequence.</p>
+    <p>
+        The robot takes 8±1 seconds to grip or release components, and 6
+        seconds to move components from the arrival area to the first machine.
+        Processing time on the first machine is normally distributed, with a
+        mean of 60 seconds and a standard deviation of 10 seconds.</p>
+    <p>
+        The robot takes 7 seconds to move from the first machine to the second
+        machine. Machining time on the second machine is 100 seconds,
+        exponentially distributed.</p>
+    <p>
+        Finally, the robot takes 5 seconds to move components from the second
+        machine to the finished parts storage area.</p>
+    <p>
+        Simulate the manufacturing cell operation, for 75 completed parts,
+        and find:</p>
+    <ol>
+        <li>
+            The distribution of transit times of jobs.<br/>
+            GPSS says the mean time was <b>452</b> seconds, with a
+            standard deviation of around <b>251</b> seconds;<br/>
+            SimScript says <b><span id='fms-tm-mean'>?</span></b> and
+            <b><span id='fms-tm-std'>?</span></b> seconds.</li>
+        <li>
+            The utilization of the robot and the machine tools.<br/>
+            GPSS says the Robot, Machine 1, and Machine 2 had utilizations
+            of <b>36%</b>, <b>33%</b> and <b>64%</b>;<br/>
+            SimScript says
+            <b><span id='fms-utz-robot'>?</span>%</b>,
+            <b><span id='fms-utz-m1'>?</span>%</b>, and
+            <b><span id='fms-utz-m2'>?</span>%</b>.</li>
+        <li>
+            The maximum storage areas required in the cell.<br/>
+            GPSS says the maximum storage required totals <b>13</b>;<br/>
+            SimScript says <b><span id='fms-stg'>?</span></b>.</li>
+    </ol>`,
+        (sim: RobotFMS, log: HTMLElement) => {
+            setText('#fms-tm-mean', format(sim.qJobs.grossDwell.avg, 0));
+            setText('#fms-tm-std', format(sim.qJobs.grossDwell.stdev, 0));
+            setText('#fms-utz-robot', format(sim.qRobot.utilization * 100, 0));
+            setText('#fms-utz-m1', format(sim.qMachine1.utilization * 100, 0));
+            setText('#fms-utz-m2', format(sim.qMachine2.utilization * 100, 0));
+            setText('#fms-stg', format(sim.qJobs.grossPop.max, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    )
+
+    //-------------------------------------------------------------------------
+    // Bicycle Factory
+    showSimulation(
+        new BicycleFactory(),
+        'Bicycle Factory',
+        `<p>
+        A factory assembles bicycles employing the following staff: 2 clerks,
+        3 framers, 1 saddler, 1 handler, 1 wheeler, 1 pedaler, 4 assemblers,
+        and 3 packers.</p>
+    <p>
+        The company commences to assemble a bicycle every 50±10 minutes.
+        The clerical department prepares the delivery documents, instructions, 
+        toolkit and invoice.</p>
+    <p>
+        Each department withdraws the component required for a particular order
+        from stock, inspects (3±1 minutes) and prepares it for assembly.
+        The frame is manufactured and takes 65 minutes, exponentially distributed.
+        When the components are available, they are assembled.
+        This takes on average 90 minutes, with a standard deviation of
+        10 minutes.</p>
+    <p>
+        When the delivery documents, toolkit, and the assembled bicycle are
+        ready, they are packed (40±5 minutes) in preparation for delivery.</p>
+    <p>
+        Simulate the bicycle factory assembly operation for 5 days and find:</p>
+    <ol>
+        <li>
+            The utilization of the staff in each department.<br/>
+            GPSS says the Clerks are busiest with a utilization of <b>78%</b>.<br/>
+            SimScript says their utilization is <b><span id='bike-clerk-utz'>?</span>%</b>.</li>
+        <li>
+            The transit times of customers’ orders.<br/>
+            GPSS says the average was <b>236</b> min with a standard deviation of <b>51</b> min.<br/>
+            SimScript says the average was <b><span id='bike-tm-mean'>?</span></b> min with a
+            <b><span id='bike-tm-std'>?</span></b> min standard deviation.</li>
+    </ol>`,
+        (sim: BicycleFactory, log: HTMLElement) => {
+            setText('#bike-clerk-utz', format(sim.qClerks.utilization * 100, 0));
+            setText('#bike-tm-mean', format(sim.qTransit.grossDwell.avg, 0));
+            setText('#bike-tm-std', format(sim.qTransit.grossDwell.stdev, 0));
+            log.innerHTML = sim.getStatsTable();
+        }
+    );
+
+    //-------------------------------------------------------------------------
+    // Stock Control
+    showSimulation(
+        new StockControl(),
+        'Stock Control',
+        `<p>
+        A manufacturing company makes waste disposal units, which it sells for
+        $200 each. Total annual demand is for 20,000 units. Distribution is
+        through three branches from a factory warehouse.</p>
+    <p>
+        The lead-time for delivery of an order from the manufacturing plant to
+        the factory warehouse is 4 weeks. The lead-time for delivery of an order
+        from the factory warehouse to the branches is 1 week.</p>
+    <p>
+        The proposed inventory control method is by an economic order quantity 
+        and order point system. The initial stocks, order points, economic order
+        quantities, weekly demand and standard deviation are shown in the table
+        below:</p>
+    <table class='params'>
+        <tr>
+            <th>Location</th> <th>Initial Stock</th> <th>Order Point</th>
+            <th>Order Qty</th> <th>Demand Avg</th> <th>Demand Stdev</th>
+        </tr>
+        <tr>
+            <th>Warehouse</th> <td>3,400</td> <td>2,100</td> <td>2,300</td>
+        </tr>
+        <tr>
+            <th>Branch 1</th>  <td>430</td>  <td>240</td>  <td>115</td>  <td>64</td>  <td>24</td>
+        </tr>
+        <tr>
+            <th>Branch 2</th>  <td>600</td>  <td>430</td>  <td>165</td>  <td>128</td>  <td>32</td>
+        </tr>
+        <tr>
+            <th>Branch 3</th>  <td>1,000</td>  <td>630</td>  <td>200</td> <td>192</td>  <td>48</td>
+        </tr>
+    </table>
+    <p>
+        Simulate the inventory control system for 75 weeks and determine:</p>
+    <ol>
+        <li>
+            The distribution of inventories at the three branches and the warehouse.</li>
+        <li>
+            The distribution of actual monthly sales.<br/>
+            GPSS says the monthly sales average was about <b>1,542</b>.<br/>
+            SimScript says <b><span id='ctl-sales-avg'>?</span></b>.</li>
+        <li>
+            The average value of the inventories at the branches and at the warehouse.<br/>
+            GPSS says the inventories were about <b>172</b>, <b>269</b>, <b>183</b>, and <b>1,831</b>.<br/>
+            SimScript says
+            <b><span id='ctl-stock1-avg'>?</span></b>,
+            <b><span id='ctl-stock2-avg'>?</span></b>,
+            <b><span id='ctl-stock3-avg'>?</span></b>, and
+            <b><span id='ctl-stock0-avg'>?</span></b>.
+            </li>
+        <li>
+            Does the system meet the company’s service policy of one stockout in eight years?<br/>
+            GPSS says there were some stockouts at Branch 3 during the 75-week simulated period.<br/>
+            SimScript detected <b><span id='ctl-stockouts'>?</span></b> stockouts.
+    </ol>`,
+        (sim: StockControl, log: HTMLElement) => {
+            setText('#ctl-sales-avg', format(sim.salesTally.avg * 4, 0)); // one month ~ 4 weeks
+            setText('#ctl-stock1-avg', format(sim.stockTallies[1].avg, 0));
+            setText('#ctl-stock2-avg', format(sim.stockTallies[2].avg, 0));
+            setText('#ctl-stock3-avg', format(sim.stockTallies[3].avg, 0));
+            setText('#ctl-stock0-avg', format(sim.stockTallies[0].avg, 0));
+            setText('#ctl-stockouts', format(sim.stockouts, 0));
+            log.innerHTML = getLineChart('Inventory Distribution',
+                { data: sim.stockHistory[0], name: 'Warehouse', color: 'black', showPoints: true },
+                { data: sim.stockHistory[1], name: 'Branch 1', color: 'red' },
+                { data: sim.stockHistory[2], name: 'Branch 2', color: 'green' },
+                { data: sim.stockHistory[3], name: 'Branch 3', color: 'blue' },
+            );
+        }
+    )
+
+    //-------------------------------------------------------------------------
+    // QTheory
+    showSimulation(
+        new QTheory(),
+        'Queueing Theory',
+        `<p>
+        When feasible, an analytical solution to queuing systems provides a 
+        useful means of estimating the performance of simple systems.</p>
+    <p>
+        This program simulates a system for which the queuing parameters are
+        calculated using the appropriate Pollaczek and Khintchin (P-K) equations.
+        The objective is to verify the results obtained by simulation using GPSS
+        and SimScript.</p>
+    <p>
+        The program simulates an interarrival time of 5 seconds (500 time units),
+        exponentially distributed, and a single service channel.
+        The mean service time is 3 seconds (300 time units).
+        The average utilization of the server is consequently 60%.</p>
+    <p>
+        Three modes of service times are investigated:</p>
+    <ol>
+        <li>Constant service time.</li>
+        <li>Exponentially distributed service time.</li>
+        <li>Erlang (k=2) service time.</li>
+    </ol>
+    <p>
+        Run the simulation for 5,000 minutes and compare the simulation
+        results with the predictions of queuing theory.</p>
+    <table class='params'>
+        <tr>
+            <th>Service</th> <th>Constant</th> <th>Exp</th> <th>Erlang</th>
+        </tr>
+        <tr>
+            <th>Mean Queue Time<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td>525.0<br/><span class='gpss'>526.7</span><br/><span class='ss' id='qt-wait-ct'>?</span></td>
+                <td>750.0<br/><span class='gpss'>757.5</span><br/><span class='ss' id='qt-wait-exp'>?</span></td>
+                <td>637.5<br/><span class='gpss'>649.4</span><br/><span class='ss' id='qt-wait-erl'>?</span></td>
+        <tr>
+            <th>Mean Queue Length<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td>1.05<br/><span class='gpss'>1.05</span><br/><span class='ss' id='qt-len-ct'>?</span></td>
+                <td>1.50<br/><span class='gpss'>1.50</span><br/><span class='ss' id='qt-len-exp'>?</span></td>
+                <td>1.28<br/><span class='gpss'>1.05</span><br/><span class='ss' id='qt-len-erl'>?</span></td>
+        </tr>
+        <tr>
+            <th>StDev Queue Time<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td>319<br/><span class='gpss'>278</span><br/><span class='ss' id='qt-tdev-ct'>?</span></td>
+                <td>750<br/><span class='gpss'>740</span><br/><span class='ss' id='qt-tdev-exp'>?</span></td>
+                <td>415<br/><span class='gpss'>595</span><br/><span class='ss' id='qt-tdev-erl'>?</span></td>
+        </tr>
+        <tr>
+            <th>StDev Queue Length<br/><span class='gpss'>GPSS</span><br/><span class='ss'>SimScript</span></th>
+                <td><br/><span class='gpss'>1.43</span><br/><span class='ss' id='qt-ldev-ct'>?</span></td>
+                <td><br/><span class='gpss'>1.94</span><br/><span class='ss' id='qt-ldev-exp'>?</span></td>
+                <td><br/><span class='gpss'>1.57</span><br/><span class='ss' id='qt-ldev-erl'>?</span></td>
+        </tr>
+    </table>`,
+        (sim: QTheory, log: HTMLElement) => {
+            setText('#qt-wait-ct', format(sim.qCt.averageDwell, 1));
+            setText('#qt-wait-exp', format(sim.qExp.averageDwell, 1));
+            setText('#qt-wait-erl', format(sim.qErl.averageDwell, 1));
+
+            setText('#qt-len-ct', format(sim.qCt.averageLength, 2));
+            setText('#qt-len-exp', format(sim.qExp.averageLength, 2));
+            setText('#qt-len-erl', format(sim.qErl.averageLength, 2));
+
+            setText('#qt-tdev-ct', format(sim.qCt.grossDwell.stdev, 0));
+            setText('#qt-tdev-exp', format(sim.qExp.grossDwell.stdev, 0));
+            setText('#qt-tdev-erl', format(sim.qErl.grossDwell.stdev, 0));
+        
+            setText('#qt-ldev-ct', format(sim.qCt.grossPop.stdev, 2));
+            setText('#qt-ldev-exp', format(sim.qExp.grossPop.stdev, 2));
+            setText('#qt-ldev-erl', format(sim.qErl.grossPop.stdev, 2));
+        }
+    );
+
+    //-------------------------------------------------------------------------
+    // Traffic
+    showSimulation(
+        new Traffic(),
+        'Traffic',
+        `<p>
+        Cars arrive at a T-junction every 6.28 seconds hyperexponentially
+        distributed. The cars then make a left turn northbound onto a
+        highway.</p>
+    <p>
+        When cars cross the southbound lanes, they must wait in a center
+        aisle which can accommodate a maximum of 8 cars.
+        Each car takes 3.6 seconds (Erlang k=4) to cross the traffic lanes.
+        It takes 4 seconds (Erlang k=5) to merge with northbound traffic.</p>
+    <p>
+        Southbound traffic arrives every 55±5 seconds and takes 15±5 seconds
+        to pass the T-junction.
+        Northbound traffic arrives every 60±5 seconds and takes 15±5 seconds
+        to pass.</p>
+    <p>
+        Simulate the traffic at the T-junction for 10 minutes and find:</p>
+    <ol>
+        <li>
+            The transit time of northbound cars turning at the T-junction.<br/>
+            GPSS says the transit time is nearly <b>25</b> seconds.<br/>
+            SimScript says the transit  time is
+            <b><span id='traffic-transit-time'>?</span></b> seconds.</li>
+        <li>
+            The actual Erlang service times.<br/>
+            GPSS says the times were <b>3.6</b> seconds to cross and <b>4.1</b>
+            seconds to merge.<br/>
+            SimScript says the times were <b><span id='traffic-cross-time'>?</span></b>
+            seconds to cross and <b><span id='traffic-merge-time'>?</span></b>
+            seconds to merge.</li>
+        <li>
+            The maximum number of cars queuing in the lane waiting to make a
+            left turn.<br/>
+            GPSS says the maximum number of cars was <b>8</b> cars, and the
+            mean wait to turn was <b>11.5</b> seconds.<br/>
+            SimScript says the maximum number of cars was
+            <b><span id='traffic-turn-cnt'>?</span></b>
+            cars, and the mean wait to turn was
+            <b><span id='traffic-turn-cross'>?</span></b> seconds.<br/>
+            </li>
+    </ol>`,
+        (sim: Traffic, log: HTMLElement) => {
+            setText('#traffic-transit-time', format(sim.qTransit.averageDwell / 100, 0));
+            setText('#traffic-cross-time', format(sim.tCross.avg / 100, 1));
+            setText('#traffic-merge-time', format(sim.tMerge.avg / 100, 1));
+            setText('#traffic-turn-cnt', format(sim.qAisle.grossPop.max, 0));
+            setText('#traffic-turn-cross', format(sim.qCross.averageDwell / 100, 1));
+            log.innerHTML = sim.getStatsTable();
+        });
+
+    //----------------------------------------------------------
+    // Supermarket
+    showSimulation(
+        new Supermarket(),
+        'Supermarket',
+        `<p>
+        Customers arrive by car to shop at a supermarket.</p>
+    <p>
+        The parking lot has space for 650 parked cars.
+        If a customer fails to find a parking space, that customer leaves 
+        immediately without shopping.</p>
+    <p>
+        On average a customer can walk to the supermarket from the parking lot
+        in 60 seconds.
+        Shoppers purchase between 5 and 100 items, uniformly distributed.
+        Customers buying 10 items or less will generally use a basket (70 provided).
+        Customers buying more than 10 items will generally use a cart (650 provided).</p>
+    <p>
+        Shopping time per customer depends on the number of items purchased 
+        (10 seconds per item).
+        Customers select items and then join the shortest queue at one of 17 checkouts.
+        Customers purchasing less than 10 items may choose the express checkout.
+        Checkout time takes 2 seconds per item purchased, plus a time of 25, 30, or 
+        35 seconds. This time depends on the method of payment (cash, check or
+        credit card which are assumed equally likely or probable).
+        After checking out a customer walks to the car (60 seconds), loads goods
+        and leaves the parking lot.</p>
+    <p>
+        The arrival rate of customers is exponentially distributed, starting at 600
+        per hour for half an hour, 900 per hour for one hour, 450 per hour for 
+        one hour and 300 per hour thereafter.</p>
+    <p>
+        Run the simulation for 3 hours and determine:</p>
+    <ol>
+        <li>
+            The transit time of customers.<br/>
+            GPSS says the time was <b>39.4</b> minutes.<br/>
+            SimScript says <b><span id='market-transit'>?</span></b> minutes.</li>
+        <li>
+            The utilization of the parking lot, carts, baskets and checkouts.<br/>
+            GPSS says the checkouts are near capacity.<br/>
+            SimScript says the utilizations are
+            <b><span id='market-utz-park'>?</span>%</b> (parking),
+            <b><span id='market-utz-cart'>?</span>%</b> (carts),
+            <b><span id='market-utz-basket'>?</span>%</b> (baskets),
+            <b><span id='market-utz-checkout'>?</span>%</b> (checkout), and
+            <b><span id='market-utz-checkoutx'>?</span>%</b> (checkout express).</li>
+        <li>
+            The number of customers in the supermarket at one minute intervals<br/>
+            GPSS says there were <b>399</b> shoppers on average, most waiting to check out.<br/>
+            SimScript says there were <b><span id='market-transit-avg'>?</span></b> shoppers on average.
+            The chart below shows the number of customers grew in the periods of high
+            traffic, and decreased later. At the end of the simulation, there were still
+            <b><span id='market-transit-last'>?</span></b> customers waiting to check out.</li>
+    </ol>
+    <div id='market-customers'></div>`,
+        (sim: Supermarket, log: HTMLElement) => {
+            setText('#market-transit', format(sim.qTransit.averageDwell / 600, 1));
+            setText('#market-utz-park', format(sim.qParking.utilization * 100, 0));
+            setText('#market-utz-cart', format(sim.qCart.utilization * 100, 0));
+            setText('#market-utz-basket', format(sim.qBasket.utilization * 100, 0));
+            setText('#market-utz-checkout', format(sim.qCheckout.utilization * 100, 0));
+            setText('#market-utz-checkoutx', format(sim.qCheckoutX.utilization * 100, 0));
+            
+            const transit = sim.qTransit.grossPop;
+            setText('#market-transit-avg', format(transit.avg, 0));
+            setText('#market-transit-last', format(sim.qTransit.pop, 0));
+            setText('#market-customers', getLineChart('Customers/minute',
+                { data: sim.customers, name: 'Total', color: 'black', showPoints: true },
+                { data: [transit.avg, transit.avg], name: `Average (${format(transit.avg, 0)})`, color: 'green', width: '1' },
+                { data: [transit.max, transit.max], name: `Max (${transit.max})`, color: 'red', width: '1' },
+            ), true);
+            //log.innerHTML = sim.getStatsTable();
+        }
+    );
+
+    //-------------------------------------------------------------------------
+    // Port
+    showSimulation(
+        new Port(),
+        'Port',
+        `<p>
+        A harbor port has three berths 1, 2 and 3.</p>
+    <p>
+        At any given time Berth1 can accommodate two small ships, or one
+        medium ship. Berth2 and Berth3 can each handle one large ship,
+        two medium ships or four small ships.</p>
+    <p>
+        The interarrival time of ships is 26 hours, exponentially distributed. 
+        Small, medium, and large ships are in the proportions 5:3:2.</p>
+    <p>
+        Queuing for berths is on a first-come first-serve basis, except that no
+        medium or small ship may go to a berth for which a large ship is waiting,
+        and medium ships have a higher priority than small ships.</p>
+    <p>
+        Unloading times for ships are exponentially distributed with mean times
+        as follows: small ships, 15 hours; medium ships, 30 hours; large ships,
+        45 hours.</p>
+    <p>
+        The loading times are as follows: small ships, 24±6 hours uniformly distributed;
+        medium ships, 36±10 hours uniformly distributed; large ships 56±12 hours uniformly
+        distributed.</p>
+    <p>
+        The tide must be high for large ships to enter or leave Berths 2 and 3.
+        Low tide lasts 3 hours, high tide, 10 hours.</p>
+    <p>
+        Run the simulation for 500 days and determine:</p>
+    <ol>
+        <li>
+            The distribution of transit times of each type of ship.<br/>
+            GPSS says the average transit times were about <b>44</b>, <b>74</b>,
+            and <b>115</b> hours<br/>
+            SimScript says the times were <b><span id='port-transit-small'>?</span></b>,
+            <b><span id='port-transit-medium'>?</span></b>, and
+            <b><span id='port-transit-large'>?</span></b> hours.</li>
+        <li>
+            The utilization of the three berths.<br/>
+            GPSS says the utilizations were <b>52%</b>, <b>49%</b>, and <b>54%</b>.<br/>
+            SimScript says the utilizations were <b><span id='port-utz-berth1'>?</span>%</b>,
+            <b><span id='port-utz-berth2'>?</span>%</b>, and
+            <b><span id='port-utz-berth3'>?</span>%</b>.</li>
+    </ol>`,
+        (sim: Port, log: HTMLElement) => {
+            setText('#port-transit-small', format(sim.qTransit[0].averageDwell, 0));
+            setText('#port-transit-medium', format(sim.qTransit[1].averageDwell, 0));
+            setText('#port-transit-large', format(sim.qTransit[2].averageDwell, 0));
+            setText('#port-utz-berth1', format(sim.qBerths[0].utilization * 100, 0));
+            setText('#port-utz-berth2', format(sim.qBerths[1].utilization * 100, 0));
+            setText('#port-utz-berth3', format(sim.qBerths[2].utilization * 100, 0));
+            //log.innerHTML = sim.getStatsTable();
+        }
+    );
+
+}
 endSampleGroup();
 
 //----------------------------------------------------------
@@ -2635,6 +2629,12 @@ if (true) {
                     stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
                     points='0 0, 40 0, 50 10, 40 20, 0 20'/>`
             ,
+            updateEntityElement: (e, element) => {
+                const polygon = element.querySelector('polygon');
+                if (polygon.fill != e.color) {
+                    polygon.setAttribute('fill', e.color);
+                }
+            },
             queues: [
                 { queue: sim.q, element: 'svg .ss-queue' }
             ]
@@ -2651,6 +2651,16 @@ if (true) {
         return {
             rotateEntities: true,
             getEntityHtml: e => createX3Car('car', 40, 20, 10, carColors[e.color] || [0, 0, 0]),
+            updateEntityElement: (e, element) => {
+                const
+                    material = element.querySelector('material'),
+                    colorAttr = 'diffuseColor',
+                    clrNow = material.getAttribute(colorAttr),
+                    clrNext = (carColors[e.color] || [0, 0, 0]).toString();
+                if (clrNext != clrNow) {
+                    material.setAttribute(colorAttr, clrNext);
+                }
+            },
             queues: [
                 { queue: sim.q, element: 'x3d .ss-queue' }
             ]
@@ -3190,7 +3200,8 @@ if (true) {
     // Avoid Static and Moving Obstacles (X3DOM)
     showSimulation(
         new SteeringAvoid({
-            avoidEntities: true
+            avoidEntities: true,
+            avoidColor: '' // avoidColor slows down 3D animations
         }),
         'Avoid Static and Moving Obstacles (X3DOM)',
         `<p>
@@ -3270,7 +3281,8 @@ if (true) {
             around the simulation surface.</li>
         <li>
             <span class='light yellow'></span> Yellow entities follow it
-            and avoid other entities, turning red while avoiding them.</li>
+            and avoid static obstacles and other entities, turning red
+            while avoiding them.</li>
         </ul>
         <label>
             Entity Count
@@ -3289,6 +3301,11 @@ if (true) {
             bind('follow-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('follow-slow', sim.slowMode, v => sim.slowMode = v);
 
+            // show static obstables
+            sim.obstacles.forEach(o => {
+                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
+            });
+
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
         }
@@ -3297,12 +3314,14 @@ if (true) {
     //----------------------------------------------------------
     // Follow (X3DOM)
     showSimulation(
-        new SteeringFollow(),
+        new SteeringFollow({
+            ////avoidColor: '' // avoidColor slows down 3D animations
+        }),
         'Follow Target, Avoid Followers (X3DOM)',
         `<p>
             This example shows how you can use <b>SeekBehavior</b> and
             <b>AvoidBehavior</b> to have entities follow a target while
-            avoiding other entities.</p>
+            avoiding static obstacles and other entities.</p>
         <ul>
         <li>
             <span class='light green'></span> The green entity wanders
@@ -3349,13 +3368,22 @@ if (true) {
             bind('follow-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('follow-x3d-slow', sim.slowMode, v => sim.slowMode = v);
 
+            // show static obstables
+            sim.obstacles.forEach(o => {
+                animationHost.firstElementChild.innerHTML += `
+                    <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} 15'>
+                        <shape>
+                            <appearance>
+                                <material diffuseColor='.5 .5 0'/>
+                            </appearance>
+                            <cylinder height='30' radius='${o.radius}'/>
+                        </shape>
+                    </transform>`;
+            });
+
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
         }
     );
 }
-
-//----------------------------------------------------------
-// Steering Vehicles Group End
 endSampleGroup();
-

@@ -18,7 +18,7 @@ const
  */
 export class SteeringBehaviors extends Simulation {
     q = new Queue();
-    step = 0.02; // simulated time step
+    step = 0.01; // simulated time step
     bounds = [new Point(), new Point(1000, 500)]; // simulation bounds
     _eCnt = 8; // start with 8 entities
 
@@ -102,9 +102,9 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
     /**
      * Gets or sets the entity's radius (used to detect collisions).
      * 
-     * The default value for this property is **20**.
+     * The default value for this property is **25**.
      */
-    radius = 20;
+    radius = 25;
     /**
      * Gets or sets an array containing {@link SteeringBehavior} objects
      * that determine how the entity moves within the simulation.
@@ -501,11 +501,11 @@ export class AvoidBehavior extends SteeringBehavior {
      * angle per unit time while the entity is avoiding other 
      * entities.
      * 
-     * The default value for this property is **2**, which
-     * corresponds to a 2 degree change in direction per unit
+     * The default value for this property is **0.5**, which
+     * corresponds to a 0.5 degree change in direction per unit
      * time while avoiding other entities.
      */
-    avoidAngle = 2;
+    avoidAngle = 0.5;
     /**
      * Gets or sets a value that determines whether the behavior
      * should prevent other behaviors from being applied while 
@@ -538,7 +538,7 @@ export class AvoidBehavior extends SteeringBehavior {
             }
             this._currentObstacle = obstacle;
         }
-        
+
         // avoid obstacle
         if (obstacle != null) {
             const direction = this._getAvoidDirection(obstacle);
@@ -750,6 +750,7 @@ const staticObstacles: IObstacle[] = [
 export class SteeringAvoid extends SteeringBehaviors {
     obstacles = staticObstacles;
     avoidEntities = false;
+    avoidColor = 'red'; // slows down 3D animations
 
     constructor(options?: any) {
         super();
@@ -769,7 +770,7 @@ export class SteeringAvoid extends SteeringBehaviors {
                 behaviors: [
                     new AvoidBehavior({ // avoid obstacles
                         obstacles: obstacles,
-                        //avoidColor: 'red', // this slows down the 3D animations
+                        avoidColor: this.avoidColor
                     }),
                     new WanderBehavior({ // wander (if not avoiding obstacles)
                         steerChange: new Uniform(-20, +20),
@@ -792,33 +793,46 @@ export class SteeringAvoid extends SteeringBehaviors {
 //------------------------------------------------------------------------------------
 // SteeringFollow Simulation
 
+const staticFollowObstacles: IObstacle[] = [
+    { position: { x: 250, y: 250 }, radius: 80 },
+    { position: { x: 750, y: 250 }, radius: 80 },
+];
+
 /**
  * Steering simulation with entities that follow a target
  * while avoiding other entities.
  */
 export class SteeringFollow extends SteeringBehaviors {
+    avoidColor = 'red'; // slows down 3D animations
+    obstacles = staticFollowObstacles;
+
+    constructor(options?: any) {
+        super();
+        setOptions(this, options);
+    }
+
     onStarting(e?: EventArgs) {
         super.onStarting(e);
 
         // array with obstacles used by the AvoidBehavior
-        const obstacles: SteeringVehicle[] = [];
+        const obstacles = this.obstacles.slice();
 
         // create a wandering target entity
         const target = new SteeringVehicle({
             ...getWanderProps(this),
             behaviors: [
+                new WrapBehavior(), // wrap around
                 new AvoidBehavior({ // avoid followers
                     obstacles: obstacles,
                 }),
                 new WanderBehavior({ // wander around (if not avoiding followers)
                     steerChange: new Uniform(-10, +10),
-                    speedChange: new Uniform(-50, +50)
+                    speedChange: new Uniform(-10, +50)
                 }),
-                new WrapBehavior() // wrap around
             ],
         });
         target.color = 'green';
-        target.steerAngleMax = 30; // avoid sharp turns
+        target.steerAngleMax = 20; // prevent tight loops
         this.activate(target);
 
         // add target to obstacle array 
@@ -834,8 +848,8 @@ export class SteeringFollow extends SteeringBehaviors {
                 behaviors: [
                     new AvoidBehavior({ // avoid other followers
                         obstacles: obstacles,
-                        slowDown: .75,
-                        //avoidColor: 'red', // this slows down the 3D animations
+                        slowDown: .5,
+                        avoidColor: this.avoidColor,
                     }),
                     new SeekBehavior({ // seek target (if not avoiding other followers)
                         target: target.position,

@@ -80,7 +80,8 @@ export interface IAnimatedQueue {
  * as specified when you set the {@link queues} property.
  * 
  * {@link Entity} objects are represented by elements whose appearance is specified by 
- * the {@link getEntityHtml} function.
+ * the {@link getEntityHtml} function and optionally updated by the 
+ * {@link updateEntityElement} function.
  */
 export class Animation {
     private _sim: Simulation;
@@ -94,6 +95,7 @@ export class Animation {
     private _rotateEntities = false;
     private _toQueueEnd = true;
     private _getEntityHtml: Function;
+    private _updateEntityElement: Function;
     /** @internal */ _entities = new Map<Entity, AnimatedEntity>();
     /** @internal */ _lastUpdate: number;
     
@@ -166,8 +168,9 @@ export class Animation {
      * Gets or sets a function that returns the HTML to be used
      * to create elements that represent the animated entity.
      * 
-     * The function should return the element's innerHTML.
-     * The {@link Animation} class creates the outer HTML.
+     * The function should take an {@link Entity} as a parameter
+     * and should return the **innerHTML** of the element used
+     * to represent the entity.
      * 
      * The innerHTML string format depends on the animation's
      * host element.
@@ -191,6 +194,48 @@ export class Animation {
     }
     set getEntityHtml(value: Function) {
         this._getEntityHtml = value;
+    }
+    /**
+     * Gets or sets a function that updates the element used
+     * to represent an entity.
+     * 
+     * The function should take two parameters: the {@link Entity} being
+     * animated and the {@link Element} used to represent it.
+     * 
+     * The function should update the {@link Element} to reflect the
+     * current state of the {@link Entity}.
+     * 
+     * For example, the code below shows how you could update the 'fill' 
+     * attribute of an animated SVG element to reflect the 'color' property
+     * of the {@link Entity} it represents:
+     * 
+     * ```typescript
+     * new Animation(simulation, animationHost, {
+     *     rotateEntities: true,
+     *     getEntityHtml: e => `<polygon
+     *         stroke='black' stroke-width='4' fill='${e.color || 'black'}' opacity='0.5'
+     *         points='0 0, 40 0, 50 10, 40 20, 0 20'/>`,
+     *     updateEntityElement: (e, element) => {
+     *         const polygon = element.querySelector('polygon');
+     *         if (polygon.fill != e.color) {
+     *             polygon.setAttribute('fill', e.color);
+     *         }
+     *     },
+     *     queues: [
+     *         { queue: sim.q, element: 'svg .ss-queue' }
+     *     ]
+     * });
+     * 
+     * Updating animation elements using this function is usually
+     * more efficient than relying on the {@link getEntityHtml}
+     * function, which re-creates the entire element rather than
+     * updating it.
+     */
+    get updateEntityElement(): Function {
+        return this._updateEntityElement;
+    }
+    set updateEntityElement(value: Function) {
+        this._updateEntityElement = value;
     }
     /**
      * Gets or sets a value that determines whether entities should 
@@ -578,7 +623,7 @@ class AnimatedEntity {
         }
         e.classList.add('ss-entity');
         this._element = e;
-        this.updateIcon();
+        this.updateIcon(true);
 
         // append animation element to host
         anim.sceneElement.appendChild(e);
@@ -644,10 +689,20 @@ class AnimatedEntity {
     }
 
     // update the animated entity's icon
-    updateIcon() {
-        const html = this._getEntityHtml();
-        if (html != this._html) { // update only if the icon changed!!!
-            this._element.innerHTML = this._html = html;
+    updateIcon(creating?: boolean) {
+        const updateFn = creating ? null : this._anim.updateEntityElement;
+        if (updateFn) {
+
+            // update the entity's element
+            updateFn(this._entity, this._element);
+
+        } else {
+
+            // update the entity's innerHTML (if it has changed)
+            const html = this._getEntityHtml();
+            if (html != this._html) {
+                this._element.innerHTML = this._html = html;
+            }
         }
     }
 

@@ -25,6 +25,10 @@
 
 # Change Log
 
+SimScript 1.0.32    (8/10/21)
+- Added **Animation.updateEntity** property to update the state of animated elements.
+- Improved "Custom Steering Behavior" samples.
+
 SimScript 1.0.31    (8/4/21)
 - Improved "Custom Steering Behavior" samples.
 

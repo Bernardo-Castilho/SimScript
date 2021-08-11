@@ -96,7 +96,8 @@
 					<p><a href="queue.html">Queue</a> positions are defined by elements in the animation host element,
 					as specified when you set the <a href="animation.html#queues">queues</a> property.</p>
 					<p><a href="entity.html">Entity</a> objects are represented by elements whose appearance is specified by
-					the <a href="animation.html#getentityhtml">getEntityHtml</a> function.</p>
+						the <a href="animation.html#getentityhtml">getEntityHtml</a> function and optionally updated by the
+					<a href="animation.html#updateentityelement">updateEntityElement</a> function.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -129,6 +130,7 @@
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="animation.html#queues" class="tsd-kind-icon">queues</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="animation.html#rotateentities" class="tsd-kind-icon">rotate<wbr>Entities</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="animation.html#sceneelement" class="tsd-kind-icon">scene<wbr>Element</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="animation.html#updateentityelement" class="tsd-kind-icon">update<wbr>Entity<wbr>Element</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -152,7 +154,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:98</li>
+									<li>Defined in animation.ts:100</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -199,7 +201,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:215</li>
+									<li>Defined in animation.ts:260</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -215,7 +217,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:218</li>
+									<li>Defined in animation.ts:263</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -247,7 +249,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:229</li>
+									<li>Defined in animation.ts:274</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -264,7 +266,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:232</li>
+									<li>Defined in animation.ts:277</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -297,7 +299,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:189</li>
+									<li>Defined in animation.ts:192</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -305,8 +307,9 @@
 									<p>Gets or sets a function that returns the HTML to be used
 									to create elements that represent the animated entity.</p>
 								</div>
-								<p>The function should return the element&#39;s innerHTML.
-								The <a href="animation.html">Animation</a> class creates the outer HTML.</p>
+								<p>The function should take an <a href="entity.html">Entity</a> as a parameter
+									and should return the <strong>innerHTML</strong> of the element used
+								to represent the entity.</p>
 								<p>The innerHTML string format depends on the animation&#39;s
 								host element.</p>
 								<p>For regular <strong>div</strong> hosts, the function will usually
@@ -325,7 +328,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:192</li>
+									<li>Defined in animation.ts:195</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -333,8 +336,9 @@
 									<p>Gets or sets a function that returns the HTML to be used
 									to create elements that represent the animated entity.</p>
 								</div>
-								<p>The function should return the element&#39;s innerHTML.
-								The <a href="animation.html">Animation</a> class creates the outer HTML.</p>
+								<p>The function should take an <a href="entity.html">Entity</a> as a parameter
+									and should return the <strong>innerHTML</strong> of the element used
+								to represent the entity.</p>
 								<p>The innerHTML string format depends on the animation&#39;s
 								host element.</p>
 								<p>For regular <strong>div</strong> hosts, the function will usually
@@ -368,7 +372,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:139</li>
+									<li>Defined in animation.ts:141</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -390,7 +394,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:145</li>
+									<li>Defined in animation.ts:147</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -412,7 +416,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:151</li>
+									<li>Defined in animation.ts:153</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -435,7 +439,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:260</li>
+									<li>Defined in animation.ts:305</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -461,7 +465,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:263</li>
+									<li>Defined in animation.ts:308</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -503,7 +507,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:202</li>
+									<li>Defined in animation.ts:247</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -519,7 +523,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:205</li>
+									<li>Defined in animation.ts:250</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -550,7 +554,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:162</li>
+									<li>Defined in animation.ts:164</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -562,6 +566,106 @@
 								child element.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Element</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="updateentityelement" class="tsd-anchor"></a>
+					<h3>update<wbr>Entity<wbr>Element</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> updateEntityElement<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> updateEntityElement<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in animation.ts:234</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets a function that updates the element used
+									to represent an entity.</p>
+								</div>
+								<p>The function should take two parameters: the <a href="entity.html">Entity</a> being
+								animated and the {@link Element} used to represent it.</p>
+								<p>The function should update the {@link Element} to reflect the
+								current state of the <a href="entity.html">Entity</a>.</p>
+								<p>For example, the code below shows how you could update the &#39;fill&#39;
+									attribute of an animated SVG element to reflect the &#39;color&#39; property
+								of the <a href="entity.html">Entity</a> it represents:</p>
+								<pre><code class="language-typescript"><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Animation</span><span style="color: #000000">(</span><span style="color: #001080">simulation</span><span style="color: #000000">, </span><span style="color: #001080">animationHost</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #001080">rotateEntities:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #795E26">getEntityHtml</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`&lt;polygon</span>
+<span style="color: #A31515">        stroke=&#039;black&#039; stroke-width=&#039;4&#039; fill=&#039;</span><span style="color: #0000FF">${</span><span style="color: #001080">e</span><span style="color: #000000FF">.</span><span style="color: #001080">color</span><span style="color: #000000FF"> </span><span style="color: #000000">||</span><span style="color: #000000FF"> </span><span style="color: #A31515">&#039;black&#039;</span><span style="color: #0000FF">}</span><span style="color: #A31515">&#039; opacity=&#039;0.5&#039;</span>
+<span style="color: #A31515">        points=&#039;0 0, 40 0, 50 10, 40 20, 0 20&#039;/&gt;`</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #795E26">updateEntityElement</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">e</span><span style="color: #000000">, </span><span style="color: #001080">element</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">polygon</span><span style="color: #000000"> = </span><span style="color: #001080">element</span><span style="color: #000000">.</span><span style="color: #795E26">querySelector</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;polygon&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">polygon</span><span style="color: #000000">.</span><span style="color: #001080">fill</span><span style="color: #000000"> != </span><span style="color: #001080">e</span><span style="color: #000000">.</span><span style="color: #001080">color</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #001080">polygon</span><span style="color: #000000">.</span><span style="color: #795E26">setAttribute</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;fill&#039;</span><span style="color: #000000">, </span><span style="color: #001080">e</span><span style="color: #000000">.</span><span style="color: #001080">color</span><span style="color: #000000">);</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">queues:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">q</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;svg .ss-queue&#039;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">    ]</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #001080">Updating</span><span style="color: #000000"> </span><span style="color: #001080">animation</span><span style="color: #000000"> </span><span style="color: #001080">elements</span><span style="color: #000000"> </span><span style="color: #001080">using</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">is</span><span style="color: #000000"> </span><span style="color: #795E26">usually</span>
+<span style="color: #795E26">more</span><span style="color: #000000"> </span><span style="color: #795E26">efficient</span><span style="color: #000000"> </span><span style="color: #795E26">than</span><span style="color: #000000"> </span><span style="color: #795E26">relying</span><span style="color: #000000"> </span><span style="color: #795E26">on</span><span style="color: #000000"> </span><span style="color: #795E26">the</span><span style="color: #000000"> &lt;</span><span style="color: #267F99">a</span><span style="color: #000000"> </span><span style="color: #267F99">href</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;animation.html#getentityhtml&quot;</span><span style="color: #000000">&gt;</span><span style="color: #795E26">getEntityHtml</span><span style="color: #000000">&lt;/</span><span style="color: #267F99">a</span><span style="color: #000000">&gt;</span>
+<span style="color: #0000FF">function</span><span style="color: #000000">, </span><span style="color: #795E26">which</span><span style="color: #000000"> </span><span style="color: #795E26">re</span><span style="color: #000000">-</span><span style="color: #795E26">creates</span><span style="color: #000000"> </span><span style="color: #795E26">the</span><span style="color: #000000"> </span><span style="color: #795E26">entire</span><span style="color: #000000"> </span><span style="color: #795E26">element</span><span style="color: #000000"> </span><span style="color: #795E26">rather</span><span style="color: #000000"> </span><span style="color: #795E26">than</span>
+<span style="color: #795E26">updating</span><span style="color: #000000"> </span><span style="color: #795E26">it</span><span style="color: #000000">.</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Function</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in animation.ts:237</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets or sets a function that updates the element used
+									to represent an entity.</p>
+								</div>
+								<p>The function should take two parameters: the <a href="entity.html">Entity</a> being
+								animated and the {@link Element} used to represent it.</p>
+								<p>The function should update the {@link Element} to reflect the
+								current state of the <a href="entity.html">Entity</a>.</p>
+								<p>For example, the code below shows how you could update the &#39;fill&#39;
+									attribute of an animated SVG element to reflect the &#39;color&#39; property
+								of the <a href="entity.html">Entity</a> it represents:</p>
+								<pre><code class="language-typescript"><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Animation</span><span style="color: #000000">(</span><span style="color: #001080">simulation</span><span style="color: #000000">, </span><span style="color: #001080">animationHost</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #001080">rotateEntities:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #795E26">getEntityHtml</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">e</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #A31515">`&lt;polygon</span>
+<span style="color: #A31515">        stroke=&#039;black&#039; stroke-width=&#039;4&#039; fill=&#039;</span><span style="color: #0000FF">${</span><span style="color: #001080">e</span><span style="color: #000000FF">.</span><span style="color: #001080">color</span><span style="color: #000000FF"> </span><span style="color: #000000">||</span><span style="color: #000000FF"> </span><span style="color: #A31515">&#039;black&#039;</span><span style="color: #0000FF">}</span><span style="color: #A31515">&#039; opacity=&#039;0.5&#039;</span>
+<span style="color: #A31515">        points=&#039;0 0, 40 0, 50 10, 40 20, 0 20&#039;/&gt;`</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #795E26">updateEntityElement</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">e</span><span style="color: #000000">, </span><span style="color: #001080">element</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">polygon</span><span style="color: #000000"> = </span><span style="color: #001080">element</span><span style="color: #000000">.</span><span style="color: #795E26">querySelector</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;polygon&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">polygon</span><span style="color: #000000">.</span><span style="color: #001080">fill</span><span style="color: #000000"> != </span><span style="color: #001080">e</span><span style="color: #000000">.</span><span style="color: #001080">color</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #001080">polygon</span><span style="color: #000000">.</span><span style="color: #795E26">setAttribute</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;fill&#039;</span><span style="color: #000000">, </span><span style="color: #001080">e</span><span style="color: #000000">.</span><span style="color: #001080">color</span><span style="color: #000000">);</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">queues:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">        { </span><span style="color: #001080">queue:</span><span style="color: #000000"> </span><span style="color: #001080">sim</span><span style="color: #000000">.</span><span style="color: #001080">q</span><span style="color: #000000">, </span><span style="color: #001080">element:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;svg .ss-queue&#039;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">    ]</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #001080">Updating</span><span style="color: #000000"> </span><span style="color: #001080">animation</span><span style="color: #000000"> </span><span style="color: #001080">elements</span><span style="color: #000000"> </span><span style="color: #001080">using</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">is</span><span style="color: #000000"> </span><span style="color: #795E26">usually</span>
+<span style="color: #795E26">more</span><span style="color: #000000"> </span><span style="color: #795E26">efficient</span><span style="color: #000000"> </span><span style="color: #795E26">than</span><span style="color: #000000"> </span><span style="color: #795E26">relying</span><span style="color: #000000"> </span><span style="color: #795E26">on</span><span style="color: #000000"> </span><span style="color: #795E26">the</span><span style="color: #000000"> &lt;</span><span style="color: #267F99">a</span><span style="color: #000000"> </span><span style="color: #267F99">href</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;animation.html#getentityhtml&quot;</span><span style="color: #000000">&gt;</span><span style="color: #795E26">getEntityHtml</span><span style="color: #000000">&lt;/</span><span style="color: #267F99">a</span><span style="color: #000000">&gt;</span>
+<span style="color: #0000FF">function</span><span style="color: #000000">, </span><span style="color: #795E26">which</span><span style="color: #000000"> </span><span style="color: #795E26">re</span><span style="color: #000000">-</span><span style="color: #795E26">creates</span><span style="color: #000000"> </span><span style="color: #795E26">the</span><span style="color: #000000"> </span><span style="color: #795E26">entire</span><span style="color: #000000"> </span><span style="color: #795E26">element</span><span style="color: #000000"> </span><span style="color: #795E26">rather</span><span style="color: #000000"> </span><span style="color: #795E26">than</span>
+<span style="color: #795E26">updating</span><span style="color: #000000"> </span><span style="color: #795E26">it</span><span style="color: #000000">.</span>
+</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">Function</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -578,7 +682,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in animation.ts:287</li>
+									<li>Defined in animation.ts:332</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -642,6 +746,9 @@
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="animation.html#sceneelement" class="tsd-kind-icon">scene<wbr>Element</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="animation.html#updateentityelement" class="tsd-kind-icon">update<wbr>Entity<wbr>Element</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="animation.html#updatedisplay" class="tsd-kind-icon">update<wbr>Display</a>
