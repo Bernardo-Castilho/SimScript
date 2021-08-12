@@ -523,26 +523,25 @@ export class AvoidBehavior extends SteeringBehavior {
 
         // change obstacle
         if (obstacle != this._currentObstacle) {
-            if (this._currentObstacle == null && obstacle != null) { // start avoiding
+            if (this._currentObstacle == null && obstacle != null) { // start avoiding, save properties
                 if (this.avoidColor) {
                     this._saveColor = e.color;
                     e.color = this.avoidColor;
                 }
                 this._saveSpeed = e.speed;
                 e.speed *= this.slowDown;
-            } else if (this._currentObstacle != null && obstacle == null) { // done avoiding
-                if (this._saveColor) {
-                    e.color = this._saveColor;
-                }
-                e.speed = this._saveSpeed;
+            } else if (this._currentObstacle != null && obstacle == null) { // done avoiding, restore properties
+                    if (this._saveColor) {
+                        e.color = this._saveColor;
+                    }
+                    e.speed = this._saveSpeed;
             }
             this._currentObstacle = obstacle;
         }
 
         // avoid obstacle
         if (obstacle != null) {
-            const direction = this._getAvoidDirection(obstacle);
-            e.angle = e.getTurnAngle(e.angle + this.avoidAngle * direction, dt);
+            e.angle = this._getAvoidAngle(obstacle, dt);
             e.steerAngle = 0; // don't turn while avoiding
         }
 
@@ -579,35 +578,39 @@ export class AvoidBehavior extends SteeringBehavior {
         return obstacle;
     }
 
-    // checks an obstacle and returns -1 to turn left, +1 to turn right
-    _getAvoidDirection(obstacle: IObstacle): number {
+    // gets the angle to use in order to avoid an obstacle
+    _getAvoidAngle(obstacle: IObstacle, dt: number): number {
         const
             e = this.entity,
             p = e.position,
-            d = Point.distance(p, obstacle.position),
-            pStraight = {
-                x: p.x + d * e._cos,
-                y: p.y + d * e._sin,
-            },
-            side = e.radius + obstacle.radius,
-            pLeft = this._getBoundaryPoint(obstacle, -side),
-            pRight = this._getBoundaryPoint(obstacle, +side);
-        return Point.distance(pStraight, pLeft) < Point.distance(pStraight, pRight)
-            ? -1 // turn left
-            : +1; // turn right
-    }
-    
-    // gets a point on an obstacle's boundary
-    _getBoundaryPoint(obstacle: IObstacle, side: number): IPoint {
+            d = Point.distance(p, obstacle.position);
+        
+        // too close? don't even try
+        if (d < obstacle.radius) {
+            return e.angle;
+        }
+
+        // chooose new angle
         const
-            p = this.entity.position,
-            d = Point.distance(p, obstacle.position),
-            a = Point.angle(p, obstacle.position, true) + Math.atan2(side, d);
-        return {
-            x: p.x + d * Math.cos(a),
-            y: p.y + d * Math.sin(a)
-        };
+            aDelta = 90 * obstacle.radius / d,
+            d1 = this._getDeltaDistance(obstacle, +aDelta),
+            d2 = this._getDeltaDistance(obstacle, -aDelta),
+            avoidDelta = d1 > d2 ? +aDelta : -aDelta;
+        return e.getTurnAngle(e.angle + avoidDelta, dt, this.avoidAngle);
     }
+
+    // measure the distance between an obstacle and a future entity position
+    _getDeltaDistance(obstacle: IObstacle, aDelta: number): number {
+        const
+            e = this.entity,
+            a = (e.angle + aDelta) * Math.PI / 180,
+            d = obstacle.radius,
+            p = {
+                x: e.position.x + d * Math.cos(a),
+                y: e.position.y + d * Math.sin(a)
+            };
+        return Point.distance(obstacle.position, p);
+    }    
 }    
 
 //------------------------------------------------------------------------------------
@@ -794,8 +797,8 @@ export class SteeringAvoid extends SteeringBehaviors {
 // SteeringFollow Simulation
 
 const staticFollowObstacles: IObstacle[] = [
-    { position: { x: 250, y: 250 }, radius: 80 },
-    { position: { x: 750, y: 250 }, radius: 80 },
+    { position: { x: 250, y: 250 }, radius: 100 },
+    { position: { x: 750, y: 250 }, radius: 100 },
 ];
 
 /**
@@ -862,6 +865,55 @@ export class SteeringFollow extends SteeringBehaviors {
             if (obstacles) {
                 obstacles.push(e);
             }
+        }
+    }
+}
+
+/**
+ * Testing AvoidBehavior strategies.
+ */
+export class SteeringTest extends SteeringBehaviors {
+    avoidColor = 'red'; // slows down 3D animations
+    obstacles = [
+        { position: { x: 500, y: 250 }, radius: 150 },
+    ];
+
+    constructor(options?: any) {
+        super();
+        setOptions(this, options);
+    }
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+
+        // array with obstacles used by the AvoidBehavior
+        const
+            obstacles = this.obstacles.slice(),
+            r = this.obstacles[0].radius,
+            yPos = new Uniform(250 - r, 250 + r);
+
+        // create some wandering entities
+        for (let i = 0; i < 12; i++) {
+            const e = new SteeringVehicle({
+                ...getWanderProps(this),
+                behaviors: [
+                    new WrapBehavior(), // wrap around
+                    new AvoidBehavior({ // avoid followers
+                        obstacles: obstacles,
+                        avoidColor: this.avoidColor,
+                    }),
+                    new WanderBehavior({ // wander around (if not avoiding followers)
+                        steerChange: new Uniform(-0, +0),
+                        speedChange: new Uniform(-20, +20)
+                    }),
+                ],
+            });
+            e.angle = 0;
+            e.position = { x: 0, y: yPos.sample() };
+            e.speed = 20;
+            e.color = 'green';
+            e.steerAngleMax = 20; // prevent tight loops
+            this.activate(e);
         }
     }
 }

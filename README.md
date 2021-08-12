@@ -1,4 +1,4 @@
-t# SimScript
+# SimScript
 
 A **Discrete Event Simulation** Library in TypeScript with
 support for 2D and 3D animations.

@@ -28,13 +28,14 @@ import { CarFollow } from './simulations/car-follow';
 import { CarFollowNetwork } from './simulations/car-follow-network';
 import { Asteroids, Ship, Missile, Asteroid } from './simulations/asteroids';
 import {
-    SteeringWander, SteeringSeek, SteeringChase, SteeringAvoid, SteeringFollow
-} from './simulations/steering';
-import {
     Telephone, Inventory, TVRepairShop, QualityControl, OrderPoint, Manufacturing,
     Textile, OilDepot, PumpAssembly, RobotFMS, BicycleFactory, StockControl, QTheory,
     Traffic, Supermarket, Port
 } from './simulations/gpss';
+import {
+    SteeringWander, SteeringSeek, SteeringChase, SteeringAvoid, SteeringFollow,
+    SteeringTest as SteeringTestAvoid
+} from './simulations/steering';
 
 //----------------------------------------------------------
 // SimScript sample Group
@@ -3385,5 +3386,29 @@ if (true) {
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
         }
     );
+
+    //----------------------------------------------------------
+    // Test Avoid behavior (SVG)
+    if (false) {
+        showSimulation(
+            new SteeringTestAvoid(),
+            'Test Avoid (SVG)',
+            `<p>Testing Avoid strategy.</p>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+            (sim: SteeringFollow, animationHost: HTMLElement) => {
+
+                // show static obstables
+                sim.obstacles.forEach(o => {
+                    animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
+                });
+
+                // show animation
+                new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
+            }
+        );
+    }
 }
 endSampleGroup();
+

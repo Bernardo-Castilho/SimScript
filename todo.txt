@@ -5,10 +5,11 @@
     * Wander
     * Seek
     * Chase
-    * Avoid (static/dynamic)
-    * Follow (chase + avoid)
+    * Avoid Obstacles (static/dynamic)
+    * Follow Entity (chase + avoid)
+    - Linear obstacles
+    - Follow Path
     - Contain
-    - Path
 - intro docs/samples
 - more docs/examples
     - pac-man
@@ -25,12 +26,16 @@
 
 # Change Log
 
+SimScript 1.0.33    (8/12/21)
+- Improved documentation
+- Improved "AvoidBehavior" samples.
+
 SimScript 1.0.32    (8/10/21)
-- Added **Animation.updateEntity** property to update the state of animated elements.
-- Improved "Custom Steering Behavior" samples.
+- Added **Animation.updateEntity** property to update the state of animated enitities.
+- Improved "Custom Steering Behaviors" samples.
 
 SimScript 1.0.31    (8/4/21)
-- Improved "Custom Steering Behavior" samples.
+- Improved "Custom Steering Behaviors" samples.
 
 SimScript 1.0.30    (7/28/21)
 - Added **Simulation.name** and **Simulation.timeUnit** properties
