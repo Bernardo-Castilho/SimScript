@@ -6,7 +6,7 @@ import { RandomVar, Uniform } from '../simscript/random';
 import { IPoint, Point, setOptions, clamp } from '../simscript/util';
 
 const
-    FAST_MODE_FRAMEDELAY = 1,
+    FAST_MODE_FRAMEDELAY = 0,
     SLOW_MODE_FRAMEDELAY = 20;
 
 /**
