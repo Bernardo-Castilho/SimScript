@@ -590,8 +590,7 @@ export class AvoidBehavior extends SteeringBehavior {
     _getAvoidAngle(obstacle: IObstacle, dt: number): number {
         const
             e = this.entity,
-            p = e.position,
-            d = Point.distance(p, obstacle.position);
+            d = Point.distance(e.position, obstacle.position);
         
         // too close? bounce or ignore
         if (d < obstacle.radius) {
@@ -613,9 +612,10 @@ export class AvoidBehavior extends SteeringBehavior {
             e = this.entity,
             a = (e.angle + aDelta) * Math.PI / 180,
             d = obstacle.radius,
+            ePos = e.position,
             p = {
-                x: e.position.x + d * Math.cos(a),
-                y: e.position.y + d * Math.sin(a)
+                x: ePos.x + d * Math.cos(a),
+                y: ePos.y + d * Math.sin(a)
             };
         return Point.distance(obstacle.position, p);
     }    
@@ -881,20 +881,20 @@ export class SteeringFollow extends SteeringBehaviors {
  * Implement linear obstacles as a group of circular ones.
  */
 export class SteeringLinearObstacles extends SteeringBehaviors {
-    avoidColor = '';//'red'; // slows down 3D animations
+    avoidColor = 'red';
     obstacles = this._generateObstaclesForPath([
         { x: -50, y: 150 },
         { x: 200, y: 50 },
         { x: 500, y: 50 },
         { x: 500, y: 150 },
         { x: 950, y: 50 },
-        { x: 800, y: 250 },
+        { x: 1000, y: 250 },
         { x: 950, y: 450 },
         { x: 500, y: 350 },
         { x: 500, y: 450 },
         { x: 200, y: 450 },
         { x: -50, y: 350 },
-    ], 3);
+    ], 4);
 
     constructor(options?: any) {
         super();
@@ -904,15 +904,25 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
     onStarting(e?: EventArgs) {
         super.onStarting(e);
 
-        // array with obstacles used by the AvoidBehavior
         const
-            obstacles = this.obstacles.slice(),
-            yPos = new Uniform(250 - 50, 250 + 50);
+            obstacles = this.obstacles.slice(), // array with obstacles used by the AvoidBehavior
+            xPos = new Uniform(0, 200), // // entity starting x position
+            yPos = new Uniform(250 - 50, 250 + 50), // entity starting y position
+            speed = new Uniform(10, 20), // entity starting speed
+            angle = new Uniform(-10, 10); // entity starting angle
 
         // create some wandering entities
         for (let i = 0; i < this.entityCount; i++) {
             const e = new SteeringVehicle({
+
+                // initialize entity properties
                 ...getWanderProps(this),
+                steerAngleMax: 20, // prevent tight loops
+                speed: speed.sample(),
+                angle: angle.sample(),
+                position: { x: xPos.sample(), y: yPos.sample() },
+    
+                // initialize entity behaviors
                 behaviors: [
                     new BounceBehavior(), // bounce off edges
                     new AvoidBehavior({ // avoid followers
@@ -926,15 +936,16 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
                     }),
                 ],
             });
-            e.angle = 0;
-            e.position = { x: 0, y: yPos.sample() };
-            e.speed = 20;
-            e.color = 'green';
-            e.steerAngleMax = 20; // prevent tight loops
+
+            // add this entity to the obstacle array
+            obstacles.push(e);
+
+            // activate the entity
             this.activate(e);
         }
     }
 
+    // generate a group of circular obstacles along a given path
     _generateObstaclesForPath(path: IPoint[], radius: number): IObstacle[] {
         let obstacles: IObstacle[] = [];
         for (let i = 0; i < path.length - 1; i++) {

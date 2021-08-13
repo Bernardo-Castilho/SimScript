@@ -716,7 +716,7 @@ class AnimatedEntity {
         // update the entity element
         switch (anim.hostTag) {
             case 'X3D':
-                e.setAttribute('translation', `${pt.x} ${pt.y} ${pt.z}`);
+                e.setAttribute('translation', `${pt.x} ${pt.y} ${pt.z || 0}`);
                 e.setAttribute('rotation', `0 0 1 ${anim.rotateEntities ? angle / 180 * Math.PI : 0}`);
                 break;
             case 'A-SCENE':

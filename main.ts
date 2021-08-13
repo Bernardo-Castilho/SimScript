@@ -33,8 +33,9 @@ import {
     Traffic, Supermarket, Port
 } from './simulations/gpss';
 import {
+    SteeringBehaviors,
     SteeringWander, SteeringSeek, SteeringChase, SteeringAvoid, SteeringFollow,
-    SteeringLinearObstacles as SteeringLinearObstacles
+    SteeringLinearObstacles
 } from './simulations/steering';
 
 //----------------------------------------------------------
@@ -2623,7 +2624,7 @@ startSampleGroup(
 if (true) {
 
     // animation options for SVG steering samples
-    const getAnimationOptionsSVG = (sim) => {
+    const getAnimationOptionsSVG = (sim: SteeringBehaviors) => {
         return {
             rotateEntities: true,
             getEntityHtml: e => `<polygon
@@ -2641,9 +2642,14 @@ if (true) {
             ]
         }
     };
+    const showObstaclesSVG = (sim: any, animationHost: HTMLElement, color = 'lightgrey') => {
+        sim.obstacles.forEach(o => {
+            animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='${color}'/>`;
+        });
+    }
 
     // animation options for X3DOM steering samples
-    const getAnimationOptionsX3D = (sim) => {
+    const getAnimationOptionsX3D = (sim: SteeringBehaviors) => {
         const carColors = {
             red: [1, 0, 0],
             orange: [1, 1, 0],
@@ -2667,6 +2673,19 @@ if (true) {
             ]
         }
     };
+    const showObstaclesX3D = (sim: any, animationHost: HTMLElement, height = 30, color = '.5 .5 0') => {
+        sim.obstacles.forEach(o => {
+            animationHost.firstElementChild.innerHTML += `
+            <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} ${height / 2}'>
+                <shape>
+                    <appearance>
+                        <material diffuseColor='${color}'/>
+                    </appearance>
+                    <cylinder height=${height} radius='${o.radius}'/>
+                </shape>
+            </transform>`;
+        });
+    }
 
     //----------------------------------------------------------
     // Wander/Wrap (SVG)
@@ -3072,10 +3091,8 @@ if (true) {
             bind('avoid-static-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('avoid-static-slow', sim.slowMode, v => sim.slowMode = v);
 
-            // show static obstables
-            sim.obstacles.forEach(o => {
-                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
-            });
+            // show static obstacles
+            showObstaclesSVG(sim, animationHost);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
@@ -3132,18 +3149,8 @@ if (true) {
             bind('avoid-static-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('avoid-static-x3d-slow', sim.slowMode, v => sim.slowMode = v);
 
-            // show static obstables
-            sim.obstacles.forEach(o => {
-                animationHost.firstElementChild.innerHTML += `
-                    <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} 15'>
-                        <shape>
-                            <appearance>
-                                <material diffuseColor='.5 .5 0'/>
-                            </appearance>
-                            <cylinder height='30' radius='${o.radius}'/>
-                        </shape>
-                    </transform>`;
-            });
+            // show static obstacles
+            showObstaclesX3D(sim, animationHost);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
@@ -3187,10 +3194,8 @@ if (true) {
             bind('avoid-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('avoid-slow', sim.slowMode, v => sim.slowMode = v);
 
-            // show static obstables
-            sim.obstacles.forEach(o => {
-                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
-            });
+            // show static obstacles
+            showObstaclesSVG(sim, animationHost);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
@@ -3249,18 +3254,8 @@ if (true) {
             bind('avoid-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('avoid-x3d-slow', sim.slowMode, v => sim.slowMode = v);
 
-            // show static obstables
-            sim.obstacles.forEach(o => {
-                animationHost.firstElementChild.innerHTML += `
-                    <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} 15'>
-                        <shape>
-                            <appearance>
-                                <material diffuseColor='.5 .5 0'/>
-                            </appearance>
-                            <cylinder height='30' radius='${o.radius}'/>
-                        </shape>
-                    </transform>`;
-            });
+            // show static obstacles
+            showObstaclesX3D(sim, animationHost);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
@@ -3271,7 +3266,7 @@ if (true) {
     // Avoid Linear Obstacles (SVG)
     showSimulation(
         new SteeringLinearObstacles(),
-        'Linear Obstacles (SVG)',
+        'Avoid Linear Obstacles (SVG)',
         `<p>
             This sample creates a linear obstacle composed of several small
             circular obstacles.</p>
@@ -3292,13 +3287,67 @@ if (true) {
             bind('linear-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('linear-slow', sim.slowMode, v => sim.slowMode = v);
 
-            // show static obstables
-            sim.obstacles.forEach(o => {
-                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
-            });
+            // show static obstacles
+            showObstaclesSVG(sim, animationHost);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Avoid Linear Obstacles (X3DOM)
+    showSimulation(
+        new SteeringLinearObstacles({
+            avoidColor: '' // avoidColor slows down 3D animations
+        }),
+        'Avoid Linear Obstacles (X3DOM)',
+        `<p>
+            This sample creates a linear obstacle composed of several small
+            circular obstacles.</p>
+        <label>
+            Entity Count
+            <input id='linear-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='linear-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringFollow, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('linear-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('linear-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstacles
+            showObstaclesX3D(sim, animationHost, 10),
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
         }
     );
 
@@ -3337,10 +3386,8 @@ if (true) {
             bind('follow-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('follow-slow', sim.slowMode, v => sim.slowMode = v);
 
-            // show static obstables
-            sim.obstacles.forEach(o => {
-                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
-            });
+            // show static obstacles
+            showObstaclesSVG(sim, animationHost);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
@@ -3404,18 +3451,8 @@ if (true) {
             bind('follow-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('follow-x3d-slow', sim.slowMode, v => sim.slowMode = v);
 
-            // show static obstables
-            sim.obstacles.forEach(o => {
-                animationHost.firstElementChild.innerHTML += `
-                    <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} 15'>
-                        <shape>
-                            <appearance>
-                                <material diffuseColor='.5 .5 0'/>
-                            </appearance>
-                            <cylinder height='30' radius='${o.radius}'/>
-                        </shape>
-                    </transform>`;
-            });
+            // show static obstacles
+            showObstaclesX3D(sim, animationHost);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
