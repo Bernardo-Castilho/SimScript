@@ -507,6 +507,14 @@ export class AvoidBehavior extends SteeringBehavior {
      */
     avoidAngle = 0.5;
     /**
+     * Gets or sets a value that determines whether the entity
+     * should bounce off obstacles that are too close, or whether
+     * it should ignore them.
+     * 
+     * The default value for this property is **false**.
+     */
+    bounce = false;
+    /**
      * Gets or sets a value that determines whether the behavior
      * should prevent other behaviors from being applied while 
      * avoiding an obstacle.
@@ -585,9 +593,9 @@ export class AvoidBehavior extends SteeringBehavior {
             p = e.position,
             d = Point.distance(p, obstacle.position);
         
-        // too close? don't even try
+        // too close? bounce or ignore
         if (d < obstacle.radius) {
-            return e.angle;
+            return e.angle + (this.bounce ? 180 : 0);
         }
 
         // chooose new angle
@@ -611,7 +619,7 @@ export class AvoidBehavior extends SteeringBehavior {
             };
         return Point.distance(obstacle.position, p);
     }    
-}    
+}
 
 //------------------------------------------------------------------------------------
 // SteeringWander Simulation
@@ -870,13 +878,23 @@ export class SteeringFollow extends SteeringBehaviors {
 }
 
 /**
- * Testing AvoidBehavior strategies.
+ * Implement linear obstacles as a group of circular ones.
  */
-export class SteeringTest extends SteeringBehaviors {
-    avoidColor = 'red'; // slows down 3D animations
-    obstacles = [
-        { position: { x: 500, y: 250 }, radius: 150 },
-    ];
+export class SteeringLinearObstacles extends SteeringBehaviors {
+    avoidColor = '';//'red'; // slows down 3D animations
+    obstacles = this._generateObstaclesForPath([
+        { x: -50, y: 150 },
+        { x: 200, y: 50 },
+        { x: 500, y: 50 },
+        { x: 500, y: 150 },
+        { x: 950, y: 50 },
+        { x: 800, y: 250 },
+        { x: 950, y: 450 },
+        { x: 500, y: 350 },
+        { x: 500, y: 450 },
+        { x: 200, y: 450 },
+        { x: -50, y: 350 },
+    ], 3);
 
     constructor(options?: any) {
         super();
@@ -889,18 +907,18 @@ export class SteeringTest extends SteeringBehaviors {
         // array with obstacles used by the AvoidBehavior
         const
             obstacles = this.obstacles.slice(),
-            r = this.obstacles[0].radius,
-            yPos = new Uniform(250 - r, 250 + r);
+            yPos = new Uniform(250 - 50, 250 + 50);
 
         // create some wandering entities
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < this.entityCount; i++) {
             const e = new SteeringVehicle({
                 ...getWanderProps(this),
                 behaviors: [
-                    new WrapBehavior(), // wrap around
+                    new BounceBehavior(), // bounce off edges
                     new AvoidBehavior({ // avoid followers
                         obstacles: obstacles,
                         avoidColor: this.avoidColor,
+                        bounce: true
                     }),
                     new WanderBehavior({ // wander around (if not avoiding followers)
                         steerChange: new Uniform(-0, +0),
@@ -914,6 +932,27 @@ export class SteeringTest extends SteeringBehaviors {
             e.color = 'green';
             e.steerAngleMax = 20; // prevent tight loops
             this.activate(e);
+        }
+    }
+
+    _generateObstaclesForPath(path: IPoint[], radius: number): IObstacle[] {
+        let obstacles: IObstacle[] = [];
+        for (let i = 0; i < path.length - 1; i++) {
+            this._generateObstaclesForLineSegment(path[i], path[i + 1], radius, obstacles);
+        }
+        return obstacles;
+    }
+    _generateObstaclesForLineSegment(p1: IPoint, p2: IPoint, radius: number, obstacles: IObstacle[]): void {
+        const
+            d = Point.distance(p1, p2),
+            a = Point.angle(p1, p2, true),
+            cos = Math.cos(a),
+            sin = Math.sin(a);
+        for (let l = 0; l <= d; l += radius * 2) {
+            obstacles.push({
+                position: { x: p1.x + l * cos, y: p1.y + l * sin },
+                radius: radius
+            });
         }
     }
 }

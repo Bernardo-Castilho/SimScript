@@ -7,7 +7,7 @@
     * Chase
     * Avoid Obstacles (static/dynamic)
     * Follow Entity (chase + avoid)
-    - Linear obstacles
+    * Linear obstacles (as many circular obstacles)
     - Follow Path
     - Contain
 - intro docs/samples

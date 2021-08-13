@@ -34,7 +34,7 @@ import {
 } from './simulations/gpss';
 import {
     SteeringWander, SteeringSeek, SteeringChase, SteeringAvoid, SteeringFollow,
-    SteeringTest as SteeringTestAvoid
+    SteeringLinearObstacles as SteeringLinearObstacles
 } from './simulations/steering';
 
 //----------------------------------------------------------
@@ -3268,6 +3268,41 @@ if (true) {
     );
 
     //----------------------------------------------------------
+    // Avoid Linear Obstacles (SVG)
+    showSimulation(
+        new SteeringLinearObstacles(),
+        'Linear Obstacles (SVG)',
+        `<p>
+            This sample creates a linear obstacle composed of several small
+            circular obstacles.</p>
+        <label>
+            Entity Count
+            <input id='linear-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='linear-slow' type='checkbox'>
+        </label>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringFollow, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('linear-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('linear-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstables
+            sim.obstacles.forEach(o => {
+                animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
+            });
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
+        }
+    );
+
+    //----------------------------------------------------------
     // Follow (SVG)
     showSimulation(
         new SteeringFollow(),
@@ -3386,29 +3421,6 @@ if (true) {
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
         }
     );
-
-    //----------------------------------------------------------
-    // Test Avoid behavior (SVG)
-    if (false) {
-        showSimulation(
-            new SteeringTestAvoid(),
-            'Test Avoid (SVG)',
-            `<p>Testing Avoid strategy.</p>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
-            (sim: SteeringFollow, animationHost: HTMLElement) => {
-
-                // show static obstables
-                sim.obstacles.forEach(o => {
-                    animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='lightgrey'/>`;
-                });
-
-                // show animation
-                new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
-            }
-        );
-    }
 }
 endSampleGroup();
 
