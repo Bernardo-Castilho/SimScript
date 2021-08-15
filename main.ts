@@ -35,7 +35,7 @@ import {
 import {
     SteeringBehaviors,
     SteeringWander, SteeringSeek, SteeringChase, SteeringAvoid, SteeringFollow,
-    SteeringLinearObstacles
+    SteeringLinearObstacles, SteeringLinearObstaclesSeek
 } from './simulations/steering';
 
 //----------------------------------------------------------
@@ -3263,95 +3263,6 @@ if (true) {
     );
 
     //----------------------------------------------------------
-    // Avoid Linear Obstacles (SVG)
-    showSimulation(
-        new SteeringLinearObstacles(),
-        'Avoid Linear Obstacles (SVG)',
-        `<p>
-            This sample creates a linear obstacle composed of several small
-            circular obstacles.</p>
-        <label>
-            Entity Count
-            <input id='linear-cnt' type='range' min='1' max='100'>
-        </label>
-        <label>
-            Slow Mode
-            <input id='linear-slow' type='checkbox'>
-        </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
-        (sim: SteeringFollow, animationHost: HTMLElement) => {
-
-            // bind parameters
-            bind('linear-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
-            bind('linear-slow', sim.slowMode, v => sim.slowMode = v);
-
-            // show static obstacles
-            showObstaclesSVG(sim, animationHost);
-
-            // show animation
-            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
-        }
-    );
-
-    //----------------------------------------------------------
-    // Avoid Linear Obstacles (X3DOM)
-    showSimulation(
-        new SteeringLinearObstacles({
-            avoidColor: '' // avoidColor slows down 3D animations
-        }),
-        'Avoid Linear Obstacles (X3DOM)',
-        `<p>
-            This sample creates a linear obstacle composed of several small
-            circular obstacles.</p>
-        <label>
-            Entity Count
-            <input id='linear-x3d-cnt' type='range' min='1' max='100'>
-        </label>
-        <label>
-            Slow Mode
-            <input id='linear-x3d-slow' type='checkbox'>
-        </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
-        (sim: SteeringFollow, animationHost: HTMLElement) => {
-
-            // bind parameters
-            bind('linear-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
-            bind('linear-x3d-slow', sim.slowMode, v => sim.slowMode = v);
-
-            // show static obstacles
-            showObstaclesX3D(sim, animationHost, 10),
-
-            // show animation
-            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
-        }
-    );
-
-    //----------------------------------------------------------
     // Follow (SVG)
     showSimulation(
         new SteeringFollow(),
@@ -3450,6 +3361,180 @@ if (true) {
             // bind parameters
             bind('follow-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('follow-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstacles
+            showObstaclesX3D(sim, animationHost);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Avoid Linear Obstacles (SVG)
+    showSimulation(
+        new SteeringLinearObstacles(),
+        'Avoid Linear Obstacles (SVG)',
+        `<p>
+        Entities avoid walls composed of several small circular obstacles.</p>
+        <label>
+            Entity Count
+            <input id='linear-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='linear-slow' type='checkbox'>
+        </label>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringFollow, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('linear-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('linear-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstacles
+            showObstaclesSVG(sim, animationHost);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Avoid Linear Obstacles (X3DOM)
+    showSimulation(
+        new SteeringLinearObstacles({
+            avoidColor: '' // avoidColor slows down 3D animations
+        }),
+        'Avoid Linear Obstacles (X3DOM)',
+        `<p>
+            Entities avoid walls composed of several small circular obstacles.</p>
+        <label>
+            Entity Count
+            <input id='linear-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='linear-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringFollow, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('linear-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('linear-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstacles
+            showObstaclesX3D(sim, animationHost, 10),
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Seek with Linear Obstacles (SVG)
+    showSimulation(
+        new SteeringLinearObstaclesSeek(),
+        'Seek with Linear Obstacles (SVG)',
+        `<p>
+            Entities use a <b>SeekBehavior</b> to reach the exit and
+            an <b>AvoidBehavior</b> to avoid walls and other entities.</p>
+        <label>
+            Entity Count
+            <input id='linseek-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='linseek-slow' type='checkbox'>
+        </label>
+        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'/>
+        </svg>`,
+        (sim: SteeringLinearObstaclesSeek, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('linseek-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('linseek-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // show static obstacles
+            showObstaclesSVG(sim, animationHost);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Seek with Linear Obstacles (X3DOM)
+    showSimulation(
+        new SteeringLinearObstaclesSeek(),
+        'Seek with Linear Obstacles (X3DOM)',
+        `<p>
+            Entities use a <b>SeekBehavior</b> to reach the exit and
+            an <b>AvoidBehavior</b> to avoid walls and other entities.</p>
+        <label>
+            Entity Count
+            <input id='linseek-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='linseek-x3d-slow' type='checkbox'>
+        </label>
+        <x3d class='ss-anim'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 500, 250)}
+            </scene>
+        </x3d>`,
+        (sim: SteeringLinearObstaclesSeek, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('linseek-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('linseek-x3d-slow', sim.slowMode, v => sim.slowMode = v);
 
             // show static obstacles
             showObstaclesX3D(sim, animationHost);

@@ -1,5 +1,6 @@
 # Todo
 - steering behaviors (http://www.red3d.com/cwr/steer/)
+    - prioritize bounce obstacles
     * Wrap
     * Bounce
     * Wander
@@ -10,12 +11,12 @@
     * Linear obstacles (as many circular obstacles)
     - Follow Path
     - Contain
+- react samples
 - intro docs/samples
 - more docs/examples
     - pac-man
     - elevators
     - robot/warehouse (3d)
-- react samples
 - strips
     - length, max speed, vehicle list (with positions: extends queue)
     - multi-segment

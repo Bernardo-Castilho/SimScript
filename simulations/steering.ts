@@ -1,4 +1,4 @@
-import { Simulation } from '../simscript/simulation';
+import { Simulation, SimulationState } from '../simscript/simulation';
 import { Entity, IAnimationPosition } from '../simscript/entity';
 import { Queue } from '../simscript/queue';
 import { Event, EventArgs } from '../simscript/event';
@@ -49,7 +49,9 @@ export class SteeringBehaviors extends Simulation {
     set entityCount(value: number) {
         if (value != this._eCnt) {
             this._eCnt = value;
-            this.start(true);
+            if (this.state == SimulationState.Running) {
+                this.start(true);
+            }
         }
     }
     /**
@@ -59,6 +61,46 @@ export class SteeringBehaviors extends Simulation {
         return new Point(
             Math.round(Math.random() * this.bounds[1].x),
             Math.round(Math.random() * this.bounds[1].y));
+    }
+    /**
+     * Generates a group of circular obstacles along a given path.
+     * @param path Array of {@link IPoint} instances that define the path.
+     * @param radius The radius of the obstacles.
+     * @param bounce Value for the **bounce** property of the obstacles.
+     * @returns Array of {@link IObstacle} instances.
+     */
+    generateObstaclesForPath(path: IPoint[], radius: number, bounce?: boolean): IObstacle[] {
+        const obstacles: IObstacle[] = [];
+        for (let i = 0; i < path.length - 1; i++) {
+            const segment = this.generateObstaclesForLineSegment(path[i], path[i + 1], radius, bounce);
+            obstacles.push(...segment);
+        }
+        return obstacles;
+    }
+    /**
+     * Generates a group of circular obstacles along a given line segment.
+     * @param p1 {@link IPoint} that defines the start of the obstacle.
+     * @param p2 {@link IPoint} that defines the end of the obstacle.
+     * @param radius The radius of the obstacles.
+     * @param bounce Value for the **bounce** property of the obstacles.
+     * @returns Array of {@link IObstacle} instances.
+     */
+    generateObstaclesForLineSegment(p1: IPoint, p2: IPoint, radius: number, bounce?: boolean): IObstacle[] {
+        const
+            d = Point.distance(p1, p2),
+            a = Point.angle(p1, p2, true),
+            cos = Math.cos(a),
+            sin = Math.sin(a),
+            rOverlap = radius * 1.1,
+            obstacles: IObstacle[] = [];
+        for (let l = 0; l <= d; l += radius * 2) {
+            obstacles.push({
+                position: { x: p1.x + l * cos, y: p1.y + l * sin },
+                radius: rOverlap,
+                bounce: bounce
+            });
+        }
+        return obstacles;
     }
 }
 
@@ -110,6 +152,11 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
      * that determine how the entity moves within the simulation.
      */
     behaviors: SteeringBehavior[] = []; // no behaviors by default
+    /**
+     * Gets or sets a value that determines whether the entity is done
+     * and should exit the simulation.
+     */
+    done = false;
     /**
      * Gets or sets the entity's current position.
      */
@@ -295,9 +342,10 @@ export class SteeringVehicle extends Entity<SteeringBehaviors> {
     async script() {
         const sim = this.simulation;
         this.enterQueueImmediately(sim.q);
-        for (; ;) {
+        while (!this.done) {
             await this.delay(sim.step);
         }
+        this.leaveQueue(sim.q);
     }
 }
 
@@ -332,9 +380,17 @@ export abstract class SteeringBehavior {
 /**
  * Interface implemented by objects that acts as obstacles.
  */
- export interface IObstacle {
+export interface IObstacle {
+    /** Gets or sets the position of the obstacle's center. */
     position: IPoint,
-    radius: number
+    /** Gets or sets the radius of the obstacle. */
+    radius: number,
+    /** 
+     * Gets or sets a value that determines whether entities
+     * that get close to the obstacle should ignore it of
+     * bounce off it.
+     */
+    bounce?: boolean
 }
 
 /**
@@ -431,6 +487,11 @@ export class SeekBehavior extends SteeringBehavior {
      * time while seeking a target.
      */
     seekAngle = 0.5;
+    /**
+     * Gets or sets the distance between the entity and the target
+     * that means the entity has arrived.
+     */
+    arrivalDistance = 0;
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
@@ -447,8 +508,8 @@ export class SeekBehavior extends SteeringBehavior {
             let angTarget = Point.angle(e.position, this.target);
             e.angle = e.getTurnAngle(angTarget, dt, this.seekAngle);
 
-            // re-start when close to center
-            if (dist < e.radius) {
+            // raise event on arrival
+            if (dist < Math.max(e.radius, this.arrivalDistance)) {
                 this.onArrive();
             }
         }
@@ -594,10 +655,12 @@ export class AvoidBehavior extends SteeringBehavior {
         
         // too close? bounce or ignore
         if (d < obstacle.radius) {
-            return e.angle + (this.bounce ? 180 : 0);
+            return (this.bounce || obstacle.bounce)
+                ? e.angle + 180 + Math.random() * 6 - 3
+                : e.angle;
         }
 
-        // chooose new angle
+        // choose new angle
         const
             aDelta = 90 * obstacle.radius / d,
             d1 = this._getDeltaDistance(obstacle, +aDelta),
@@ -882,8 +945,8 @@ export class SteeringFollow extends SteeringBehaviors {
  */
 export class SteeringLinearObstacles extends SteeringBehaviors {
     avoidColor = 'red';
-    obstacles = this._generateObstaclesForPath([
-        { x: -50, y: 150 },
+    obstacles = this.generateObstaclesForPath([
+        { x: 0, y: 250 },
         { x: 200, y: 50 },
         { x: 500, y: 50 },
         { x: 500, y: 150 },
@@ -893,8 +956,8 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
         { x: 500, y: 350 },
         { x: 500, y: 450 },
         { x: 200, y: 450 },
-        { x: -50, y: 350 },
-    ], 4);
+        { x: 0, y: 250 },
+    ], 5, true);
 
     constructor(options?: any) {
         super();
@@ -906,17 +969,18 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
 
         const
             obstacles = this.obstacles.slice(), // array with obstacles used by the AvoidBehavior
-            xPos = new Uniform(0, 200), // // entity starting x position
-            yPos = new Uniform(250 - 50, 250 + 50), // entity starting y position
+            xPos = new Uniform(400, 500), // // entity starting x position
+            yPos = new Uniform(200, 300), // entity starting y position
             speed = new Uniform(10, 20), // entity starting speed
-            angle = new Uniform(-10, 10); // entity starting angle
+            angle = new Uniform(0, 360); // entity starting angle
 
         // create some wandering entities
         for (let i = 0; i < this.entityCount; i++) {
             const e = new SteeringVehicle({
 
                 // initialize entity properties
-                ...getWanderProps(this),
+                color: 'orange',
+                speedMin: 10,
                 steerAngleMax: 20, // prevent tight loops
                 speed: speed.sample(),
                 angle: angle.sample(),
@@ -925,10 +989,9 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
                 // initialize entity behaviors
                 behaviors: [
                     new BounceBehavior(), // bounce off edges
-                    new AvoidBehavior({ // avoid followers
+                    new AvoidBehavior({ // avoid obstacles
                         obstacles: obstacles,
-                        avoidColor: this.avoidColor,
-                        bounce: true
+                        avoidColor: this.avoidColor
                     }),
                     new WanderBehavior({ // wander around (if not avoiding followers)
                         steerChange: new Uniform(-0, +0),
@@ -937,33 +1000,89 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
                 ],
             });
 
-            // add this entity to the obstacle array
-            obstacles.push(e);
+            // optionally, add this entity to the obstacle array
+            ////obstacles.push(e);
 
             // activate the entity
             this.activate(e);
         }
     }
+}
 
-    // generate a group of circular obstacles along a given path
-    _generateObstaclesForPath(path: IPoint[], radius: number): IObstacle[] {
-        let obstacles: IObstacle[] = [];
-        for (let i = 0; i < path.length - 1; i++) {
-            this._generateObstaclesForLineSegment(path[i], path[i + 1], radius, obstacles);
-        }
-        return obstacles;
+/**
+ * Seek behavior with linear obstacles.
+ */
+export class SteeringLinearObstaclesSeek extends SteeringBehaviors {
+    avoidColor = 'red';
+    obstacles = [
+        ...this.generateObstaclesForPath([
+            { x: -100, y: 350 },
+            { x: 450, y: 150 },
+            { x: 450, y: -10 }
+        ], 10, true),
+        ...this.generateObstaclesForPath([
+            { x: 550, y: -10 },
+            { x: 550, y: 150 },
+            { x: 1100, y: 350 },
+        ], 10, true),
+    ];
+
+    constructor(options?: any) {
+        super();
+        setOptions(this, options);
     }
-    _generateObstaclesForLineSegment(p1: IPoint, p2: IPoint, radius: number, obstacles: IObstacle[]): void {
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+
         const
-            d = Point.distance(p1, p2),
-            a = Point.angle(p1, p2, true),
-            cos = Math.cos(a),
-            sin = Math.sin(a);
-        for (let l = 0; l <= d; l += radius * 2) {
-            obstacles.push({
-                position: { x: p1.x + l * cos, y: p1.y + l * sin },
-                radius: radius
+            obstacles = this.obstacles.slice(), // array with obstacles used by the AvoidBehavior
+            xPos = new Uniform(0, 1000), // // entity starting x position
+            yPos = new Uniform(400, 450), // entity starting y position
+            speed = new Uniform(10, 100), // entity starting speed
+            angle = new Uniform(0, 360); // entity starting angle
+
+        // create some wandering entities
+        for (let i = 0; i < this.entityCount; i++) {
+            const e = new SteeringVehicle({
+
+                // initialize entity properties
+                color: 'orange',
+                speedMin: 10,
+                speedMax: speed.sample(),
+                speed: speed.sample(),
+                angle: angle.sample(),
+                position: { x: xPos.sample(), y: yPos.sample() },
+                radius: 10,
+    
+                // initialize entity behaviors
+                behaviors: [
+                    new BounceBehavior(), // bounce off edges
+                    new AvoidBehavior({ // avoid obstacles
+                        obstacles: obstacles,
+                        avoidColor: this.avoidColor
+                    }),
+                    new SeekBehavior({ // seek exit
+                        target: { x: this.bounds[1].x / 2, y: 0 }, // exit point
+                        arrivalDistance: 25, // close enough
+                        arrive: s => { // remove entity from simulation on arrival
+                            const
+                                e = s.entity,
+                                index = obstacles.indexOf(e);
+                            if (index > -1) {
+                                obstacles.splice(index, 1);
+                            }
+                            e.done = true;
+                        }
+                    }),
+                ],
             });
+
+            // optionally, add this entity to the obstacle array
+            obstacles.push(e);
+
+            // activate the entity
+            this.activate(e);
         }
     }
 }
