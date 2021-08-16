@@ -3373,7 +3373,9 @@ if (true) {
     //----------------------------------------------------------
     // Avoid Linear Obstacles (SVG)
     showSimulation(
-        new SteeringLinearObstacles(),
+        new SteeringLinearObstacles({
+            avoidColor: '' // avoidColor slows down animations
+        }),
         'Avoid Linear Obstacles (SVG)',
         `<p>
         Entities avoid walls composed of several small circular obstacles.</p>
@@ -3406,7 +3408,7 @@ if (true) {
     // Avoid Linear Obstacles (X3DOM)
     showSimulation(
         new SteeringLinearObstacles({
-            avoidColor: '' // avoidColor slows down 3D animations
+            avoidColor: '' // avoidColor slows down animations
         }),
         'Avoid Linear Obstacles (X3DOM)',
         `<p>

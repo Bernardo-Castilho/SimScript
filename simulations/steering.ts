@@ -7,7 +7,7 @@ import { IPoint, Point, setOptions, clamp } from '../simscript/util';
 
 const
     FAST_MODE_FRAMEDELAY = 0,
-    SLOW_MODE_FRAMEDELAY = 20;
+    SLOW_MODE_FRAMEDELAY = 5;
 
 /**
  * Simulation used to show various steering behaviors.
@@ -568,14 +568,6 @@ export class AvoidBehavior extends SteeringBehavior {
      */
     avoidAngle = 0.5;
     /**
-     * Gets or sets a value that determines whether the entity
-     * should bounce off obstacles that are too close, or whether
-     * it should ignore them.
-     * 
-     * The default value for this property is **false**.
-     */
-    bounce = false;
-    /**
      * Gets or sets a value that determines whether the behavior
      * should prevent other behaviors from being applied while 
      * avoiding an obstacle.
@@ -637,8 +629,10 @@ export class AvoidBehavior extends SteeringBehavior {
                 if (minDist == null || dist < minDist) { // closer
                     if (dist < e.radius) { // close enough...
                         if (Point.distance(pNext, o.position) - offset < dist) { // and getting closer...
-                            minDist = dist;
-                            obstacle = o;
+                            if (minDist == null || o.bounce || o.bounce == obstacle.bounce) { // prioritize bouncing obstacles
+                                minDist = dist;
+                                obstacle = o;
+                            }
                         }
                     }
                 }
@@ -941,7 +935,7 @@ export class SteeringFollow extends SteeringBehaviors {
 }
 
 /**
- * Implement linear obstacles as a group of circular ones.
+ * Implement linear obstacles (walls) as a group of circular ones.
  */
 export class SteeringLinearObstacles extends SteeringBehaviors {
     avoidColor = 'red';
@@ -967,6 +961,7 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
     onStarting(e?: EventArgs) {
         super.onStarting(e);
 
+        // values used to initialize entities
         const
             obstacles = this.obstacles.slice(), // array with obstacles used by the AvoidBehavior
             xPos = new Uniform(400, 500), // // entity starting x position
@@ -974,7 +969,7 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
             speed = new Uniform(10, 20), // entity starting speed
             angle = new Uniform(0, 360); // entity starting angle
 
-        // create some wandering entities
+        // create entities
         for (let i = 0; i < this.entityCount; i++) {
             const e = new SteeringVehicle({
 
@@ -989,7 +984,7 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
                 // initialize entity behaviors
                 behaviors: [
                     new BounceBehavior(), // bounce off edges
-                    new AvoidBehavior({ // avoid obstacles
+                    new AvoidBehavior({ // avoid walls and other entities
                         obstacles: obstacles,
                         avoidColor: this.avoidColor
                     }),
@@ -1001,7 +996,7 @@ export class SteeringLinearObstacles extends SteeringBehaviors {
             });
 
             // optionally, add this entity to the obstacle array
-            ////obstacles.push(e);
+            obstacles.push(e);
 
             // activate the entity
             this.activate(e);
@@ -1019,12 +1014,12 @@ export class SteeringLinearObstaclesSeek extends SteeringBehaviors {
             { x: -100, y: 350 },
             { x: 450, y: 150 },
             { x: 450, y: -10 }
-        ], 10, true),
+        ], 5, true),
         ...this.generateObstaclesForPath([
             { x: 550, y: -10 },
             { x: 550, y: 150 },
             { x: 1100, y: 350 },
-        ], 10, true),
+        ], 5, true),
     ];
 
     constructor(options?: any) {
@@ -1074,6 +1069,68 @@ export class SteeringLinearObstaclesSeek extends SteeringBehaviors {
                             }
                             e.done = true;
                         }
+                    }),
+                ],
+            });
+
+            // optionally, add this entity to the obstacle array
+            obstacles.push(e);
+
+            // activate the entity
+            this.activate(e);
+        }
+    }
+}
+
+/**
+ * Implement linear obstacles (walls) as a group of circular ones.
+ */
+ export class SteeringLinearObstaclesXXX extends SteeringBehaviors {
+    avoidColor = 'red';
+     obstacles = this.generateObstaclesForPath([
+        { x: 400, y: 550 },
+        { x: 400, y: 250 },
+        { x: 600, y: 250 },
+        { x: 600, y: 550 },
+    ], 5, true);
+
+    constructor(options?: any) {
+        super();
+        setOptions(this, options);
+    }
+
+    onStarting(e?: EventArgs) {
+        super.onStarting(e);
+
+        const
+            obstacles = this.obstacles.slice(), // array with obstacles used by the AvoidBehavior
+            xPos = new Uniform(500, 500), // // entity starting x position
+            yPos = new Uniform(400, 400), // entity starting y position
+            speed = new Uniform(10, 20), // entity starting speed
+            angle = new Uniform(-90, -90); // entity starting angle
+
+        // create some wandering entities
+        for (let i = 0; i < this.entityCount; i++) {
+            const e = new SteeringVehicle({
+
+                // initialize entity properties
+                color: 'orange',
+                speedMin: 10,
+                steerAngleMax: 20, // prevent tight loops
+                speed: speed.sample(),
+                angle: angle.sample(),
+                position: { x: xPos.sample(), y: yPos.sample() },
+    
+                // initialize entity behaviors
+                behaviors: [
+                    new BounceBehavior(), // bounce off edges
+                    new AvoidBehavior({ // avoid obstacles
+                        obstacles: obstacles,
+                        avoidColor: this.avoidColor
+                    }),
+                    new WanderBehavior({ // wander around (if not avoiding followers)
+                        steerChange: new Uniform(-0, +0),
+                        speedChange: new Uniform(-20, +20)
                     }),
                 ],
             });

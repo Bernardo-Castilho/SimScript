@@ -1,6 +1,5 @@
 # Todo
 - steering behaviors (http://www.red3d.com/cwr/steer/)
-    - prioritize bounce obstacles
     * Wrap
     * Bounce
     * Wander
@@ -26,6 +25,10 @@
     - canals?
 
 # Change Log
+
+SimScript 1.0.34    (8/16/21)
+- Improved documentation
+- Improved "AvoidBehavior" implementation and samples.
 
 SimScript 1.0.33    (8/12/21)
 - Improved documentation

@@ -5,7 +5,7 @@ support for 2D and 3D animations.
 
 The [SimScript API Documentation](https://bernardo-castilho.github.io/simscript/docs/)
 describes all the classes in the **SimScript** library and their properties.
-This [SimScript Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
+This [Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
 shows several simulations, including 2D and 3D animations.
 
 **SimScript** uses JavaScript's
@@ -193,3 +193,11 @@ The links below show some samples of **SimScript** simulations:
 - [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show how to use SimScript's
     **Network** class.
+
+# Get Involved
+
+If you have any suggestions to improve **SimScript**, or wish to report any issues, 
+feel free to contact me via [email](mailto:bernardo-castilho@hotmail.com).
+
+You can also use GitHub to [submit issues](https://github.com/Bernardo-Castilho/SimScript/issues).
+
