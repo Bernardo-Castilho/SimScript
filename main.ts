@@ -37,6 +37,9 @@ import {
     SteeringWander, SteeringSeek, SteeringChase, SteeringAvoid, SteeringFollow,
     SteeringLinearObstacles, SteeringLinearObstaclesSeek
 } from './simulations/steering';
+import {
+    NetworkSteering
+} from './simulations/network-steering';
 
 //----------------------------------------------------------
 // SimScript sample Group
@@ -2647,6 +2650,11 @@ if (true) {
             animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='${color}'/>`;
         });
     }
+    const getAnimationTemplateSVG = () => {
+        return `<svg class='ss-anim steering' viewBox='0 0 1000 500'>
+            <circle class='ss-queue'></circle>
+        </svg>`;
+    };
 
     // animation options for X3DOM steering samples
     const getAnimationOptionsX3D = (sim: SteeringBehaviors) => {
@@ -2686,6 +2694,32 @@ if (true) {
             </transform>`;
         });
     }
+    const getAnimationTemplateX3D = () => {
+        return `<x3d class='ss-anim steering'> 
+            <scene>
+
+                <!-- default viewpoint -->
+                <viewpoint
+                    position='500 -500 600'
+                    orientation='1 0 0 .8'
+                    centerOfRotation='0 0 -20'>
+                </viewpoint>
+
+                <!-- ground -->
+                <transform scale='1000 500 .1' translation='500 250 -0.5'>
+                    <shape>
+                        <appearance> 
+                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
+                        </appearance>
+                        <box/>
+                    </shape>
+                </transform>
+
+                <!-- queues -->
+                ${createX3Queue('q', 0, 0)}
+            </scene>
+        </x3d>`;
+    };
 
     //----------------------------------------------------------
     // Wander/Wrap (SVG)
@@ -2710,9 +2744,7 @@ if (true) {
             Slow Mode
             <input id='wander-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringWander, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -2747,30 +2779,7 @@ if (true) {
             Slow Mode
             <input id='wander-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringWander, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -2807,9 +2816,7 @@ if (true) {
             Slow Mode
             <input id='bounce-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringWander, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -2846,30 +2853,7 @@ if (true) {
             Slow Mode
             <input id='bounce-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringWander, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -2899,12 +2883,7 @@ if (true) {
             Slow Mode
             <input id='seek-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle cx='50%' cy='50%' r='20' fill='none' stroke='orange'/>
-            <circle cx='50%' cy='50%' r='80' fill='none' stroke='orange'/>
-            <circle cx='50%' cy='50%' r='140' fill='none' stroke='orange'/>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringSeek, animationHost: HTMLElement) => {
             bind('seek-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('seek-slow', sim.slowMode, v => sim.slowMode = v);
@@ -2930,30 +2909,7 @@ if (true) {
             Slow Mode
             <input id='seek-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringSeek, animationHost: HTMLElement) => {
             bind('seek-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('seek-x3d-slow', sim.slowMode, v => sim.slowMode = v);
@@ -2984,9 +2940,7 @@ if (true) {
             Slow Mode
             <input id='chase-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringChase, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3021,30 +2975,7 @@ if (true) {
             Slow Mode
             <input id='chase-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringChase, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3082,9 +3013,7 @@ if (true) {
             Slow Mode
             <input id='avoid-static-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringAvoid, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3119,30 +3048,7 @@ if (true) {
             Slow Mode
             <input id='avoid-static-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringAvoid, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3185,9 +3091,7 @@ if (true) {
             Slow Mode
             <input id='avoid-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringAvoid, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3224,30 +3128,7 @@ if (true) {
             Slow Mode
             <input id='avoid-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringAvoid, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3288,9 +3169,7 @@ if (true) {
             Slow Mode
             <input id='follow-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringFollow, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3332,30 +3211,7 @@ if (true) {
             Slow Mode
             <input id='follow-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringFollow, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3387,9 +3243,7 @@ if (true) {
             Slow Mode
             <input id='linear-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringFollow, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3421,30 +3275,7 @@ if (true) {
             Slow Mode
             <input id='linear-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringFollow, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3475,9 +3306,7 @@ if (true) {
             Slow Mode
             <input id='linseek-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim steering' viewBox='0 0 1000 500'>
-            <circle class='ss-queue'/>
-        </svg>`,
+        ${getAnimationTemplateSVG()}`,
         (sim: SteeringLinearObstaclesSeek, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3508,30 +3337,7 @@ if (true) {
             Slow Mode
             <input id='linseek-x3d-slow' type='checkbox'>
         </label>
-        <x3d class='ss-anim'> 
-            <scene>
-
-                <!-- default viewpoint -->
-                <viewpoint
-                    position='500 -500 600'
-                    orientation='1 0 0 .8'
-                    centerOfRotation='0 0 -20'>
-                </viewpoint>
-
-                <!-- ground -->
-                <transform scale='1000 500 .1' translation='500 250 -0.5'>
-                    <shape>
-                        <appearance> 
-                            <material diffuseColor='0.1 0.3 0.1' transparency='0.8'></material>
-                        </appearance>
-                        <box/>
-                    </shape>
-                </transform>
-
-                <!-- queues -->
-                ${createX3Queue('q', 500, 250)}
-            </scene>
-        </x3d>`,
+        ${getAnimationTemplateX3D()}`,
         (sim: SteeringLinearObstaclesSeek, animationHost: HTMLElement) => {
 
             // bind parameters
@@ -3545,6 +3351,87 @@ if (true) {
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
         }
     );
+
+    //----------------------------------------------------------
+    // Network Steering Behavior (SVG)
+    showSimulation(
+        new NetworkSteering(),
+        'Network Steering (SVG)',
+        `<p>
+            Shows how you can use steering behaviors with networks.</p>
+        <p>
+            The sample creates a network and uses it to create paths for
+            the properties.
+            Paths are arrays of links which are traversed using a <b>SeekBehavior</b>.
+            Entities also use an <b>AvoidBehavior</b> to avoid each other while
+            moving along links.</p>
+        <label>
+            Entity Count
+            <input id='net-steer-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='net-steer-slow' type='checkbox'>
+        </label>
+        <svg class='ss-anim'
+            viewbox='-100 -50 1000 500'
+            fill='orange'
+            stroke='black'
+            stroke-width='1'
+            font-size='10'
+            text-anchor='middle'
+            dominant-baseline='middle'>
+        </svg>`,
+        (sim: NetworkSteering, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('net-steer-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('net-steer-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // render network
+            renderNetworkSVG(sim.network, animationHost, true, true);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
+        }
+    );
+
+    //----------------------------------------------------------
+    // Network Steering Behavior (X3DOM)
+    showSimulation(
+        new NetworkSteering(),
+        'Network Steering (X3DOM)',
+        `<p>
+            Shows how you can use steering behaviors with networks.</p>
+        <p>
+            The sample creates a network and uses it to create paths for
+            the properties.
+            Paths are arrays of links which are traversed using a <b>SeekBehavior</b>.
+            Entities also use an <b>AvoidBehavior</b> to avoid each other while
+            moving along links.</p>
+        <label>
+            Entity Count
+            <input id='net-steer-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Slow Mode
+            <input id='net-steer-x3d-slow' type='checkbox'>
+        </label>
+        ${getAnimationTemplateX3D()}`,
+        (sim: NetworkSteering, animationHost: HTMLElement) => {
+
+            // bind parameters
+            bind('net-steer-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
+            bind('net-steer-x3d-slow', sim.slowMode, v => sim.slowMode = v);
+
+            // render network
+            renderNetworkX3D(sim.network, animationHost, false, true);
+
+            // show animation
+            new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
+        }
+    );
+
 }
 endSampleGroup();
 

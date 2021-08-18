@@ -1,4 +1,10 @@
 # Todo
+* templates
+- too many X3DOM
+- slow-down head-on
+- SeekPath behavior (with splines)
+- AvoidPedestrianBehavior
+
 - steering behaviors (http://www.red3d.com/cwr/steer/)
     * Wrap
     * Bounce

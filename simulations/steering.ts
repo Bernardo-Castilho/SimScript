@@ -114,7 +114,7 @@ export class SteeringBehaviors extends Simulation {
  * an array of {@link SteeringBehavior} objects which are applied
  * in sequence to update the entity state after each time increment.
  */
-export class SteeringVehicle extends Entity<SteeringBehaviors> {
+export class SteeringVehicle<S extends SteeringBehaviors = SteeringBehaviors> extends Entity<S> {
     _speed = 0;
     _speedMin = 0;
     _speedMax = null;
@@ -490,8 +490,21 @@ export class SeekBehavior extends SteeringBehavior {
     /**
      * Gets or sets the distance between the entity and the target
      * that means the entity has arrived.
+     * 
+     * The default value for this property is **null**, which causes
+     * the behavior to use the enitity's radius as the arrival 
+     * distance.
      */
-    arrivalDistance = 0;
+    arrivalDistance = null;
+    /**
+     * Gets or sets the distance at which the entity can proceed
+     * at full speed.
+     * 
+     * The default value for this property is **null**, which causes
+     * the behavior to use half of the simulation width as the max
+     * speed distance.
+     */
+    maxSpeedDistance = null;
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
         super.applyBehavior(e, dt);
@@ -501,7 +514,8 @@ export class SeekBehavior extends SteeringBehavior {
             // adjust speed
             const
                 dist = Point.distance(e.position, this.target),
-                pct = dist / (sim.bounds[1].x / 2);
+                distMax = this.maxSpeedDistance || (sim.bounds[1].x / 2),
+                pct = dist / distMax;
             e.speed = e.speedMax * pct;
 
             // adjust angle
@@ -509,7 +523,8 @@ export class SeekBehavior extends SteeringBehavior {
             e.angle = e.getTurnAngle(angTarget, dt, this.seekAngle);
 
             // raise event on arrival
-            if (dist < Math.max(e.radius, this.arrivalDistance)) {
+            let arrivalDistance = this.arrivalDistance != null ? this.arrivalDistance : e.radius;
+            if (dist < arrivalDistance) {
                 this.onArrive();
             }
         }
@@ -575,34 +590,44 @@ export class AvoidBehavior extends SteeringBehavior {
      * The default value for this property is **true**.
      */
     preventOthersWhileAvoiding = true;
-
-    applyBehavior(e: SteeringVehicle, dt: number): boolean {
-        super.applyBehavior(e, dt);
-
-        // find nearest obstacle
-        const obstacle = this._getNearestObstacle(dt);
-
-        // change obstacle
-        if (obstacle != this._currentObstacle) {
-            if (this._currentObstacle == null && obstacle != null) { // start avoiding, save properties
+    /**
+     * Gets or sets the current obstacle being avoided by this behavior.
+     */
+    get currentObstacle(): IObstacle {
+        return this._currentObstacle;
+    }
+    set currentObstacle(value: IObstacle) {
+        if (value != this._currentObstacle) {
+            const e = this.entity;
+            if (this._currentObstacle == null && value != null) { // start avoiding, save properties
                 if (this.avoidColor) {
                     this._saveColor = e.color;
                     e.color = this.avoidColor;
                 }
                 this._saveSpeed = e.speed;
                 e.speed *= this.slowDown;
-            } else if (this._currentObstacle != null && obstacle == null) { // done avoiding, restore properties
-                    if (this._saveColor) {
-                        e.color = this._saveColor;
-                    }
-                    e.speed = this._saveSpeed;
+            } else if (this._currentObstacle != null && value == null) { // done avoiding, restore properties
+                if (this._saveColor) {
+                    e.color = this._saveColor;
+                }
+                e.speed = this._saveSpeed;
             }
-            this._currentObstacle = obstacle;
+            this._currentObstacle = value;
         }
+    }
+
+    applyBehavior(e: SteeringVehicle, dt: number): boolean {
+        super.applyBehavior(e, dt);
+
+        // find nearest obstacle
+        const obstacle = this.getNearestObstacle(dt);
+
+        // change obstacle
+        this.currentObstacle = obstacle;
 
         // avoid obstacle
         if (obstacle != null) {
-            e.angle = this._getAvoidAngle(obstacle, dt);
+            e.angle = this.getAvoidAngle(obstacle, dt);
             e.steerAngle = 0; // don't turn while avoiding
         }
 
@@ -611,7 +636,7 @@ export class AvoidBehavior extends SteeringBehavior {
     }
 
     // gets the nearest obstacle to an entity
-    _getNearestObstacle(dt: number): IObstacle {
+    protected getNearestObstacle(dt: number): IObstacle {
         const
             e = this.entity as SteeringVehicle,
             pNow = e.position,
@@ -642,14 +667,14 @@ export class AvoidBehavior extends SteeringBehavior {
     }
 
     // gets the angle to use in order to avoid an obstacle
-    _getAvoidAngle(obstacle: IObstacle, dt: number): number {
+    protected getAvoidAngle(obstacle: IObstacle, dt: number): number {
         const
             e = this.entity,
             d = Point.distance(e.position, obstacle.position);
         
         // too close? bounce or ignore
         if (d < obstacle.radius) {
-            return (this.bounce || obstacle.bounce)
+            return (obstacle.bounce)
                 ? e.angle + 180 + Math.random() * 6 - 3
                 : e.angle;
         }
@@ -657,14 +682,14 @@ export class AvoidBehavior extends SteeringBehavior {
         // choose new angle
         const
             aDelta = 90 * obstacle.radius / d,
-            d1 = this._getDeltaDistance(obstacle, +aDelta),
-            d2 = this._getDeltaDistance(obstacle, -aDelta),
+            d1 = this.getDeltaDistance(obstacle, +aDelta),
+            d2 = this.getDeltaDistance(obstacle, -aDelta),
             avoidDelta = d1 > d2 ? +aDelta : -aDelta;
         return e.getTurnAngle(e.angle + avoidDelta, dt, this.avoidAngle);
     }
 
     // measure the distance between an obstacle and a future entity position
-    _getDeltaDistance(obstacle: IObstacle, aDelta: number): number {
+    protected getDeltaDistance(obstacle: IObstacle, aDelta: number): number {
         const
             e = this.entity,
             a = (e.angle + aDelta) * Math.PI / 180,
@@ -924,6 +949,7 @@ export class SteeringFollow extends SteeringBehaviors {
                     }),
                 ],
             });
+            e.position.y = 50; // start away from static obstacles
             this.activate(e);
 
             // add entity to obstacle array
@@ -1069,68 +1095,6 @@ export class SteeringLinearObstaclesSeek extends SteeringBehaviors {
                             }
                             e.done = true;
                         }
-                    }),
-                ],
-            });
-
-            // optionally, add this entity to the obstacle array
-            obstacles.push(e);
-
-            // activate the entity
-            this.activate(e);
-        }
-    }
-}
-
-/**
- * Implement linear obstacles (walls) as a group of circular ones.
- */
- export class SteeringLinearObstaclesXXX extends SteeringBehaviors {
-    avoidColor = 'red';
-     obstacles = this.generateObstaclesForPath([
-        { x: 400, y: 550 },
-        { x: 400, y: 250 },
-        { x: 600, y: 250 },
-        { x: 600, y: 550 },
-    ], 5, true);
-
-    constructor(options?: any) {
-        super();
-        setOptions(this, options);
-    }
-
-    onStarting(e?: EventArgs) {
-        super.onStarting(e);
-
-        const
-            obstacles = this.obstacles.slice(), // array with obstacles used by the AvoidBehavior
-            xPos = new Uniform(500, 500), // // entity starting x position
-            yPos = new Uniform(400, 400), // entity starting y position
-            speed = new Uniform(10, 20), // entity starting speed
-            angle = new Uniform(-90, -90); // entity starting angle
-
-        // create some wandering entities
-        for (let i = 0; i < this.entityCount; i++) {
-            const e = new SteeringVehicle({
-
-                // initialize entity properties
-                color: 'orange',
-                speedMin: 10,
-                steerAngleMax: 20, // prevent tight loops
-                speed: speed.sample(),
-                angle: angle.sample(),
-                position: { x: xPos.sample(), y: yPos.sample() },
-    
-                // initialize entity behaviors
-                behaviors: [
-                    new BounceBehavior(), // bounce off edges
-                    new AvoidBehavior({ // avoid obstacles
-                        obstacles: obstacles,
-                        avoidColor: this.avoidColor
-                    }),
-                    new WanderBehavior({ // wander around (if not avoiding followers)
-                        steerChange: new Uniform(-0, +0),
-                        speedChange: new Uniform(-20, +20)
                     }),
                 ],
             });

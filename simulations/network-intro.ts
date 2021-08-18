@@ -412,12 +412,12 @@ export function renderNetworkSVG(network: Network, svg: HTMLElement, nodes = tru
 }
 
 // renders a network into an x3d element
-export function renderNetworkX3D(network: Network, x3d: HTMLElement) {
-    const scene = x3d.querySelector('scene');
+export function renderNetworkX3D(network: Network, x3d: HTMLElement, nodes = true, links = true) {
     let html = '';
-    network.nodes.forEach(nd => {
-        const pos = nd.position;
-        html += `
+    if (nodes) {
+        network.nodes.forEach(nd => {
+            const pos = nd.position;
+            html += `
             <transform class='ss-queue q${nd.id}' translation='${pos.x} ${pos.y} 0'>
                 <shape>
                     <appearance>
@@ -426,13 +426,15 @@ export function renderNetworkX3D(network: Network, x3d: HTMLElement) {
                     <box size='5 5 2'></box>
                 </shape>
             </transform>`;
-    });
-    network.links.forEach((link: ILink, index: number) => {
-        if (index % 2 == 0) {
-            const from = link.from.position;
-            const to = link.to.position;
-            const len = Point.distance(from, to);
-            html += `
+        });
+    }
+    if (links) {
+        network.links.forEach((link: ILink, index: number) => {
+            if (index % 2 == 0) {
+                const from = link.from.position;
+                const to = link.to.position;
+                const len = Point.distance(from, to);
+                html += `
             <transform translation='${from.x} ${from.y} 0' rotation='0 0 1 ${Point.angle(from, to, true)}'>
                 <transform translation='${len / 2} 0 0'>
                     <shape>
@@ -443,7 +445,9 @@ export function renderNetworkX3D(network: Network, x3d: HTMLElement) {
                     </shape>
                 </transform>
             </transform>`;
-        }
-    });
+            }
+        });
+    }
+    const scene = x3d.querySelector('scene');
     scene.innerHTML += html;
 }
