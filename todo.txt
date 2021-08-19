@@ -1,23 +1,10 @@
 # Todo
-* templates
-- too many X3DOM
-- slow-down head-on
-- SeekPath behavior (with splines)
-- AvoidPedestrianBehavior
+- SVG transform/network
+- too many WebGL contexts (X3DOM)
 
-- steering behaviors (http://www.red3d.com/cwr/steer/)
-    * Wrap
-    * Bounce
-    * Wander
-    * Seek
-    * Chase
-    * Avoid Obstacles (static/dynamic)
-    * Follow Entity (chase + avoid)
-    * Linear obstacles (as many circular obstacles)
-    - Follow Path
-    - Contain
+* steering behaviors (http://www.red3d.com/cwr/steer/)
 - react samples
-- intro docs/samples
+- code project article
 - more docs/examples
     - pac-man
     - elevators

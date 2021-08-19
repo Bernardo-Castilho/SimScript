@@ -8,9 +8,9 @@ export function startSampleGroup(title: string, intro: string) {
     let e = createElement(`
         <div class='sample-group''>
             <h1>
-                <button class='collapse'>-</button> ${title}
+                <button class='collapse'>+</button> ${title}
             </h1>
-            <div class='body'>
+            <div class='body' style='display:none'>
                 <div class='intro'>
                     ${intro}
                 </div>

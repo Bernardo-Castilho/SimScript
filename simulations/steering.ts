@@ -276,9 +276,9 @@ export class SteeringVehicle<S extends SteeringBehaviors = SteeringBehaviors> ex
 
         // apply all behaviors
         if (this.behaviors) {
-            //this.behaviors.forEach(b => b.applyBehavior(this, dt));
             for (let i = 0; i < this.behaviors.length; i++) {
                 const b = this.behaviors[i];
+                b.entity = this;
                 if (b.applyBehavior(this, dt)) {
                     break; // stop iterating if applyBehavior returned true
                 }
@@ -372,7 +372,6 @@ export abstract class SteeringBehavior {
      * false to stop and not apply any remaining behaviors.
      */
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
-        this.entity = e;
         return false;
     }
 }
@@ -398,7 +397,6 @@ export interface IObstacle {
  */
 export class WrapBehavior extends SteeringBehavior {
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
-        super.applyBehavior(e, dt);
         const bounds = e.simulation.bounds;
         if (bounds) {
             const p = e.position;
@@ -422,7 +420,6 @@ export class WrapBehavior extends SteeringBehavior {
  */
 export class BounceBehavior extends SteeringBehavior {
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
-        super.applyBehavior(e, dt);
         const bounds = e.simulation.bounds;
         if (bounds) {
             const p = e.position;
@@ -451,7 +448,6 @@ export class WanderBehavior extends SteeringBehavior {
     }
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
-        super.applyBehavior(e, dt);
         const now = e.simulation.timeNow;
         if (now - this._timeLastChange >= this.changeInterval) {
             if (this.steerChange != null) {
@@ -507,14 +503,12 @@ export class SeekBehavior extends SteeringBehavior {
     maxSpeedDistance = null;
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
-        super.applyBehavior(e, dt);
         if (this.target) {
-            const sim = e.simulation;
 
             // adjust speed
             const
                 dist = Point.distance(e.position, this.target),
-                distMax = this.maxSpeedDistance || (sim.bounds[1].x / 2),
+                distMax = this.maxSpeedDistance || (e.simulation.bounds[1].x / 2),
                 pct = dist / distMax;
             e.speed = e.speedMax * pct;
 
@@ -617,7 +611,6 @@ export class AvoidBehavior extends SteeringBehavior {
     }
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
-        super.applyBehavior(e, dt);
 
         // find nearest obstacle
         const obstacle = this.getNearestObstacle(dt);
@@ -636,9 +629,9 @@ export class AvoidBehavior extends SteeringBehavior {
     }
 
     // gets the nearest obstacle to an entity
-    protected getNearestObstacle(dt: number): IObstacle {
+    protected getNearestObstacle(dt: number, criticalDistance = this.entity.radius): IObstacle {
         const
-            e = this.entity as SteeringVehicle,
+            e = this.entity,
             pNow = e.position,
             pNext = {
                 x: pNow.x + e._cos,
@@ -652,7 +645,7 @@ export class AvoidBehavior extends SteeringBehavior {
                     offset = o.radius + e.radius + e.speed * dt,
                     dist = Point.distance(pNow, o.position) - offset;
                 if (minDist == null || dist < minDist) { // closer
-                    if (dist < e.radius) { // close enough...
+                    if (dist <= criticalDistance) { // close enough...
                         if (Point.distance(pNext, o.position) - offset < dist) { // and getting closer...
                             if (minDist == null || o.bounce || o.bounce == obstacle.bounce) { // prioritize bouncing obstacles
                                 minDist = dist;

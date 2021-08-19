@@ -200,7 +200,7 @@ if (true) {
                     <b>${format(sim.tally.max)}</b>
                 </li>
             </ul>` +
-                sim.tally.getHistogramChart(sim.randomVar.name);
+            sim.tally.getHistogramChart(sim.randomVar.name);
         
             // parameters
             bind('rand-type', sim.randomVarIndex, v => sim.randomVarIndex = v);
@@ -220,7 +220,6 @@ if (true) {
             Single resource with multiple servers versus
             multiple resources with a single server.</p>`,
         (sim: MultiServer, log: HTMLElement) => {
-
             let utzQSingle = 0;
             sim.qSingle.forEach((q: Queue) => {
                 utzQSingle += q.grossPop.avg / q.capacity;
@@ -3356,24 +3355,28 @@ if (true) {
     // Network Steering Behavior (SVG)
     showSimulation(
         new NetworkSteering(),
-        'Network Steering (SVG)',
+        'Network Behaviors (SVG)',
         `<p>
             Shows how you can use steering behaviors with networks.</p>
         <p>
             The sample creates a network and uses it to create paths for
-            the properties.
-            Paths are arrays of links which are traversed using a <b>SeekBehavior</b>.
-            Entities also use an <b>AvoidBehavior</b> to avoid each other while
-            moving along links.</p>
+            the entities.</p>
+        <p>
+            Entities traverse the paths using a <b>NetworkSeekBehavior</b>,
+            and avoid other entities using a <b>NetworkAvoidBehavior</b>.</p>
         <label>
             Entity Count
             <input id='net-steer-cnt' type='range' min='1' max='100'>
         </label>
         <label>
+            Entities Done
+            <b><span id='net-steer-done'>0</span></b>
+        </label>
+        <label>
             Slow Mode
             <input id='net-steer-slow' type='checkbox'>
         </label>
-        <svg class='ss-anim'
+        <svg class='ss-anim steering'
             viewbox='-100 -50 1000 500'
             fill='orange'
             stroke='black'
@@ -3381,6 +3384,7 @@ if (true) {
             font-size='10'
             text-anchor='middle'
             dominant-baseline='middle'>
+            <circle class='ss-queue'></circle>
         </svg>`,
         (sim: NetworkSteering, animationHost: HTMLElement) => {
 
@@ -3388,8 +3392,19 @@ if (true) {
             bind('net-steer-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('net-steer-slow', sim.slowMode, v => sim.slowMode = v);
 
+            // show stats
+            let vehiclesDone = 0;
+            const updateStats = () => {
+                if (sim.vehiclesDone != vehiclesDone) {
+                    vehiclesDone = sim.vehiclesDone;
+                    setText('#net-steer-done', vehiclesDone.toString());
+                }
+            };
+            sim.stateChanged.addEventListener(updateStats);
+            sim.timeNowChanged.addEventListener(updateStats)
+
             // render network
-            renderNetworkSVG(sim.network, animationHost, true, true);
+            renderNetworkSVG(sim.network, animationHost, true, false);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
@@ -3400,18 +3415,22 @@ if (true) {
     // Network Steering Behavior (X3DOM)
     showSimulation(
         new NetworkSteering(),
-        'Network Steering (X3DOM)',
+        'Network Behaviors (X3DOM)',
         `<p>
             Shows how you can use steering behaviors with networks.</p>
         <p>
             The sample creates a network and uses it to create paths for
-            the properties.
-            Paths are arrays of links which are traversed using a <b>SeekBehavior</b>.
-            Entities also use an <b>AvoidBehavior</b> to avoid each other while
-            moving along links.</p>
+            the entities.</p>
+        <p>
+            Entities traverse the paths using a <b>NetworkSeekBehavior</b>,
+            and avoid other entities using a <b>NetworkAvoidBehavior</b>.</p>
         <label>
             Entity Count
             <input id='net-steer-x3d-cnt' type='range' min='1' max='100'>
+        </label>
+        <label>
+            Entities Done
+            <b><span id='net-steer-x3d-done'>0</span></b>
         </label>
         <label>
             Slow Mode
@@ -3424,8 +3443,19 @@ if (true) {
             bind('net-steer-x3d-cnt', sim.entityCount, v => sim.entityCount = v, ' entities');
             bind('net-steer-x3d-slow', sim.slowMode, v => sim.slowMode = v);
 
+            // show stats
+            let vehiclesDone = 0;
+            const updateStats = () => {
+                if (sim.vehiclesDone != vehiclesDone) {
+                    vehiclesDone = sim.vehiclesDone;
+                    setText('#net-steer-x3d-done', vehiclesDone.toString());
+                }
+            };
+            sim.stateChanged.addEventListener(updateStats);
+            sim.timeNowChanged.addEventListener(updateStats)
+
             // render network
-            renderNetworkX3D(sim.network, animationHost, false, true);
+            renderNetworkX3D(sim.network, animationHost, true, false);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsX3D(sim));
