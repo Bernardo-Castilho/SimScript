@@ -482,7 +482,7 @@ export class SeekBehavior extends SteeringBehavior {
      * corresponds to a 0.5 degree change in direction per unit
      * time while seeking a target.
      */
-    seekAngle = 0.5;
+    seekAngle: number = 0.5;
     /**
      * Gets or sets the distance between the entity and the target
      * that means the entity has arrived.
@@ -491,7 +491,7 @@ export class SeekBehavior extends SteeringBehavior {
      * the behavior to use the enitity's radius as the arrival 
      * distance.
      */
-    arrivalDistance = null;
+    arrivalDistance: number = null;
     /**
      * Gets or sets the distance at which the entity can proceed
      * at full speed.
@@ -500,7 +500,7 @@ export class SeekBehavior extends SteeringBehavior {
      * the behavior to use half of the simulation width as the max
      * speed distance.
      */
-    maxSpeedDistance = null;
+    maxSpeedDistance: number = null;
 
     applyBehavior(e: SteeringVehicle, dt: number): boolean {
         if (this.target) {

@@ -1,19 +1,19 @@
 import { RandomInt, Uniform } from '../simscript/random';
 import { ILink } from '../simscript/network';
-import { assert, setOptions, Point } from '../simscript/util';
+import { setOptions, Point } from '../simscript/util';
 
 import { createNetwork } from './network-intro';
 import { SteeringBehaviors, SteeringVehicle, SeekBehavior, AvoidBehavior } from './steering';
 
-const SPEED_MIN = 2;
+const SPEED_MIN = 5;
 const SPEED_MAX = 100;
 const SEGMENT_COUNT = 10;
 
 // Simulation with a network and some Steering Vehicles
 export class NetworkSteering extends SteeringBehaviors {
-    network = createNetwork(3, 5, 200); // nodes are 100m apart
+    network = createNetwork(3, 5, 200, false); // nodes are 200m apart
     rndNode = new RandomInt(this.network.nodes.length - 1);
-    speed = new Uniform(SPEED_MAX / 5, SPEED_MAX);
+    speed = new Uniform(SPEED_MIN, SPEED_MAX);
     vehicles: NetworkSteeringVehicle[] = [];
     vehiclesDone = 0;
 
@@ -24,41 +24,48 @@ export class NetworkSteering extends SteeringBehaviors {
         this.vehicles = [];
         this.vehiclesDone = 0;
 
-        // test head-on
-        const nodes = this.network.nodes;
+        // testing
         if (false) {
+
+            // head-on
+            const
+                network = this.network,
+                nodes = network.nodes;
             this.vehicles.push(new NetworkSteeringVehicle(this, {
                 speedMax: SPEED_MAX,
-                path: this.network.shortestPath(nodes[0], nodes[4]),
+                path: [
+                    ...network.shortestPath(nodes[0], nodes[4]),
+                    ...network.shortestPath(nodes[4], nodes[10])
+                ]
             }));
             this.vehicles.push(new NetworkSteeringVehicle(this, {
                 speedMax: SPEED_MAX / 1.5,
-                path: this.network.shortestPath(nodes[4], nodes[0]),
+                path: network.shortestPath(nodes[4], nodes[0]),
             }));
             this.vehicles.push(new NetworkSteeringVehicle(this, {
                 speedMax: SPEED_MAX * 1.5,
-                path: this.network.shortestPath(nodes[4], nodes[0]),
+                path: network.shortestPath(nodes[4], nodes[0]),
             }));
-        }
 
-        // test passing
-        if (false) {
+            // passing
             this.vehicles.push(new NetworkSteeringVehicle(this, {
                 speedMax: SPEED_MAX,
-                path: this.network.shortestPath(nodes[5], nodes[9]),
+                path: [
+                    ...network.shortestPath(nodes[5], nodes[9]),
+                    ...network.shortestPath(nodes[9], nodes[10])
+                ]
             }));
             this.vehicles.push(new NetworkSteeringVehicle(this, {
                 speedMax: SPEED_MAX / 2,
-                path: this.network.shortestPath(nodes[6], nodes[9]),
+                path: network.shortestPath(nodes[6], nodes[9]),
             }));
             this.vehicles.push(new NetworkSteeringVehicle(this, {
                 speedMax: SPEED_MAX / 3,
-                path: this.network.shortestPath(nodes[7], nodes[9]),
+                path: network.shortestPath(nodes[7], nodes[9]),
             }));
-        }
+        } else {
 
-        // random paths
-        if (true) {
+            // generate entities with random paths
             for (let i = 0; i < this.entityCount; i++) {
                 this.vehicles.push(new NetworkSteeringVehicle(this));
             }
@@ -99,7 +106,6 @@ export class NetworkSteeringVehicle extends SteeringVehicle<NetworkSteering> {
                     obstacles: sim.vehicles,
                 }),
                 new NetworkSeekBehavior({
-                    seekAngle: 5, // max turn per unit time
                     arrivalDistance: 5, // less than the vehicle radius
                     maxSpeedDistance: 10, // shorter than a link
                     arrive: () => {
@@ -119,7 +125,10 @@ export class NetworkSteeringVehicle extends SteeringVehicle<NetworkSteering> {
             for (let i = 0; i < SEGMENT_COUNT; i++) {
 
                 // select to nodes
-                let to = (from + 20) % sim.network.nodes.length;
+                let to = sim.rndNode.sample();
+                while (to == from) {
+                    to = sim.rndNode.sample();
+                }
 
                 // append to path
                 this.path.push(...sim.network.shortestPath(nodes[from], nodes[to]));
@@ -132,8 +141,8 @@ export class NetworkSteeringVehicle extends SteeringVehicle<NetworkSteering> {
 }
 
 /**
- * Behavior that causes entities to pass slower ones and swerve to
- * avoid collisions with other entities.
+ * Behavior that causes entities to turn in order to overtake slower ones
+ * and swerve to avoid head-on collisions with other entities.
  */
 export class NetworkAvoidBehavior extends AvoidBehavior {
     applyBehavior(e: NetworkSteeringVehicle, dt: number): boolean {
@@ -159,7 +168,7 @@ export class NetworkAvoidBehavior extends AvoidBehavior {
 
                     // turn to pass and to avoid collisions
                     const
-                        turnAngle = pass ? +30 : -30, // left to pass, right to avoid
+                        turnAngle = pass ? +10 : -30, // left to pass, right to avoid
                         targetAngle = Point.angle(link.from.position, link.to.position) + turnAngle;
                     e.angle = e.getTurnAngle(targetAngle, dt);
 
@@ -184,26 +193,44 @@ export class NetworkAvoidBehavior extends AvoidBehavior {
 }
 
 /**
- * Behavior that makes an entity traverse a path formed by
- * a list of {@link ILink} objects.
+ * Behavior that makes an entity traverse a path formed by a list
+ * of {@link ILink} objects.
  */
 export class NetworkSeekBehavior extends SeekBehavior {
     _lastPath: ILink[];
 
+    constructor(options: any) {
+        super();
+        this.seekAngle = 5; // max turn per unit time
+        setOptions(this, options);
+    }
+
     applyBehavior(e: NetworkSteeringVehicle, dt: number): boolean {
-        if (e.path && e.path.length) {
-           
+        const path = e.path;
+        if (path && path.length) {
+
+            // save from position
+            let link = path[0];
+            const startPosition = Point.clone(link.from.position);
+
+            // merge with next link if the angle is the same
+            const angle = Point.angle(link.from.position, link.to.position);
+            if (path.length > 1) {
+                const nextLink = path[1];
+                if (Point.angle(nextLink.from.position, nextLink.to.position) == angle) {
+                    link = nextLink;
+                    path.shift();
+                }
+            }
+
             // update target
-            const
-                path = e.path,
-                link = path[0];
             this.target = link.to.position;
-            
+
             // initialize position
             if (path != this._lastPath) {
                 this._lastPath = path;
-                e.position = Point.clone(link.from.position);
-                e.angle = Point.angle(link.from.position, link.to.position);
+                e.position = startPosition;
+                e.angle = angle;
             }
 
             // adjust speed
@@ -213,12 +240,16 @@ export class NetworkSeekBehavior extends SeekBehavior {
                 pct = dist / distMax;
             e.speed = e.speedMax * pct;
 
+            // get arrival distance
+            let arrivalDistance = this.arrivalDistance != null
+                ? this.arrivalDistance
+                : e.radius;
+
             // adjust angle
             let angTarget = Point.angle(e.position, this.target);
             e.angle = e.getTurnAngle(angTarget, dt, this.seekAngle);
 
             // raise event on arrival
-            let arrivalDistance = this.arrivalDistance != null ? this.arrivalDistance : e.radius;
             if (dist < arrivalDistance) {
                 path.shift();
                 if (path.length == 0) {
@@ -226,6 +257,8 @@ export class NetworkSeekBehavior extends SeekBehavior {
                 }
             }
         }
+ 
+        // done
         return false;
     }
 }

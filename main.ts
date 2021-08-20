@@ -3362,7 +3362,7 @@ if (true) {
             The sample creates a network and uses it to create paths for
             the entities.</p>
         <p>
-            Entities traverse the paths using a <b>NetworkSeekBehavior</b>,
+            Entities traverse the paths using a <b>NetworkSeekBehavior</b>
             and avoid other entities using a <b>NetworkAvoidBehavior</b>.</p>
         <label>
             Entity Count
@@ -3404,7 +3404,7 @@ if (true) {
             sim.timeNowChanged.addEventListener(updateStats)
 
             // render network
-            renderNetworkSVG(sim.network, animationHost, true, false);
+            renderNetworkSVG(sim.network, animationHost, true, true);
 
             // show animation
             new Animation(sim, animationHost, getAnimationOptionsSVG(sim));
@@ -3422,7 +3422,7 @@ if (true) {
             The sample creates a network and uses it to create paths for
             the entities.</p>
         <p>
-            Entities traverse the paths using a <b>NetworkSeekBehavior</b>,
+            Entities traverse the paths using a <b>NetworkSeekBehavior</b>
             and avoid other entities using a <b>NetworkAvoidBehavior</b>.</p>
         <label>
             Entity Count

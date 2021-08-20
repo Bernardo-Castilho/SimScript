@@ -277,7 +277,7 @@ export class ServiceVehicle extends Entity<NetworkIntro> {
 }
 
 // create a grid-like network
-export function createNetwork(rows: number, cols: number, spacing: number) {
+export function createNetwork(rows: number, cols: number, spacing: number, sparse = true) {
 
     // create nodes
     const nodes: INode[] = [];
@@ -302,27 +302,29 @@ export function createNetwork(rows: number, cols: number, spacing: number) {
             links.push({ from: nodes[i], to: nodes[i + 1] });
             links.push({ from: nodes[i + 1], to: nodes[i] });
         }
-        if (row < rows - 1 && (i % 2 != 0)) { // up/down, sparse
+        if (row < rows - 1 && (!sparse || i % 2 != 0)) { // up/down, sparse
             links.push({ from: nodes[i], to: nodes[i + cols] });
             links.push({ from: nodes[i + cols], to: nodes[i] });
         }
 
         // diagonal links
-        if (row == 0 && col == 0) {
-            links.push({ from: nodes[i + 1], to: nodes[i + cols] });
-            links.push({ from: nodes[i + cols], to: nodes[i + 1] });
-        }
-        if (row == 0 && col == cols - 1) {
-            links.push({ from: nodes[i - 1], to: nodes[i + cols] });
-            links.push({ from: nodes[i + cols], to: nodes[i - 1] });
-        }
-        if (row == rows - 1 && col == 0) {
-            links.push({ from: nodes[i + 1], to: nodes[i - cols] });
-            links.push({ from: nodes[i - cols], to: nodes[i + 1] });
-        }
-        if (row == rows - 1 && col == cols - 1) {
-            links.push({ from: nodes[i - 1], to: nodes[i - cols] });
-            links.push({ from: nodes[i - cols], to: nodes[i - 1] });
+        if (sparse) {
+            if (row == 0 && col == 0) {
+                links.push({ from: nodes[i + 1], to: nodes[i + cols] });
+                links.push({ from: nodes[i + cols], to: nodes[i + 1] });
+            }
+            if (row == 0 && col == cols - 1) {
+                links.push({ from: nodes[i - 1], to: nodes[i + cols] });
+                links.push({ from: nodes[i + cols], to: nodes[i - 1] });
+            }
+            if (row == rows - 1 && col == 0) {
+                links.push({ from: nodes[i + 1], to: nodes[i - cols] });
+                links.push({ from: nodes[i - cols], to: nodes[i + 1] });
+            }
+            if (row == rows - 1 && col == cols - 1) {
+                links.push({ from: nodes[i - 1], to: nodes[i - cols] });
+                links.push({ from: nodes[i - cols], to: nodes[i - 1] });
+            }
         }
     }
 
