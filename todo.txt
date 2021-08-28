@@ -1,4 +1,5 @@
 # Todo
+* Simulation.stop(reset?)
 - SVG transform/network
 - too many WebGL contexts (X3DOM)
 
@@ -18,6 +19,10 @@
     - canals?
 
 # Change Log
+
+SimScript 1.0.35    (?/?/21)
+- Added 'reset' parameter to **Simulation.stop** method.
+- Added React sample (with routing etc).
 
 SimScript 1.0.34    (8/16/21)
 - Improved documentation

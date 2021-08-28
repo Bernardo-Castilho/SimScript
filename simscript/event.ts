@@ -78,7 +78,7 @@ export class Event<S = any, T = EventArgs> {
      * @param sender Object that raised the event.
      * @param args {@link EventArgs} object that contains the event parameters.
      */
-    raise(sender: S, args: T) {
+    raise(sender: S, args?: T) {
         this._listeners.forEach(l => {
             l.listener.call(l.self, sender, args);
         });

@@ -139,7 +139,7 @@ export class Simulation {
      * such as 's', 'min', or 'hours' to get better looking output from the
      * {@link getStatsTable} method.
      */
-     get timeUnit(): string {
+    get timeUnit(): string {
         return this._timeUnit;
     }
     set timeUnit(value: string) {
@@ -252,10 +252,7 @@ export class Simulation {
 
         // reset
         if (reset) {
-            this._queues.forEach(q => q.reset());
-            this._fec = [];
-            this._queues = [];
-            this._setTimeNow(0);
+            this._reset();
             this.onStarting();
         }
 
@@ -275,11 +272,17 @@ export class Simulation {
      * 
      * Use the the {@link start} method to resume or re-start the 
      * simulation when it is paused.
+     * 
+     * @param reset Whether to reset the simulation state after
+     * stopping it.
      */
-    stop() {
+    stop(reset = false) {
         if (this.state == SimulationState.Running) {
             this._tmElapsed = Date.now() - this._tmStart;
             this._setState(SimulationState.Paused);
+        }
+        if (reset) {
+            this._reset();
         }
     }
     /**
@@ -520,7 +523,7 @@ export class Simulation {
             this.onStateChanged();
         }
     }
-
+    
     // change simulation time
     protected _setTimeNow(value: number) {
         if (value != this._tmNow) {
@@ -528,6 +531,15 @@ export class Simulation {
             this._tmNow = value;
             this.onTimeNowChanged();
         }
+    }
+
+    // reset the simulation by clearing all queues and 
+    // setting the current time to zero.
+    protected _reset() {
+        this._queues.forEach(q => q.reset());
+        this._fec = [];
+        this._queues = [];
+        this._setTimeNow(0);
     }
 
     // perform actions due now, wait and repeat

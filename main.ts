@@ -434,13 +434,13 @@ if (true) {
         
             if (rho > 1) {
                 log.innerHTML += `<p class='error'>
-                ** The server utilization exceeds 100%; the system will not reach a steady-state **
-            </p>`;
+                    ** The server utilization exceeds 100%; the system will not reach a steady-state **
+                </p>`;
             }
 
             log.innerHTML += `
-            ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
-            ${sim.qWait.grossDwell.getHistogramChart('Wait times (minutes)')}`;
+                ${sim.qWait.grossPop.getHistogramChart('Queue lengths')}
+                ${sim.qWait.grossDwell.getHistogramChart('Wait times (minutes)')}`;
 
             // parameters
             bind('mmc-capy', sim.qService.capacity, v => sim.qService.capacity = v, ' servers');
