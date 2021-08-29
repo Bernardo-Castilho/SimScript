@@ -725,7 +725,6 @@ export class SteeringWander extends SteeringBehaviors {
 
     onStarting(e?: EventArgs) {
         super.onStarting(e);
-
         for (let i = 0; i < this.entityCount; i++) {
             const e = new SteeringVehicle({
                 ...getWanderProps(this),

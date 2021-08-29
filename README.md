@@ -133,6 +133,11 @@ The links below show some samples of **SimScript** simulations:
 
 ## New Samples
 
+- [React Sample](https://bernardo-castilho.github.io/simscript/react/)\
+    Shows how you can use SimScript in React. 
+    The source code for this sample is available on
+    [GitHub](https://github.com/Bernardo-Castilho/simscript-react).
+
 - [Steering Behaviors](https://stackblitz.com/edit/typescript-fhrhfm)\
     Shows samples inspired by the article 
     [Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/).

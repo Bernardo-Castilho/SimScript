@@ -20,7 +20,7 @@
 
 # Change Log
 
-SimScript 1.0.35    (?/?/21)
+SimScript 1.0.35    (8/29/21)
 - Added 'reset' parameter to **Simulation.stop** method.
 - Added React sample (with routing etc).
 
