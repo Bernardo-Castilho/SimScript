@@ -591,7 +591,7 @@ class AnimatedQueue {
 class AnimatedEntity {
     private _anim: Animation;
     private _entity: Entity;
-    private _html: string; ////
+    private _html: string;
     /** internal */ _element: Element;
     /** internal */ _sz: IPoint;
     /** internal */ _offset: IPoint;
