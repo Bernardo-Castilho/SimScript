@@ -114,7 +114,15 @@ export class Animation {
         // scene element
         this._scene = this._host;
         if (this.hostTag == 'X3D') {
+
+            // x3dom scene element is a child of the animation host
             this._scene = this._host.querySelector('scene');
+
+            // reload x3dom to make sure animation is visible
+            const x3dom = window['x3dom'] as any;
+            if (x3dom != null && !animationHost.offsetHeight) {
+                requestAnimationFrame(() => x3dom.reload());
+            }
         }
 
         // simulation
@@ -927,7 +935,10 @@ class BoundingBox {
         }
     }
     private applyTransforms(el: Element) {
-        for (let e = el.closest('transform'); e != null; e = e.parentElement.closest('transform')) {
+        let e = el.closest('transform');
+        while (e != null) {
+
+            // apply translation
             const t = getAttributes(e, 'translation');
             if (t && t.length >= 3) {
                 const c = this.center;
@@ -935,6 +946,8 @@ class BoundingBox {
                 c.y += t[1];
                 c.z += t[2];
             }
+
+            // apply scale
             const s = getAttributes(e, 'scale');
             if (s && s.length >= 3) {
                 const sz = this.size;
@@ -942,6 +955,10 @@ class BoundingBox {
                 sz.y *= s[1];
                 sz.z *= s[2];
             }
+
+            // move on to parent transform
+            const p = e.parentElement;
+            e = p ? p.closest('transform') : null;
         }
     }
     private merge(box: BoundingBox) {

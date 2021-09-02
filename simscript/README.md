@@ -5,8 +5,15 @@ support for 2D and 3D animations.
 
 The [SimScript API Documentation](https://bernardo-castilho.github.io/simscript/docs/)
 describes all the classes in the **SimScript** library and their properties.
+
 This [Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
 shows several simulations, including 2D and 3D animations.
+
+This [Sample](https://bernardo-castilho.github.io/simscript/react/)\
+is written in **React**. It shows how you can create React components
+to show simulations, with support for custom parameters and animations.
+The source code is available on
+[GitHub](https://github.com/Bernardo-Castilho/simscript-react).
 
 **SimScript** uses JavaScript's
 [async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
@@ -151,10 +158,6 @@ The links below show some samples of **SimScript** simulations:
     The samples show how you can use SimScript to simulate a wide range of practical applications
     and allow you to compare results obtained by GPSS and SimScript.
 
-- [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt)\
-    Shows how you can customize the behavior of a SimScript **Network** to use a
-    car-following model and to account for network congestion.
-
 - [Asteroids (SVG animation)](https://stackblitz.com/edit/typescript-mcoqyz)\
     Shows how you can use Simscript to implement a simple arcade game with
     support for keyboard/touch events, sounds, and collision detection.
@@ -198,6 +201,10 @@ The links below show some samples of **SimScript** simulations:
 - [Network Intro (X3DOM animation)](https://stackblitz.com/edit/typescript-hl7cya)\
     Uses an [X3DOM](https://www.x3dom.org/)-based 3D animation to show how to use SimScript's
     **Network** class.
+
+- [Car-Following Network (X3DOM animation)](https://stackblitz.com/edit/typescript-5hfpwt)\
+    Shows how you can customize the behavior of a SimScript **Network** to use a
+    car-following model and to account for network congestion.
 
 # Get Involved
 

@@ -20,6 +20,11 @@
 
 # Change Log
 
+SimScript 1.0.36    (9/2/21)
+- Fixed Animation class to reload X3DOM when needed.
+- Fixed bug in Animation class bounding box calculations.
+- Improved React sample.
+
 SimScript 1.0.35    (8/29/21)
 - Added 'reset' parameter to **Simulation.stop** method.
 - Added React sample (with routing etc).

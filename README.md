@@ -10,7 +10,7 @@ This [Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
 shows several simulations, including 2D and 3D animations.
 
 This [Sample](https://bernardo-castilho.github.io/simscript/react/)\
-is written in React. It shows how you can create React components
+is written in **React**. It shows how you can create React components
 to show simulations, with support for custom parameters and animations.
 The source code is available on
 [GitHub](https://github.com/Bernardo-Castilho/simscript-react).
