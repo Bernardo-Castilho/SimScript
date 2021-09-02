@@ -424,8 +424,10 @@ export class BounceBehavior extends SteeringBehavior {
         if (bounds) {
             const p = e.position;
             if (p.x < bounds[0].x || p.x > bounds[1].x) {
+                p.x = p.x < bounds[0].x ? bounds[0].x : bounds[1].x;
                 e.angle = 180 - e.angle;
             } else if (p.y < bounds[0].y || p.y > bounds[1].y) {
+                p.y = p.y < bounds[0].y ? bounds[0].y : bounds[1].y;
                 e.angle = -e.angle;
             }
         }
