@@ -9,7 +9,7 @@ describes all the classes in the **SimScript** library and their properties.
 This [Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
 shows several simulations, including 2D and 3D animations.
 
-This [Sample](https://bernardo-castilho.github.io/simscript/react/)\
+This [Sample](https://bernardo-castilho.github.io/simscript/react/)
 is written in **React**. It shows how you can create React components
 to show simulations, with support for custom parameters and animations.
 The source code is available on
