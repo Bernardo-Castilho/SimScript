@@ -2645,9 +2645,11 @@ if (true) {
         }
     };
     const showObstaclesSVG = (sim: any, animationHost: HTMLElement, color = 'lightgrey') => {
+        let html = animationHost.innerHTML;
         sim.obstacles.forEach(o => {
-            animationHost.innerHTML += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='${color}'/>`;
+            html += `<circle cx='${o.position.x}' cy='${o.position.y}' r='${o.radius}' fill='${color}'/>`;
         });
+        animationHost.innerHTML = html;
     }
     const getAnimationTemplateSVG = () => {
         return `<svg class='ss-anim steering' viewBox='0 0 1000 500'>
@@ -2681,9 +2683,10 @@ if (true) {
         }
     };
     const showObstaclesX3D = (sim: any, animationHost: HTMLElement, height = 30, color = '.5 .5 0') => {
+        const scene = animationHost.firstElementChild;
+        let html = scene.innerHTML;
         sim.obstacles.forEach(o => {
-            animationHost.firstElementChild.innerHTML += `
-            <transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} ${height / 2}'>
+            html += `<transform rotation='1 0 0 1.57' translation='${o.position.x} ${o.position.y} ${height / 2}'>
                 <shape>
                     <appearance>
                         <material diffuseColor='${color}'/>
@@ -2692,6 +2695,7 @@ if (true) {
                 </shape>
             </transform>`;
         });
+        scene.innerHTML = html;
     }
     const getAnimationTemplateX3D = () => {
         return `<x3d class='ss-anim steering'> 
