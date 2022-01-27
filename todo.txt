@@ -4,8 +4,19 @@
 - too many WebGL contexts (X3DOM)
 
 * steering behaviors (http://www.red3d.com/cwr/steer/)
-- react samples
+* react samples
 - code project article
+    discrete event simulation
+    scheduler, await/async
+    typescript, c#
+    Simulation (stage: controls the show)
+    Entities (actors: move through the simulation)
+    Queues (props: restrict entity flow, gather stats)
+    Generate Entities
+    Restrict Entity Flow: delay, enterQueue/leaveQueue, wait/signal
+    Collect Stats: queues, histograms
+    examples: barbershop, mmc, crosswalk
+    animation: 2d, 3d
 - more docs/examples
     - pac-man
     - elevators
