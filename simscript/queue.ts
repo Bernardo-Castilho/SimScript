@@ -8,7 +8,10 @@ import { assert, setOptions } from './util';
  * a simulation.
  * 
  * Queues can be seized and released by entities while the simulation
- * runs. When that happens, the simulation collects aggregate statistics
+ * runs using the {@link Entity.enterQueue} and {@link Entity.leaveQueue}
+ * methods.
+ * 
+ * When that happens, the simulation collects aggregate statistics
  * about the number of entities in the queue and the amount of time
  * they spent there.
  * 
@@ -31,12 +34,34 @@ import { assert, setOptions } from './util';
  * }
  * ```
  * 
- * The queue statistics can be obtained at the end of the simulation by
- * inspeting the queue's {@link grossPop} and {@link grossDwell} 
+ * Queue statistics can be obtained at the end of the simulation by
+ * inspecting the queue's {@link grossPop} and {@link grossDwell} 
  * {@link Tally} objects.
  * 
  * You can also generate complete reports on queue utilization using 
  * the {@link Simulation.getStatsTable} method.
+ * 
+ * In addition to the {@link Entity.enterQueue} and {@link Entity.leaveQueue}
+ * methods, SimScript has a {@link Entity.seize} method that provides a
+ * shorter way to instruct entities to enter one or more waiting queues
+ * (unlimited capacity), seize a resource (limited capacity), undergo a delay,
+ * and leave the waiting queues.
+ * 
+ * For example, the code below uses the {@link Entity.seize} method to perform
+ * the same tasks as the script listed above:
+ * 
+  * ```typescript
+ * class Customer extends Entity<BarberShop> {
+ *     service = new Uniform(15 - 3, 15 + 3);
+ *     async script() {
+ *         const shop = this.simulation;
+ * 
+ *         // seize method: enter the line, seize the barber, leave the line,
+ *         // get a haircut, release the barber
+ *         await this.seize(shop.qJoe, this.service.sample(), shop.qWait);
+ *     }
+ * }
+ * ```
  */
 export class Queue {
     private _sim: Simulation | null = null;
