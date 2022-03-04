@@ -7,6 +7,11 @@ import { assert, setOptions } from './util';
  * Class that represents a resource and collects statistics within 
  * a simulation.
  * 
+ * We refer to queues and resources interchangeably. Resources are
+ * just Queues with limited capacity. Seizing a resource is the
+ * same as entering a Queue, and releasing a resource is the same
+ * as leaving a Quue.
+ * 
  * Queues can be seized and released by entities while the simulation
  * runs using the {@link Entity.enterQueue} and {@link Entity.leaveQueue}
  * methods.
@@ -42,7 +47,7 @@ import { assert, setOptions } from './util';
  * the {@link Simulation.getStatsTable} method.
  * 
  * In addition to the {@link Entity.enterQueue} and {@link Entity.leaveQueue}
- * methods, SimScript has a {@link Entity.seize} method that provides a
+ * methods, SimScript has an {@link Entity.seize} method that provides a
  * shorter way to instruct entities to enter one or more waiting queues
  * (unlimited capacity), seize a resource (limited capacity), undergo a delay,
  * and leave the waiting queues.

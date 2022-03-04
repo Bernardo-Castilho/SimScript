@@ -66,10 +66,13 @@
 				<p>The <a href="https://bernardo-castilho.github.io/simscript/docs/">SimScript API Documentation</a>
 				describes all the classes in the <strong>SimScript</strong> library and their properties.</p>
 				<p>This <a href="https://bernardo-castilho.github.io/simscript/dist/index.html">Sample</a>
-				shows several simulations, including 2D and 3D animations.</p>
-				<p>This <a href="https://bernardo-castilho.github.io/simscript/react/">Sample</a>
-					is written in <strong>React</strong>. It shows how you can create React components
-					to show simulations, with support for custom parameters and animations.
+					is written using pure TypeScript (no frameworks).
+					It shows several simulations, including 2D and 3D animations.
+					The source code is available on
+				<a href="https://github.com/Bernardo-Castilho/simscript">GitHub</a>.</p>
+				<p>This <a href="https://bernardo-castilho.github.io/simscript/react/">React Sample</a>
+					shows how you can create React components to show simulations,
+					with support for routing, custom parameter binding, and animations.
 					The source code is available on
 				<a href="https://github.com/Bernardo-Castilho/simscript-react">GitHub</a>.</p>
 				<p><strong>SimScript</strong> uses JavaScript&#39;s
@@ -81,8 +84,9 @@
 				</a>
 				<p>Simulations create resources (queues) and entities which execute an async
 				<strong>script</strong> method that describes the actions each entity should perform.</p>
-				<p>The <strong>Simulation</strong> class is abstract. In most cases, you will create classes
-				that extend it to create the queues and entities you need.</p>
+				<p>The <strong>Simulation</strong> class is abstract.
+					In most cases, you will create classes that extend it to create the
+				queues and entities you need.</p>
 				<a href="#entity-class" id="entity-class" style="color: inherit; text-decoration: none;">
 					<h2>Entity Class</h2>
 				</a>
@@ -92,9 +96,7 @@
 				<strong>delays</strong>, and sending or waiting for <strong>signals</strong>.</p>
 				<p>The <strong>Entity</strong> class is abstract. In most cases, you will create one
 					or more classes that extend it to perform the actions required by your
-					simulations.
-					The <strong>Entity</strong> class has an optional generic parameter that contains the
-				type of <strong>Simulation</strong> it refers to.</p>
+				simulations.</p>
 				<a href="#queue-class" id="queue-class" style="color: inherit; text-decoration: none;">
 					<h2>Queue Class</h2>
 				</a>
@@ -122,8 +124,7 @@
 					distance represented by a link.
 					You may create classes that extend <strong>Network</strong> and override this
 					method to provide custom behaviors such as congestion and turning
-					costs.
-				For example:</p>
+				costs. For example:</p>
 				<pre><code class="language-typescript"><span style="color: #008000">// network with congestion cost</span>
 <span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CongestionNetwork</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">Network</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #795E26">getLinkDistance</span><span style="color: #000000">(</span><span style="color: #001080">link</span><span style="color: #000000">: </span><span style="color: #267F99">ILink</span><span style="color: #000000">, </span><span style="color: #001080">prevLink</span><span style="color: #000000">?: </span><span style="color: #267F99">ILink</span><span style="color: #000000">): </span><span style="color: #267F99">number</span><span style="color: #000000"> {</span>

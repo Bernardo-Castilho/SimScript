@@ -7,11 +7,14 @@ The [SimScript API Documentation](https://bernardo-castilho.github.io/simscript/
 describes all the classes in the **SimScript** library and their properties.
 
 This [Sample](https://bernardo-castilho.github.io/simscript/dist/index.html)
-shows several simulations, including 2D and 3D animations.
+is written using pure TypeScript (no frameworks).
+It shows several simulations, including 2D and 3D animations.
+The source code is available on
+[GitHub](https://github.com/Bernardo-Castilho/simscript).
 
-This [Sample](https://bernardo-castilho.github.io/simscript/react/)
-is written in **React**. It shows how you can create React components
-to show simulations, with support for custom parameters and animations.
+This [React Sample](https://bernardo-castilho.github.io/simscript/react/)
+shows how you can create React components to show simulations,
+with support for routing, custom parameter binding, and animations.
 The source code is available on
 [GitHub](https://github.com/Bernardo-Castilho/simscript-react).
 
@@ -26,8 +29,9 @@ features to make simulation code easy to write and understand.
 Simulations create resources (queues) and entities which execute an async
 **script** method that describes the actions each entity should perform.
 
-The **Simulation** class is abstract. In most cases, you will create classes 
-that extend it to create the queues and entities you need.
+The **Simulation** class is abstract. 
+In most cases, you will create classes that extend it to create the 
+queues and entities you need.
 
 ## Entity Class
 
@@ -39,8 +43,6 @@ Typical actions include entering and leaving **queues**, going through
 The **Entity** class is abstract. In most cases, you will create one
 or more classes that extend it to perform the actions required by your 
 simulations.
-The **Entity** class has an optional generic parameter that contains the
-type of **Simulation** it refers to.
 
 ## Queue Class
 
@@ -72,8 +74,7 @@ The **Network** class has a **getLinkDistance** that returns the
 distance represented by a link.
 You may create classes that extend **Network** and override this 
 method to provide custom behaviors such as congestion and turning 
-costs.
-For example:
+costs. For example:
 
 ```typescript
 // network with congestion cost
