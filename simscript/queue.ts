@@ -10,7 +10,7 @@ import { assert, setOptions } from './util';
  * We refer to queues and resources interchangeably. Resources are
  * just Queues with limited capacity. Seizing a resource is the
  * same as entering a Queue, and releasing a resource is the same
- * as leaving a Quue.
+ * as leaving a Queue.
  * 
  * Queues can be seized and released by entities while the simulation
  * runs using the {@link Entity.enterQueue} and {@link Entity.leaveQueue}

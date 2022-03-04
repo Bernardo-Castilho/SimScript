@@ -71,6 +71,10 @@
 						<p>Class that represents a resource and collects statistics within
 						a simulation.</p>
 					</div>
+					<p>We refer to queues and resources interchangeably. Resources are
+						just Queues with limited capacity. Seizing a resource is the
+						same as entering a Queue, and releasing a resource is the same
+					as leaving a Quue.</p>
 					<p>Queues can be seized and released by entities while the simulation
 						runs using the <a href="entity.html#enterqueue">Entity.enterQueue</a> and <a href="entity.html#leavequeue">Entity.leaveQueue</a>
 					methods.</p>
@@ -99,7 +103,7 @@
 					<p>You can also generate complete reports on queue utilization using
 					the <a href="simulation.html#getstatstable">Simulation.getStatsTable</a> method.</p>
 					<p>In addition to the <a href="entity.html#enterqueue">Entity.enterQueue</a> and <a href="entity.html#leavequeue">Entity.leaveQueue</a>
-						methods, SimScript has a <a href="entity.html#seize">Entity.seize</a> method that provides a
+						methods, SimScript has an <a href="entity.html#seize">Entity.seize</a> method that provides a
 						shorter way to instruct entities to enter one or more waiting queues
 						(unlimited capacity), seize a resource (limited capacity), undergo a delay,
 					and leave the waiting queues.</p>
@@ -184,7 +188,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:78</li>
+									<li>Defined in queue.ts:83</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -237,7 +241,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:247</li>
+									<li>Defined in queue.ts:252</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -259,7 +263,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:235</li>
+									<li>Defined in queue.ts:240</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -282,7 +286,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:122</li>
+									<li>Defined in queue.ts:127</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -301,7 +305,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:125</li>
+									<li>Defined in queue.ts:130</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -335,7 +339,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:165</li>
+									<li>Defined in queue.ts:170</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -357,7 +361,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:195</li>
+									<li>Defined in queue.ts:200</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -380,7 +384,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:188</li>
+									<li>Defined in queue.ts:193</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -403,7 +407,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:175</li>
+									<li>Defined in queue.ts:180</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -426,7 +430,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:181</li>
+									<li>Defined in queue.ts:186</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -448,7 +452,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:253</li>
+									<li>Defined in queue.ts:258</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -470,7 +474,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:241</li>
+									<li>Defined in queue.ts:246</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -493,7 +497,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:105</li>
+									<li>Defined in queue.ts:110</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -508,7 +512,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:108</li>
+									<li>Defined in queue.ts:113</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -538,7 +542,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:213</li>
+									<li>Defined in queue.ts:218</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -562,7 +566,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:204</li>
+									<li>Defined in queue.ts:209</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -586,7 +590,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:152</li>
+									<li>Defined in queue.ts:157</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -615,7 +619,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:229</li>
+									<li>Defined in queue.ts:234</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -638,7 +642,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:159</li>
+									<li>Defined in queue.ts:164</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -661,7 +665,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:137</li>
+									<li>Defined in queue.ts:142</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -688,7 +692,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:222</li>
+									<li>Defined in queue.ts:227</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -715,7 +719,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:355</li>
+									<li>Defined in queue.ts:360</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -737,7 +741,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:273</li>
+									<li>Defined in queue.ts:278</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -775,7 +779,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:263</li>
+									<li>Defined in queue.ts:268</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -808,7 +812,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:314</li>
+									<li>Defined in queue.ts:319</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -840,7 +844,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in queue.ts:339</li>
+									<li>Defined in queue.ts:344</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
