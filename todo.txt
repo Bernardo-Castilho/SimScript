@@ -2,6 +2,9 @@
 * Simulation.stop(reset?)
 - SVG transform/network
 - too many WebGL contexts (X3DOM)
+- npm run dev
+- npm run build
+- npm run serve
 
 * steering behaviors (http://www.red3d.com/cwr/steer/)
 * react samples
